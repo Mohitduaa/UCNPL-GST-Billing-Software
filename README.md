@@ -66,16 +66,16 @@ Your data never leaves your computer. No cloud and no limits. Open source, so yo
 
 Pick your computer. Every link below always gets the newest version. Your invoices stay on your computer, whichever you pick. All files are also on the [latest release](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest) page, under **Assets**.
 
-### Windows 10 / 11: the Setup program (recommended)
+### Windows: Portable Package & Launcher (Recommended)
 
-1. **[Download `UCNPL-GST-Billing-Setup.exe`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing-Setup.exe)** (about 35 MB).
-2. **Double-click it** in your Downloads folder. If Windows says *"Windows protected your PC"*, click **More info**, then **Run anyway** (the Setup is new and not yet signed; nothing is wrong with it).
-3. **Your books:** first time? Leave *Start new books* ticked. Already using the ZIP or the one-line install? Setup finds it and asks: keep using your books where they are, or copy them to `C:\Users\<your name>\UCNPL Billing`. **Your old folder is never changed or deleted.**
-4. **Click Install, then Finish.** The app opens full screen in its own window. Closing it keeps it running near the clock; right-click that icon for *Quit*.
+1. **[Download `UCNPL-GST-Billing.zip`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip)** (about 25 MB).
+2. **Extract the ZIP** anywhere (e.g. `Documents\UCNPL Billing`) — right-click the ZIP → *Extract All*.
+3. Open the extracted folder and double-click **`UCNPL GST Billing - WINDOWS.hta`**.
+4. Click **Install**. The app opens by itself at `http://localhost:47371`, and a **UCNPL Billing** icon is placed on your Desktop and in the Start menu.
 
-No administrator password and no Node.js to install: everything it needs is inside. **Updates:** the app shows *Update to vX* → **Update Now** (no reinstalling). **Removing:** Windows **Settings → Apps → Installed apps → UCNPL Billing → Uninstall** (it asks before deleting your books; the answer is No unless you choose Yes). Full guide: [Install on Windows](https://ucnpl.com/free-gst-software-documentation/install.html).
+No administrator password and no Node.js setup needed: everything it needs is bundled inside. **Updates:** the app shows *Update to vX* → **Update Now**. **Data is 100% safe:** invoices and settings stay on your PC.
 
-Other ways on Windows: [one PowerShell line](#option-0-one-line-no-zip-no-smartscreen--gatekeeper-warning-no-npm) (no SmartScreen box) or [the ZIP](#the-zip-one-launcher-per-system).
+Other ways on Windows: [one PowerShell line](#option-0-one-line-no-zip-no-smartscreen--gatekeeper-warning-no-npm) (Option 0) or [step-by-step launcher instructions](#option-1-windows--extract-then-double-click-the-launcher-no-terminal).
 
 ### macOS
 
@@ -93,13 +93,11 @@ Updates come from the app's **Update** button. **Never drag a new folder over th
 
 Your books are kept in `~/.local/share/free-gst-billing-data`; `sudo apt remove free-gst-billing` leaves them. To update, install the new .deb the same way.
 
-### Linux: any 64-bit system (AppImage)
+### Linux: any 64-bit system
 
-1. **[Download `UCNPL-GST-Billing-Linux-x86_64.AppImage`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing-Linux-x86_64.AppImage)**.
-2. Right-click it → **Properties → Permissions** → tick *Allow executing file as program* (or `chmod +x UCNPL-GST-Billing-Linux-x86_64.AppImage`).
-3. Double-click it.
-
-Same books folder as the .deb. Full guide: [Install on Linux or a NAS](https://ucnpl.com/free-gst-software-documentation/install-linux.html).
+1. **[Download `UCNPL-GST-Billing.zip`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip)**.
+2. Unpack the ZIP and run `bash "UCNPL GST Billing - LINUX.sh"` in Terminal.
+3. The app starts and opens automatically in your browser at `http://localhost:47371`.
 
 ### NAS or a home server
 
@@ -515,9 +513,9 @@ If we priced every 🆕 feature at the going rate on the paid alternatives:
 - ~600 MB free disk space for the install
 - No internet after install (except for optional Google Drive backup / update check)
 
-### Windows: the Setup program (recommended)
+### Windows: Portable ZIP & Launcher (Recommended)
 
-Download [`UCNPL-GST-Billing-Setup.exe`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing-Setup.exe), double-click it, and click **Install**. Everything it needs is inside; no administrator password. Step by step: [Download and install](#download-and-install).
+Download [`UCNPL-GST-Billing.zip`](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip), extract it, and double-click **`UCNPL GST Billing - WINDOWS.hta`**. Everything it needs is inside; no administrator password. Step by step: [Download and install](#download-and-install).
 
 ### Option 0: one line (no ZIP, no SmartScreen / Gatekeeper warning, no npm)
 
