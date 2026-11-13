@@ -14,7 +14,7 @@
     INNERBORDER="no"
     SCROLL="auto"
     MAXIMIZEBUTTON="no"
-    ICON="_system\app-icon.ico" />
+    ICON="app-icon.ico" />
   <style>
     /* Trident (IE11) renders this window: no CSS variables, no grid, no flex
        gap. Centred blocks and floats look identical on Windows 7 to 11.
@@ -237,13 +237,13 @@
   var ROOT = launcherFolder();
   var SYSTEM = ROOT + '\\_system';
 
-  // The launcher sits next to _system/, so the icon has a known absolute
-  // path. A relative src would resolve against the current directory,
-  // which is not always this folder.
-  document.getElementById('mark').src = 'file:///' + (SYSTEM + '\\app-icon.ico').replace(/\\/g, '/');
-
   function fileExists(rel) { return fso.FileExists(ROOT + '\\' + rel); }
   function folderExists(rel) { return fso.FolderExists(ROOT + '\\' + rel); }
+
+  // The launcher sits next to app-icon.ico and _system/, so the icon has a known
+  // absolute path.
+  var iconFile = fileExists('app-icon.ico') ? (ROOT + '\\app-icon.ico') : (SYSTEM + '\\app-icon.ico');
+  document.getElementById('mark').src = 'file:///' + iconFile.replace(/\\/g, '/');
 
   // Windows lets you double-click a file INSIDE a .zip without extracting
   // anything: it copies that ONE file to %TEMP%\Temp1_<name>.zip\... and
