@@ -169,8 +169,6 @@ From then on, click the **UCNPL Billing** icon on your Desktop: it starts the ap
 
 ## Screenshots
 
-Real screens from the app, with a made-up demo business (UCNPL, fake GSTIN and bank details).
-
 <table>
   <tr>
     <td width="50%"><img src="docs-site/assets/img/app-dashboard.png" alt="The Dashboard: overdue banner, totals in rupees and dollars, low stock and the invoice list"><br><sub><b>Dashboard</b>: overdue invoices, totals, low stock and every invoice in one list.</sub></td>
