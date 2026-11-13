@@ -64,7 +64,7 @@ const PRELUDE = [
   'fail() { printf "FAIL\\t%s\\t%s\\n" "$1" "${2:-}" >> "$R"; }',
   'version_of() { node -p "require(\'$1/package.json\').version"; }',
   'set_version() { node -e \'const f=process.argv[1];const p=require(f);p.version=process.argv[2];require("fs").writeFileSync(f,JSON.stringify(p,null,2))\' "$1/package.json" "$2"; }',
-  'backups() { ls "$HOME/Documents/FreeGSTBill Backups" 2>/dev/null | wc -l | tr -d " "; }',
+  'backups() { ls "$HOME/Documents/UCNPL Billing Backups" 2>/dev/null | wc -l | tr -d " "; }',
   'export HOME=/tmp/home',
 ];
 const KEEP = '\'{"id":"keep-me"}\'';
@@ -91,7 +91,7 @@ const ALPINE = [...PRELUDE,
   'V=$(version_of "$S"); if [ "$V" = "$NEWVER" ]; then pass "1 installed version is now v$NEWVER"; else fail "1 installed version is now v$NEWVER" "got v$V"; fi',
   'if grep -q OLD "$S/dist/index.html"; then fail "1 app files were replaced" "dist/index.html is still the old one"; else pass "1 app files were replaced"; fi',
   `if [ "$(cat "$S/data/bills/keep-me.json")" = ${KEEP} ]; then pass "1 data/ is untouched"; else fail "1 data/ is untouched"; fi`,
-  'B=$(ls "$HOME/Documents/FreeGSTBill Backups/"pre-update-*.tar.gz 2>/dev/null | head -n 1)',
+  'B=$(ls "$HOME/Documents/UCNPL Billing Backups/"pre-update-*.tar.gz 2>/dev/null | head -n 1)',
   'if [ -n "$B" ] && tar -tzf "$B" | grep -q "data/bills/keep-me.json"; then pass "1 data was backed up before the update"; else fail "1 data was backed up before the update" "no backup holding the data"; fi',
   'if grep -q "All [0-9]* entries extracted completely" /work/alpine-1.log; then pass "1 every file was checked against the ZIP"; else fail "1 every file was checked against the ZIP"; fi',
   'if [ ! -e "$S/.update-previous" ]; then pass "1 rollback copy removed afterwards"; else fail "1 rollback copy removed afterwards"; fi',

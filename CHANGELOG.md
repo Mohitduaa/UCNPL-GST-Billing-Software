@@ -1530,7 +1530,7 @@ the old folder. Restart the app, or its container, afterwards.
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -1584,7 +1584,7 @@ The in-app **Control Panel → Update Now** works here too. It needs `unzip`
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -1674,7 +1674,7 @@ The in-app **Control Panel → Update Now** works here too. It needs `unzip`
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -1748,7 +1748,7 @@ The in-app **Control Panel → Update Now** works here too. It needs `unzip`
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -1998,7 +1998,7 @@ The in-app **Control Panel → Update Now** works here too. It needs `unzip`
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -2070,7 +2070,7 @@ needs `unzip` (or python3). Restart the app, or its container, afterwards.
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -2189,7 +2189,7 @@ on, **Control Panel → Update Now** works there too.
 #### Is my data safe?
 Yes. Invoices, clients, products and settings live in `_system/data/`, which
 an update never touches. The updater also takes an automatic backup to
-`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/FreeGSTBill Backups/`)
+`Documents\UCNPLBilling Backups\` (on Linux `~/Documents/UCNPL Billing Backups/`)
 before it changes anything.
 
 #### Something went wrong?
@@ -3809,7 +3809,7 @@ Control Panel so the user never has to touch the folder again.
 
 Every script is idempotent — safe to re-run any time. `update` and
 `restore` snapshot the current `data/` folder to
-`~/Documents/FreeGSTBill Backups/pre-*-<timestamp>.zip` FIRST so a
+`~/Documents/UCNPL Billing Backups/pre-*-<timestamp>.zip` FIRST so a
 partial failure can be rolled back without data loss.
 
 ### Added — in-app Control Panel (`/api/control-panel/*` + React view)

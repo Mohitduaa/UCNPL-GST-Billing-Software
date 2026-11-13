@@ -45,7 +45,7 @@ Write-Host ''
 # --- Step 1: Belt-and-braces backup of data folder BEFORE anything ---
 $dataDir = Join-Path $SystemDir 'data'
 if (Test-Path $dataDir) {
-  $backupsHome = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'FreeGSTBill Backups'
+  $backupsHome = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'UCNPL Billing Backups'
   if (-not (Test-Path $backupsHome)) { New-Item -ItemType Directory -Path $backupsHome | Out-Null }
   $stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
   $preUpdateBackup = Join-Path $backupsHome "pre-update-$stamp.zip"

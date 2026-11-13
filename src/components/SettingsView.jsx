@@ -563,7 +563,7 @@ export default function SettingsView({ onSaved }) {
   const runExport = async () => {
     try {
       const json = await exportAllData(exportSel);
-      const fileName = `freegstbill-backup-${new Date().toISOString().split('T')[0]}.json`;
+      const fileName = `ucnpl-billing-backup-${new Date().toISOString().split('T')[0]}.json`;
 
       // Local download (always)
       const blob = new Blob([json], { type: 'application/json' });
@@ -2107,7 +2107,7 @@ function BackupAndTrashPanel() {
         <label className="form-label" htmlFor="backup-folder">Also keep a copy of every daily backup in this folder <HelpButton title="Backup copy in another folder" doc="backup#backup-copy" size={16} style={{ marginLeft: 6 }} /></label>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <input id="backup-folder" type="text" className="form-input" style={{ flex: 1, minWidth: 220 }}
-            placeholder={'e.g. D:\\FreeGSTBill or E:\\ (a second drive or USB disk)'}
+            placeholder={'e.g. D:\\UCNPLBilling or E:\\ (a second drive or USB disk)'}
             value={folderInput} onChange={(e) => setFolderInput(e.target.value)} />
           <button type="button" className="btn btn-primary" disabled={folderBusy || folderInput.trim() === (backupFolder.path || '')}
             onClick={() => saveBackupFolder(folderInput.trim())}>Save folder</button>

@@ -85,7 +85,7 @@ ${which}
   <li><strong>The app opens in its own window</strong>The window says <i>Done! Opening Free GST Billing...</i> and the app appears, with no browser tabs or address bar. A short welcome asks for your business details; see <a href="first-run.html">The first-run setup</a>. The install window closes by itself.</li>
 </ol>
 <p><b>Every day after that:</b> click the <b>Free GST Billing</b> icon on your Desktop or in the Start menu.</p>
-<p><b>To update or repair it:</b> do the same three steps again. It finds your install, backs up your data to <code>Documents\\FreeGSTBill Backups</code>, and replaces only the app's own files. Your invoices, clients and settings stay exactly as they are.</p>
+<p><b>To update or repair it:</b> do the same three steps again. It finds your install, backs up your data to <code>Documents\\UCNPL Billing Backups</code>, and replaces only the app's own files. Your invoices, clients and settings stay exactly as they are.</p>
 <div class="note tip"><strong>If the window shows PROBLEM in red</strong>
 <p>The line under it says what to do (no internet, the disk is full, the folder cannot be written to). Do that, then paste the same line again; it carries on where it stopped. Nothing in your data is changed by a failed install.</p></div>
 <p>The app is installed to <code>%LOCALAPPDATA%\\Programs\\Free GST Billing</code>. If you installed it from the ZIP before, the line finds that copy (through its Desktop shortcut) and updates it where it is. Your data is in the <code>_system\\data</code> folder inside it.</p>
@@ -181,7 +181,7 @@ ${which}
 <p><b>The easy way:</b> in the app, open ${ui('Control Panel')} and use ${ui('Remove…')}. Tick what else to delete (your data, PDFs, backups) and click ${ui('Remove the app')}. See <a href="control-panel.html#remove">Remove the App</a>. Or, with the app closed, double-click <b>UCNPL GST Billing - WINDOWS</b> in the app folder, click <b>More options</b>, then ${ui('Remove the app...')}: the same tick boxes, then ${ui('Remove the app')}.</p>
 <p><b>Or with one line:</b> press ${key('Windows', 'R')}, paste this line and press ${key('Enter')}:</p>
 <pre><code>${WIN_REMOVE}</code></pre>
-<p>It stops the app and removes it and its icons. Your invoices, clients and settings are kept unless you type <code>DELETE</code> when it asks (and even then a last copy goes to <code>Documents\\FreeGSTBill Backups</code>).</p>
+<p>It stops the app and removes it and its icons. Your invoices, clients and settings are kept unless you type <code>DELETE</code> when it asks (and even then a last copy goes to <code>Documents\\UCNPL Billing Backups</code>).</p>
 <p>By hand: in the launcher, ${ui('More options')} → ${ui('Stop the app')}, then delete the app folder and the <b>Free GST Billing</b> shortcuts on the Desktop and in the Start menu. Nothing is installed into Windows itself.</p>
 </section>
 `,
@@ -217,7 +217,7 @@ ${which}
   <li><strong>The app opens</strong>It says <i>Done! Opening Free GST Billing...</i> and the app appears in its own window if you have Chrome or Edge, or in Safari otherwise. A short welcome asks for your business details; see <a href="first-run.html">The first-run setup</a>. You can close Terminal.</li>
 </ol>
 <p><b>Every day after that:</b> click <b>Free GST Billing</b> in the Dock or in Launchpad. (It lives in the <b>Applications</b> folder inside your home folder: Finder → ${ui('Go')} → ${ui('Home')} → <b>Applications</b>.)</p>
-<p><b>To update or repair it:</b> paste the same line again. It backs up your data to <code>Documents/FreeGSTBill Backups</code> and replaces only the app's own files; your invoices, clients and settings stay as they are.</p>
+<p><b>To update or repair it:</b> paste the same line again. It backs up your data to <code>Documents/UCNPL Billing Backups</code> and replaces only the app's own files; your invoices, clients and settings stay as they are.</p>
 <p>If something goes wrong, Terminal shows <b>PROBLEM</b> and, under it, what to do. Do that, then paste the line again.</p>
 <p>The app's files are in <code>Applications/Free GST Billing</code> in your home folder; your data is in <code>_system/data</code> inside it.</p>
 </section>
@@ -366,7 +366,7 @@ ${which}
   <li><strong>Answer one question</strong><i>Open Free GST Billing by itself when this computer starts? [y/N]</i>: type <code>y</code> and press ${key('Enter')}, or just ${key('Enter')} for no.</li>
   <li><strong>The app opens</strong>In its own window if you have Chrome, Chromium or Edge, or in your browser otherwise.</li>
 </ol>
-<p><b>Every day after that:</b> open <b>Free GST Billing</b> from your applications menu. <b>To update or repair it:</b> run the same line again; your data is backed up to <code>~/Documents/FreeGSTBill Backups</code> first and never touched.</p>
+<p><b>Every day after that:</b> open <b>Free GST Billing</b> from your applications menu. <b>To update or repair it:</b> run the same line again; your data is backed up to <code>~/Documents/UCNPL Billing Backups</code> first and never touched.</p>
 <p>If it says <i>curl: command not found</i>, run <code>sudo apt install -y curl</code> first. The app goes to <code>~/.local/share/free-gst-billing</code>; your data is in <code>_system/data</code> inside it.</p>
 <p><b>NAS or Alpine:</b> there may be no <code>bash</code>; end the line with <code>| sh</code> instead. Alpine needs Node.js from its own store first: <code>sudo apk add nodejs</code>. To choose the folder, put <code>FREEGSTBILL_DIR=/volume1/apps/free-gst-billing</code> just before <code>sh</code>.</p>
 <p><b>To remove it</b> (your invoices are kept unless you type <code>DELETE</code> when asked):</p>

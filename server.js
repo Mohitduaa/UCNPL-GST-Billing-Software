@@ -2110,7 +2110,7 @@ app.post('/api/control-panel/open-data-folder', (req, res) => {
 });
 
 app.post('/api/control-panel/open-backups-folder', (req, res) => {
-  const backupsHome = path.join(process.env.USERPROFILE || process.env.HOME || '', 'Documents', 'FreeGSTBill Backups');
+  const backupsHome = path.join(process.env.USERPROFILE || process.env.HOME || '', 'Documents', 'UCNPL Billing Backups');
   try {
     if (!fs.existsSync(backupsHome)) makeDir(backupsHome);
     if (isWindows) spawn('explorer.exe', [backupsHome], { detached: true }).unref();
@@ -2322,10 +2322,10 @@ function todayLocalIso() {
 // v1.10.80 (#99) - a second copy of every daily backup in a folder the user
 // picks (another drive, a USB disk, a synced folder), so a failed C: drive does
 // not take the backups with it. Stored in meta.json as `backupFolder`; the
-// copies go in "<folder>/FreeGSTBill Backups/<date>", 30 days kept, and are
+// copies go in "<folder>/UCNPL Billing Backups/<date>", 30 days kept, and are
 // listed and restorable like the ones in data/backups.
 const BACKUP_FOLDER_KEY = 'backupFolder';
-const EXTRA_BACKUP_SUBDIR = 'FreeGSTBill Backups';
+const EXTRA_BACKUP_SUBDIR = 'UCNPL Billing Backups';
 const DATE_DIR = /^\d{4}-\d{2}-\d{2}$/;
 const extraBackupsDir = () => {
   const folder = readJSON(META_PATH, {})[BACKUP_FOLDER_KEY];

@@ -141,7 +141,7 @@ export default [
 <ul>
   <li><strong>No administrator rights.</strong> The install line puts the app in your own user folder (Windows: <code>%LOCALAPPDATA%\\Programs\\Free GST Billing</code>; Mac: <code>Applications</code> in your home folder). It does not change Windows system files, add a Windows service or ask for an admin password.</li>
   <li><strong>From the official place only.</strong> The install line downloads the script and the app from this project's own GitHub page, over a secure (HTTPS) connection.</li>
-  <li><strong>Your data is never touched.</strong> Installing over an existing copy backs up your data to <code>Documents\\FreeGSTBill Backups</code> first and replaces only the app's own files.</li>
+  <li><strong>Your data is never touched.</strong> Installing over an existing copy backs up your data to <code>Documents\\UCNPL Billing Backups</code> first and replaces only the app's own files.</li>
 </ul>
 <h3>Why Windows or the Mac may show a warning for the ZIP</h3>
 <p>The app is <b>not code-signed</b>. A signing certificate costs a few hundred dollars every year, and this app is free. So when you open the downloaded ZIP's launcher, Windows may show <b>"Windows protected your PC"</b> and a Mac may say it <b>cannot check the app</b>. That message means "this program is not signed by a paid certificate". It does not mean a virus was found. See <a href="install.html#windows-protected">"Windows protected your PC"</a>.</p>

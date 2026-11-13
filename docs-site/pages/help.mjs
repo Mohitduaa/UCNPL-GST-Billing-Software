@@ -254,7 +254,7 @@ export default [
 <section id="update-failed">
 <h3>An update went wrong</h3>
 <p>You may see: <strong>"Update failed — ..."</strong> in the app, <strong>"ERROR: could not reach GitHub. Are you online?"</strong>, <strong>"Could not check for updates. Check internet connection."</strong>, or <strong>"The new version is in place, but it is not ready to run yet"</strong>.</p>
-<p>Your data folder is never changed by an update, and a backup was saved in <code>Documents\\FreeGSTBill Backups</code> before it started.</p>
+<p>Your data folder is never changed by an update, and a backup was saved in <code>Documents\\UCNPL Billing Backups</code> before it started.</p>
 <ol>
   <li>Check the internet, then run the update again. This fixes most problems.</li>
   <li>If the window showed a <strong>PROBLEM:</strong>, fix that first (see <a href="#install-failed">The install stopped with an error</a>), then click ${ui('Open App')}: it finishes the install by itself.</li>
@@ -339,7 +339,7 @@ export default [
 <p>The drive the app is on has no free space, so the app could not write. The app writes each file in full or not at all, so nothing already saved is lost or half-written.</p>
 <ol>
   <li>Free some space: empty the Recycle Bin (Mac: Bin), delete old downloads and videos you do not need.</li>
-  <li>Backups you have already copied somewhere else can be deleted from <code>Documents\\FreeGSTBill Backups</code>.</li>
+  <li>Backups you have already copied somewhere else can be deleted from <code>Documents\\UCNPL Billing Backups</code>.</li>
   <li>Try again.</li>
 </ol>
 </section>
@@ -505,7 +505,7 @@ export default [
 <p>A restore saves what you have now first, so a failed one changes nothing.</p>
 <ol>
   <li>Read the end of the message: <a href="#cannot-connect">Failed to fetch</a>, <a href="#payload-too-large">Request body too large</a>, <a href="#disk-full">disk full</a> and <a href="#no-permission">permission</a> each have their own entry.</li>
-  <li>For <b>Import Backup</b>, choose the <code>freegstbill-backup-<i>date</i>.json</code> file saved by Export Backup. A ZIP from the launcher or Control Panel is restored with ${ui('Choose Backup ZIP')} in the <a href="control-panel.html#actions">Control Panel</a> instead.</li>
+  <li>For <b>Import Backup</b>, choose the <code>ucnpl-billing-backup-<i>date</i>.json</code> file saved by Export Backup. A ZIP from the launcher or Control Panel is restored with ${ui('Choose Backup ZIP')} in the <a href="control-panel.html#actions">Control Panel</a> instead.</li>
   <li>Try another day from <b>Settings, Backup Management</b>.</li>
 </ol>
 <p>See <a href="backup.html">Backups and updates</a>.</p>
@@ -543,7 +543,7 @@ export default [
   <li>Open the data folder: ${ui('Open Data Folder')} in the <a href="control-panel.html#actions">Control Panel</a>.</li>
   <li>Open <code>backups</code>, then the newest date folder, then the same subfolder (<code>bills</code>). Copy that file.</li>
   <li>Paste it into the same subfolder of the data folder, replacing the damaged one, and reload the page.</li>
-  <li>No good copy there? Look in the ZIPs in <code>Documents\\FreeGSTBill Backups</code>, or move the damaged file to your Desktop (everything else keeps working) and <a href="#report-problem">send it to us</a>.</li>
+  <li>No good copy there? Look in the ZIPs in <code>Documents\\UCNPL Billing Backups</code>, or move the damaged file to your Desktop (everything else keeps working) and <a href="#report-problem">send it to us</a>.</li>
 </ol>
 <p>Restoring a whole day from <b>Settings, Backup Management</b> also works, but it puts all your data back to that day. See <a href="backup.html#automatic-backups">Automatic daily backups</a>.</p>
 </section>

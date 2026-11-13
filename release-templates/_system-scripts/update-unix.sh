@@ -231,7 +231,7 @@ fi
 
 # --- Step 4: back up data/ before touching anything -------------------------
 if [ -d "$SYSTEM_DIR/data" ]; then
-  BACKUPS_HOME="${HOME:-$SYSTEM_DIR/..}/Documents/FreeGSTBill Backups"
+  BACKUPS_HOME="${HOME:-$SYSTEM_DIR/..}/Documents/UCNPL Billing Backups"
   mkdir -p "$BACKUPS_HOME" || fail "Could not create $BACKUPS_HOME for the backup. Nothing was changed."
   BACKUP="$BACKUPS_HOME/pre-update-$(date +%Y-%m-%d_%H-%M-%S).tar.gz"
   say "Backing up your data to $BACKUP ..."
