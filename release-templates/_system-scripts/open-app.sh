@@ -27,7 +27,7 @@ read_port() {
 read_port
 
 problem() {
-  msg="UCNPL Billing could not start: $1 To repair it, run the install line again (https://ucnpl.com/free-gst-software-documentation/install.html)."
+  msg="UCNPL Billing could not start: $1 To repair it, run the install line again (https://github.com/Mohitduaa/UCNPL-GST-Billing-Software)."
   if [ "$(uname -s)" = Darwin ] && [ -z "${FREEGSTBILL_TEST:-}" ]; then
     osascript -e "display alert \"UCNPL Billing\" message \"$msg\"" >/dev/null 2>&1
   fi

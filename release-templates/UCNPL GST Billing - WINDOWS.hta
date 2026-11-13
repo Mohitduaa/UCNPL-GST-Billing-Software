@@ -224,7 +224,7 @@
   var fso = new ActiveXObject("Scripting.FileSystemObject");
 
   // Resolve the folder this HTA lives in. location.pathname is
-  // "file:///C:/path/to/Free%20GST%20Billing%20-%20WINDOWS.hta" - we strip
+  // "file:///C:/path/to/UCNPL%20GST%20Billing%20-%20WINDOWS.hta" - we strip
   // the filename, url-decode, and normalize slashes.
   function launcherFolder() {
     var p = location.pathname;
@@ -587,7 +587,7 @@
           '<ol>' +
           '<li>Close this window.</li>' +
           '<li>Right-click the <b>UCNPL-GST-Billing</b> ZIP and choose <b>Extract All&hellip;</b>.</li>' +
-          '<li>Open the new folder and double-click <b>UCNPL Billing - WINDOWS</b>.</li>' +
+          '<li>Open the new folder and double-click <b>UCNPL GST Billing - WINDOWS</b>.</li>' +
           '</ol>');
         setMore([{ label: 'Download the app again', run: openGitHub }]);
         return;

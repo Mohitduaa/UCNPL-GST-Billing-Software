@@ -3,7 +3,7 @@
 #
 # Mark this executable once (chmod +x) and either double-click in
 # most file managers (Nautilus, Dolphin, Nemo — prompt to run) or
-# run from a terminal: `./Free\ GST\ Billing.sh`
+# run from a terminal: `./UCNPL\ GST\ Billing\ -\ LINUX.sh`
 #
 # Same design as the .command variant for macOS: detect state,
 # offer a minimal menu, hand off to _system/*.sh. All post-install

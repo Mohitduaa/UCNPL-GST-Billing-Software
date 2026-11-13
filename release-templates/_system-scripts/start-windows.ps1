@@ -145,7 +145,7 @@ function Remove-ObsoleteFiles {
     @{ old = 'UCNPL Billing.command'; now = 'UCNPL Billing - MAC.command' },
     @{ old = 'UCNPL Billing.sh';      now = 'UCNPL Billing - LINUX.sh' },
     # batch launchers from before the one-file launcher (v1.10.44)
-    @{ old = 'Install UCNPLBilling.bat';  now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Install UCNPLBilling.bat';  now = 'UCNPL GST Billing - WINDOWS.hta' },
     @{ old = 'Start UCNPLBilling.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
     @{ old = 'Stop UCNPLBilling.bat';     now = 'UCNPL Billing - WINDOWS.hta' },
     @{ old = 'Update UCNPLBilling.bat';   now = 'UCNPL Billing - WINDOWS.hta' },

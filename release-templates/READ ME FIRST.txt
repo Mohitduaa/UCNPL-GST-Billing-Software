@@ -1,6 +1,6 @@
 ===========================================================
   UCNPL GST BILLING SOFTWARE
-  Free, and yours to keep
+  Open-source, offline, and yours to keep
 ===========================================================
 
   Your invoices, clients and data stay on THIS computer.
@@ -61,7 +61,7 @@
 
   STEP-BY-STEP GUIDES, for every computer, with every click
   explained (no technical knowledge needed):
-  https://ucnpl.com/free-gst-software-documentation/install.html
+  https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md
 
 
 -----------------------------------------------------------
@@ -243,10 +243,10 @@
       and anything urgent straight away.
 
       The full guide, with every screen explained:
-      https://ucnpl.com/free-gst-software-documentation/
+      https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md
 
 
 ===========================================================
-  This software is free and open source (MIT licence).
+  This software is open source (MIT licence).
   If it saves you money, tell another shop owner about it.
 ===========================================================
