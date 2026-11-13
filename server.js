@@ -2759,10 +2759,10 @@ function servePlaceholder(req, res) {
 <style>
   body { font-family: -apple-system, Segoe UI, Inter, sans-serif; max-width: 560px;
          margin: 6rem auto; padding: 2rem; color: #1e293b; line-height: 1.55; }
-  h1 { color: #1e40af; margin: 0 0 0.5rem; }
+  h1 { color: #c96442; margin: 0 0 0.5rem; }
   code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
   .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #cbd5e1;
-             border-top-color: #1e40af; border-radius: 50%; animation: spin 1s linear infinite;
+             border-top-color: #c96442; border-radius: 50%; animation: spin 1s linear infinite;
              vertical-align: middle; margin-right: 6px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .muted { color: #64748b; font-size: 0.9em; }
