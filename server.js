@@ -1970,7 +1970,7 @@ app.get('/api/check-update', async (req, res) => {
 // `_system/` in a release install, or `release-templates/_system-scripts/`
 // when running from the source repo.
 // ============================================================
-import { spawn } from 'child_process';
+import { spawn, exec } from 'child_process';
 import os from 'os';
 
 const isWindows = process.platform === 'win32';
@@ -2100,11 +2100,23 @@ app.post('/api/control-panel/open-apps-settings', (req, res) => {
   } catch (e) { res.json({ ok: false, error: e.message }); }
 });
 
+function openFolderInOS(targetDir) {
+  if (isWindows) {
+    exec('start "" "' + targetDir + '"', (err) => {
+      if (err) {
+        spawn('powershell.exe', ['-NoProfile', '-Command', 'Start-Process explorer.exe -ArgumentList \"' + targetDir + '\"'], { detached: true }).unref();
+      }
+    });
+  } else if (isMac) {
+    spawn('open', [targetDir], { detached: true }).unref();
+  } else {
+    spawn('xdg-open', [targetDir], { detached: true }).unref();
+  }
+}
+
 app.post('/api/control-panel/open-data-folder', (req, res) => {
   try {
-    if (isWindows) spawn('explorer.exe', [DATA_DIR], { detached: true }).unref();
-    else if (isMac) spawn('open', [DATA_DIR], { detached: true }).unref();
-    else spawn('xdg-open', [DATA_DIR], { detached: true }).unref();
+    openFolderInOS(DATA_DIR);
     res.json({ ok: true });
   } catch (e) { res.json({ ok: false, error: e.message }); }
 });
@@ -2113,9 +2125,7 @@ app.post('/api/control-panel/open-backups-folder', (req, res) => {
   const backupsHome = path.join(process.env.USERPROFILE || process.env.HOME || '', 'Documents', 'UCNPL Billing Backups');
   try {
     if (!fs.existsSync(backupsHome)) makeDir(backupsHome);
-    if (isWindows) spawn('explorer.exe', [backupsHome], { detached: true }).unref();
-    else if (isMac) spawn('open', [backupsHome], { detached: true }).unref();
-    else spawn('xdg-open', [backupsHome], { detached: true }).unref();
+    openFolderInOS(backupsHome);
     res.json({ ok: true, path: backupsHome });
   } catch (e) { res.json({ ok: false, error: e.message }); }
 });
