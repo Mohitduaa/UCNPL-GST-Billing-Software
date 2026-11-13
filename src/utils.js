@@ -886,8 +886,8 @@ export const markUnpaidPatch = (bill) => {
 // The online documentation. Help buttons link straight to the section for
 // their screen, and the sidebar User Guide opens the start (v1.10.75). The
 // build of docs-site checks that every doc="page#section" used in src exists.
-export const DOCS_URL = 'https://ucnpl.com/';
-export const docsLink = () => 'https://ucnpl.com/';
+export const DOCS_URL = 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md';
+export const docsLink = () => 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md';
 
 // GSTR-1 B2C Large: an inter-state sale to an unregistered buyer above this
 // invoice value is reported invoice by invoice. The limit fell from ₹2.5 lakh
