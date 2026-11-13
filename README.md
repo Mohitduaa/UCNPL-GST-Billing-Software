@@ -25,7 +25,7 @@ Your data never leaves your computer. No cloud and no limits. Open source, so yo
 
 <sub>Each button always gets the newest version · Universal Portable ZIP (about 25 MB, runs on Windows, macOS, and Linux) · <a href="#download-and-install">step-by-step for every system</a></sub>
 
-<a href="#quick-start--installation"><img src="https://img.shields.io/badge/%E2%9A%A1%20Install-3%20steps-0f766e?style=for-the-badge&labelColor=334155" alt="Install in 3 steps" height="30"></a> <a href="#your-first-invoice-in-5-minutes"><img src="https://img.shields.io/badge/%F0%9F%A7%BE%20First%20invoice-5%20minutes-7c3aed?style=for-the-badge&labelColor=334155" alt="Your first invoice in 5 minutes" height="30"></a> <a href="#screenshots"><img src="https://img.shields.io/badge/%F0%9F%93%B8%20See-screenshots-0369a1?style=for-the-badge&labelColor=334155" alt="Screenshots" height="30"></a> <a href="https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases"><img src="https://img.shields.io/badge/%F0%9F%93%A6%20All-releases-475569?style=for-the-badge&labelColor=334155" alt="All releases" height="30"></a> <a href="https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new/choose"><img src="https://img.shields.io/badge/%F0%9F%90%9B%20Report-a%20problem-b91c1c?style=for-the-badge&labelColor=334155" alt="Report a problem" height="30"></a> <a href="https://ucnpl.com/free-gst-software-documentation/support.html"><img src="https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20Support-the%20project-be123c?style=for-the-badge&labelColor=334155" alt="Support the project" height="30"></a>
+<a href="#quick-start--installation"><img src="https://img.shields.io/badge/%E2%9A%A1%20Install-3%20steps-0f766e?style=for-the-badge&labelColor=334155" alt="Install in 3 steps" height="30"></a> <a href="#your-first-invoice-in-5-minutes"><img src="https://img.shields.io/badge/%F0%9F%A7%BE%20First%20invoice-5%20minutes-7c3aed?style=for-the-badge&labelColor=334155" alt="Your first invoice in 5 minutes" height="30"></a> <a href="#screenshots"><img src="https://img.shields.io/badge/%F0%9F%93%B8%20See-screenshots-0369a1?style=for-the-badge&labelColor=334155" alt="Screenshots" height="30"></a> <a href="https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases"><img src="https://img.shields.io/badge/%F0%9F%93%A6%20All-releases-475569?style=for-the-badge&labelColor=334155" alt="All releases" height="30"></a> <a href="https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new/choose"><img src="https://img.shields.io/badge/%F0%9F%90%9B%20Report-a%20problem-b91c1c?style=for-the-badge&labelColor=334155" alt="Report a problem" height="30"></a>
 
 </div>
 
@@ -724,14 +724,11 @@ We believe every business in India deserves professional billing software withou
 - **How we earn:** paid work for businesses that want it (custom features, setup and moving data in, support plans) and people who choose to support the project.
 - **Tracking you would gain us nothing.** We sell no ads and no data, so there is nothing to collect. And the code is public, so you can check this instead of believing it.
 
-### Support the project
-
-If the app saves you time, you can help keep it going:
+### Contributing & Feedback
 
 - ⭐ **Star this repo**, so other businesses find it
 - 💬 **Tell another business** about it
-- 🐛 **[Report a bug](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new?template=bug_report.yml) or [ask for a feature](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new?template=feature_request.yml)**: fixes and features ship every Saturday
-- 💛 **UPI, any amount:** `princeramgarhiaa-1@okaxis` (also as a QR code in the app, under **Support & About**)
+- 🐛 **[Report a bug](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new?template=bug_report.yml) or [ask for a feature](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues/new?template=feature_request.yml)**: fixes and updates ship regularly
 
 **Work with UCNPL:** custom software and web apps, customising this app for your business, setup and data migration, support plans, AI integration and automation, and mobile apps. [contact@ucnpl.com](mailto:contact@ucnpl.com)
 
