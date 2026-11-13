@@ -581,7 +581,7 @@ npm run dev              # dev server on http://localhost:5173 · API on http://
 
 ### The UCNPL Billing icon
 
-Every install (the launcher, the one-line command, Mac and Linux) puts a **UCNPL Billing** icon on your computer: the blue **B**, on the Desktop and in the Start menu on Windows. Click it every day: it starts the app if it is not running and opens it in its own window. Update, backup, restart and stop are in the app's **⚙ Control Panel**.
+Every install (the launcher, the one-line command, Mac and Linux) puts a **UCNPL Billing** icon on your computer, on the Desktop and in the Start menu on Windows. Click it every day: it starts the app if it is not running and opens it in its own window. Update, backup, restart and stop are in the app's **⚙ Control Panel**.
 
 > Use only this icon. Don't use the browser's own **Install app** button (in Chrome or Edge's address bar): that icon opens a window but cannot start the app, so after a restart it only shows "Needs a Quick Start". If you already have one, right-click it and choose **Uninstall**.
 

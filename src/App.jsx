@@ -857,9 +857,10 @@ function App() {
       <div className="app-window-starting" role="status" aria-live="polite" style={{
         position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', flexDirection: 'column',
         alignItems: 'center', justifyContent: 'center', gap: '1rem',
-        background: darkMode ? '#0f172a' : '#f0f2f5', color: darkMode ? '#e2e8f0' : '#0f172a',
+        background: 'var(--ground, #faf9f5)', color: 'var(--text, #141413)',
+        fontFamily: 'var(--font-sans, "Montserrat", sans-serif)',
       }}>
-        <img src="/icons/icon-192.png" alt="" width={72} height={72} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+        <img src="/icons/icon-192.png" alt="" width={72} height={72} style={{ borderRadius: 16 }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
         <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>UCNPL Billing</h2>
         <div className="server-down-waiting"><div className="server-down-spinner" /><span>Starting again…</span></div>
       </div>
@@ -870,30 +871,19 @@ function App() {
     return (
       <div className="server-down-overlay">
         <div className="server-down-modal">
-          <FileText size={48} color="#3b82f6" />
+          <img src="/icons/icon-192.png" alt="UCNPL Billing" width={56} height={56} style={{ borderRadius: 14, marginBottom: '0.75rem', boxShadow: '0 4px 16px rgba(201, 100, 66, 0.25)' }} />
           <h2>UCNPL Billing Needs a Quick Start <HelpButton title="Needs a Quick Start" doc="shortcuts#app-not-running" size={16} /></h2>
           <p>
             Your data is <strong>100% safe</strong> on your computer — nothing is lost.
             The app just needs to be started once.
           </p>
-          {/* v1.10.69 - there was an "Open GST Billing" button here, linking to
-              freegstbill://start. Only the old Install FreeGSTBill.bat ever
-              registered that protocol, and it stopped shipping in v1.10.44, so
-              on every current install the button did nothing at all. There is
-              also nothing it could do: a web page cannot start a program, and
-              this screen is being served from the offline cache precisely
-              because the server is not running. The steps below are the only
-              real answer, so they are no longer the fallback. See ERR-019. */}
           <div className="server-down-steps">
             <p className="server-down-hint">How to start it:</p>
             <ol>
-              <li>Double-click the <strong>UCNPL Billing</strong> icon on your Desktop (the blue <strong>B</strong>)</li>
+              <li>Double-click the <strong>UCNPL Billing</strong> icon on your Desktop</li>
               <li>Or search <strong>"UCNPL Billing"</strong> in the Start Menu</li>
             </ol>
-            {/* v1.10.83 - an icon made by the browser ("Install as Desktop App",
-                removed in this version) opens this window but cannot start the
-                app. Say so, or people keep clicking it. */}
-            <p className="server-down-hint">Opened this from a Chrome or Edge app icon? That icon cannot start the app. Use the Free GST Billing icon instead; you can remove the other one (right-click it, then Uninstall).</p>
+            <p className="server-down-hint">Opened this from a Chrome or Edge app icon? That icon cannot start the app. Use the UCNPL Billing icon instead; you can remove the other one (right-click it, then Uninstall).</p>
           </div>
           <p className="server-down-safe">All your invoices, clients, and data are safely stored on your computer. They are never deleted or shared.</p>
           <div className="server-down-waiting">
