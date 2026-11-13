@@ -345,6 +345,14 @@ Every 🆕 row below is a feature we shipped in v1.10 that competitors either pa
 | 🆕 **Barcode + QR of invoice number on PDF** | ✅ Every invoice | ⚠ Paid | ⚠ Paid | ❌ | ❌ |
 | 🆕 **Feedback QR (Google Reviews link) on PDF** | ✅ | ❌ | ❌ | ❌ | ❌ |
 | 🆕 **Google Drive backup + PDF upload (opt-in)** | ✅ Free (your OAuth) | ❌ | ⚠ Paid | ✅ (Premium) | ❌ |
+| 🆕 **Import from Tally, Vyapar & Excel** | ✅ XML / XLSX / CSV free | ❌ | ⚠ Paid Gold | ⚠ Paid add-on | ⚠ Paid |
+| 🆕 **Size billing for Glass/Mirror/Flex (Sq.ft)** | ✅ Built-in formula | ⚠ Paid module | ❌ | ❌ | ❌ |
+| 🆕 **Windows Native App (WebView2 + System Tray)** | ✅ Free (.exe + tray) | ✅ | ✅ | ❌ Cloud only | ❌ Cloud only |
+| 🆕 **Native Linux Packages (.deb & AppImage)** | ✅ Double-click install | ❌ | ❌ | ❌ | ❌ |
+| 🆕 **1-Click WhatsApp invoice sharing with UPI** | ✅ Free | ⚠ Paid add-on | ⚠ Paid | ⚠ Paid | ⚠ Paid |
+| 🆕 **Profit & Loss with real COGS (purchase cost)** | ✅ Real-time gross profit | ✅ | ⚠ Paid Gold | ✅ (Standard+) | ❌ |
+| 🆕 **Custom reference fields (Doctor, Job Card, AWB)** | ✅ Unlimited custom | ⚠ Paid TDL | ⚠ Paid | ✅ | ⚠ Limited |
+| 🆕 **Dedicated Cancelled Tab + 30-day Trash Bin** | ✅ Full audit trail | ⚠ Manual | ⚠ Paid cloud | ✅ | ⚠ Limited |
 
 *Last verified 2026. Competitors' features change; verify on their pricing pages.*
 
@@ -360,8 +368,11 @@ If we priced every 🆕 feature at the going rate on the paid alternatives:
 - **Daily backup with Trash bin**: cloud-only (paid) on Zoho + ClearTax
 - **ITR module** (with 234B/C, surcharge cap, 80D senior tiers): ClearTax sells this as a separate ~₹1,500/yr product
 - **Multi-language invoices**: Tally paid module
+- **Tally (XML) & Vyapar migration / import**: paid service or add-on on competing tools (~₹1,500–₹3,000)
+- **Size billing for glass, flex & marble (Sq.ft)**: Tally custom TDL module costs ~₹3,000–₹5,000
+- **1-click WhatsApp alerts with UPI**: competitor add-on or paid API subscription (~₹1,200–₹2,400/yr)
 
-**Total that would cost you ~₹8,000–₹15,000/year on the competing stack.** Here: **₹0, MIT-licensed open source.**
+**Total that would cost you ~₹15,000–₹25,000/year on the competing stack.** Here: **₹0, MIT-licensed open source.**
 
 ---
 
