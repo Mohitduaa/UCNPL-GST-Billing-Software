@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Download, RefreshCw, Package, FolderOpen, HardDrive, StopCircle, Upload, AlertCircle, CheckCircle, Trash2, RotateCcw } from 'lucide-react';
+import { Download, RefreshCw, Package, FolderOpen, HardDrive, StopCircle, Upload, AlertCircle, CheckCircle, Trash2, RotateCcw, X } from 'lucide-react';
 import PageHeader from './PageHeader';
 import { toast } from './Toast';
 import HelpButton from './HelpButton';
@@ -25,6 +25,7 @@ export default function ControlPanel() {
   const [busy, setBusy] = useState(null); // action name currently in flight
   const [lastResult, setLastResult] = useState(null);
   const [removeOpen, setRemoveOpen] = useState(false);
+  const [howToRemoveOpen, setHowToRemoveOpen] = useState(false);
   const [removeOpts, setRemoveOpts] = useState({ data: false, pdfs: false, backups: false });
   const [removed, setRemoved] = useState(null);
 
@@ -301,9 +302,15 @@ export default function ControlPanel() {
           buttonLabel={status && !status.canRemove ? 'How to remove it' : 'Remove…'}
           disabled={!!busy || !status}
           onClick={() => {
-            // Not an installed copy (source code, or an old layout): the guide's steps instead.
-            if (!status.canRemove) { window.open(docsLink(status.platform === 'darwin' ? 'install-mac#uninstall-mac' : 'install#uninstall'), '_blank', 'noopener'); return; }
-            setRemoveOpen(true); setTimeout(() => document.getElementById('remove-app')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+            if (!status.canRemove) {
+              setHowToRemoveOpen(true);
+              setRemoveOpen(false);
+              setTimeout(() => document.getElementById('how-to-remove-app')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+              return;
+            }
+            setRemoveOpen(true);
+            setHowToRemoveOpen(false);
+            setTimeout(() => document.getElementById('remove-app')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
           }}
           variant="danger"
         />
@@ -312,7 +319,7 @@ export default function ControlPanel() {
 
       {removeOpen && status?.canRemove && (
         <div id="remove-app" className="glass-panel p-6" style={{ marginTop: '1.5rem', border: '1px solid #dc2626' }}>
-          <h3 style={{ margin: '0 0 0.4rem' }}>Remove Free GST Billing from this computer</h3>
+          <h3 style={{ margin: '0 0 0.4rem' }}>Remove UCNPL Billing from this computer</h3>
           <p style={{ margin: '0 0 0.8rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
             Tick what else should be deleted. Anything not ticked stays in <code>{status.appFolder}</code>.
           </p>
@@ -346,6 +353,92 @@ export default function ControlPanel() {
           <p style={{ fontSize: '0.78rem', margin: '0.8rem 0 0', color: 'var(--text-muted)' }}>
             Copies in a second backup folder you chose in Settings are not touched. Delete them by hand if you want.
           </p>
+        </div>
+      )}
+
+      
+      {howToRemoveOpen && (
+        <div id="how-to-remove-app" className="glass-panel p-6" style={{ marginTop: '1.5rem', border: '1px solid #ef4444', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.6rem' }}>
+            <h3 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#dc2626' }}>
+              <Trash2 size={22} /> How to Remove UCNPL Billing From This Computer
+            </h3>
+            <button className="icon-btn" onClick={() => setHowToRemoveOpen(false)} title="Close" aria-label="Close" style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: 4 }}>
+              <X size={20} />
+            </button>
+          </div>
+
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '1.2rem', lineHeight: '1.5' }}>
+            UCNPL Billing is 100% portable and leaves no hidden services or background tracking on your PC. Follow the steps below based on how you run the app:
+          </p>
+
+          <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
+            {/* Method 1: Portable */}
+            <div style={{ background: 'var(--bg-secondary)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
+              <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                📁 Portable Folder / Pen Drive
+              </h4>
+              <p style={{ margin: '0 0 0.6rem', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+                If you run the app directly from an extracted folder or Pen drive (without installing):
+              </p>
+              <ol style={{ margin: '0 0 1rem', paddingLeft: '1.2rem', fontSize: '0.85rem', lineHeight: '1.6' }}>
+                <li><b>Stop Server:</b> Click the Stop Server button above or close this window.</li>
+                <li><b>Check Backups:</b> Your invoices & data are safely backed up in <code>Documents/UCNPL Billing Backups</code>.</li>
+                <li><b>Delete Folder:</b> Simply delete the <code>UCNPL-GST-Billing</code> folder. Nothing is left behind!</li>
+              </ol>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <button className="btn btn-secondary" style={{ fontSize: '0.8rem' }} onClick={() => runAction('open-backups-folder')}>
+                  <FolderOpen size={14} style={{ marginRight: 4 }} /> Open Backups Folder
+                </button>
+                <button className="btn btn-secondary" style={{ fontSize: '0.8rem' }} onClick={() => runAction('open-data-folder')}>
+                  <FolderOpen size={14} style={{ marginRight: 4 }} /> Open Data Folder
+                </button>
+              </div>
+            </div>
+
+            {/* Method 2: Windows Setup */}
+            <div style={{ background: 'var(--bg-secondary)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid #10b981' }}>
+              <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                💻 Windows Setup (.exe Installer)
+              </h4>
+              <p style={{ margin: '0 0 0.6rem', fontSize: '0.86rem', color: 'var(--text-muted)' }}>
+                If you installed via <code>UCNPL-GST-Billing-Setup.exe</code>:
+              </p>
+              <ol style={{ margin: '0 0 1rem', paddingLeft: '1.2rem', fontSize: '0.85rem', lineHeight: '1.6' }}>
+                <li>Press <b>Win + I</b> on your keyboard to open Windows Settings.</li>
+                <li>Go to <b>Apps</b> → <b>Installed apps</b> (or Apps & Features).</li>
+                <li>Search for <b>UCNPL Billing</b> and click the three dots (⋮) → <b>Uninstall</b>.</li>
+                <li>Choose whether you want to keep or delete your data when asked.</li>
+              </ol>
+              <button className="btn btn-secondary" style={{ fontSize: '0.8rem' }} onClick={() => runAction('open-apps-settings')}>
+                Open Windows Installed Apps
+              </button>
+            </div>
+
+            {/* Method 3: macOS / Linux */}
+            <div style={{ background: 'var(--bg-secondary)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid #8b5cf6' }}>
+              <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                🍎 macOS / Linux
+              </h4>
+              <ul style={{ margin: '0 0 1rem', paddingLeft: '1.2rem', fontSize: '0.85rem', lineHeight: '1.6' }}>
+                <li><b>macOS:</b> In Finder, open <code>Applications</code> and move <b>UCNPL Billing</b> to Trash.</li>
+                <li><b>Linux (.deb):</b> Run <code>sudo apt remove ucnpl-billing</code> in Terminal.</li>
+                <li><b>Linux (AppImage):</b> Delete the <code>.AppImage</code> file and its desktop shortcut.</li>
+              </ul>
+              <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                Data stays in <code>~/Documents/UCNPL Billing Backups</code> unless you delete it manually.
+              </p>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '1.2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.6rem' }}>
+            <span style={{ fontSize: '0.84rem', color: 'var(--text-muted)' }}>
+              Need help? Invoices are always safe in your Backups folder before removal.
+            </span>
+            <button className="btn btn-secondary" onClick={() => setHowToRemoveOpen(false)}>
+              Close Guide
+            </button>
+          </div>
         </div>
       )}
 
