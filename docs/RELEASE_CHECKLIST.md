@@ -51,9 +51,9 @@ to `Documents\UCNPLBilling Backups\` before it changes anything.
 ### Installed the Linux .deb, the AppImage or Docker?
 The Update button does not apply to those. Download the new file from the
 table below and install it like the first time (.deb: double-click it, or
-`sudo apt install ./free-gst-billing_<NEW>_amd64.deb`; AppImage: use the
+`sudo apt install ./ucnpl-billing_<NEW>_amd64.deb`; AppImage: use the
 new file instead of the old one). Your books in
-`~/.local/share/free-gst-billing-data` are kept.
+`~/.local/share/ucnpl-billing-data` are kept.
 
 ### Something went wrong?
 Open an issue with a screenshot of the error:
@@ -69,7 +69,7 @@ https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues
 |---|---|
 | Windows | `UCNPL-GST-Billing-Setup.exe` |
 | Mac | `UCNPL-GST-Billing.zip` (same as always) |
-| Linux: Ubuntu, Linux Mint, Debian | `free-gst-billing_<NEW>_amd64.deb` |
+| Linux: Ubuntu, Linux Mint, Debian | `ucnpl-billing_<NEW>_amd64.deb` |
 | Linux: any other (64-bit) | `UCNPL-GST-Billing-Linux-x86_64.AppImage` |
 | NAS / home server (Docker) | coming 14 Nov, with safe access from other PCs |
 
@@ -125,7 +125,7 @@ npm run test:linux         # installs and runs each one in clean containers
 #    them. See ERR-003: one tagged release per version.
 cp "release-build/UCNPL-GST-Billing-v<NEW>.zip" "release-build/UCNPL-GST-Billing.zip"
 gh release create v<NEW> "release-build/UCNPL-GST-Billing.zip" \
-  "release-build/free-gst-billing_<NEW>_amd64.deb" \
+  "release-build/ucnpl-billing_<NEW>_amd64.deb" \
   "release-build/UCNPL-GST-Billing-Linux-x86_64.AppImage" \
   --target main --title "v<NEW> — <short user-facing summary>" \
   --notes-file <notes>

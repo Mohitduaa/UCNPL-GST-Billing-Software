@@ -21,7 +21,7 @@ if (-not (Test-Path $dataDir)) {
 
 $desktop = [Environment]::GetFolderPath('Desktop')
 $stamp = Get-Date -Format 'yyyy-MM-dd_HH-mm-ss'
-$out = Join-Path $desktop "MOVE-FreeGSTBill-$stamp.zip"
+$out = Join-Path $desktop "MOVE-UCNPLBilling-$stamp.zip"
 
 Write-Host ''
 Write-Host "  Exporting your data -> $out ..."

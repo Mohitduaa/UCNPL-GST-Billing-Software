@@ -13,9 +13,9 @@
 #   ssh -L 47371:127.0.0.1:47371 you@your-nas
 # and open http://localhost:47371 on that PC.
 services:
-  free-gst-billing:
-    image: free-gst-billing:__VERSION__
-    container_name: free-gst-billing
+  ucnpl-billing:
+    image: ucnpl-billing:__VERSION__
+    container_name: ucnpl-billing
     restart: unless-stopped
     init: true
     environment:

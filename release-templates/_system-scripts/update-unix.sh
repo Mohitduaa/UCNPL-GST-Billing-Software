@@ -134,7 +134,7 @@ else
   node - "$REPO_API" "$ZIP" <<'NODE' || fail 'Could not download the update. Check the internet connection and try again. Nothing was changed.'
 const [api, out] = process.argv.slice(2);
 const fs = require('fs');
-const agent = { 'User-Agent': 'FreeGSTBill-Updater' };
+const agent = { 'User-Agent': 'UCNPLBilling-Updater' };
 (async () => {
   if (typeof fetch !== 'function') throw new Error('Node.js 18 or newer is needed to download updates.');
   const rel = await fetch(api, { headers: { ...agent, Accept: 'application/vnd.github+json' } });

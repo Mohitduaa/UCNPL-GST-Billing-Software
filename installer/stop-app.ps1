@@ -34,10 +34,10 @@ $closed = ''
 if ($CloseWindow) {
   # Only windows whose exe is in this folder (an update may have renamed it to *.old).
   $wins = @(Get-Process -Name 'UCNPL Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and ((Split-Path -Parent $_.Path).TrimEnd('\') -eq $Sys) })
-  # The window listens for this (installer\host\FreeGSTBilling.cs: the same name rule).
+  # The window listens for this (installer\host\UCNPLBilling.cs: the same name rule).
   # Closing it by message would only hide it near the clock.
   $h = [Security.Cryptography.SHA1]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($Sys.ToLowerInvariant()))
-  $evName = 'Local\FreeGSTBillingHost-' + (($h[0..7] | ForEach-Object { $_.ToString('x2') }) -join '') + '-close'
+  $evName = 'Local\UCNPLBillingHost-' + (($h[0..7] | ForEach-Object { $_.ToString('x2') }) -join '') + '-close'
   try { $ev = [System.Threading.EventWaitHandle]::OpenExisting($evName); [void]$ev.Set(); $ev.Dispose() } catch { }
   $deadline = (Get-Date).AddSeconds(5)
   while ((Get-Date) -lt $deadline -and @($wins | Where-Object { -not $_.HasExited }).Count) { Start-Sleep -Milliseconds 250 }
@@ -93,7 +93,7 @@ if (Test-Path -LiteralPath $lockFile) {
 # Only a recent one, like start-windows.ps1 itself (a process id is reused).
 $serverJs = (Join-Path $Sys 'server.js').ToLower()
 $hash = [Security.Cryptography.SHA1]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($serverJs))
-$mark = Join-Path $env:TEMP ('FreeGSTBilling-' + (($hash[0..7] | ForEach-Object { $_.ToString('x2') }) -join '') + '.starting')
+$mark = Join-Path $env:TEMP ('UCNPLBilling-' + (($hash[0..7] | ForEach-Object { $_.ToString('x2') }) -join '') + '.starting')
 if ((Test-Path -LiteralPath $mark) -and ((Get-Item -LiteralPath $mark).LastWriteTime -gt (Get-Date).AddMinutes(-10))) {
   $p = ([string](Get-Content -LiteralPath $mark -Raw)).Trim()
   if ($p -match '^\d+$' -and (Test-IsNode ([int]$p))) { $ids += [int]$p; $why += "TEMP start file: $p" }

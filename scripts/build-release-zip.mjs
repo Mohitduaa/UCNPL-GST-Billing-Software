@@ -300,7 +300,7 @@ function assertServerImportsResolve() {
 assertServerImportsResolve();
 
 // v1.10.69 - the "Update Now" buttons were links to freegstbill-update://run,
-// a URL protocol that only the OLD Install FreeGSTBill.bat ever registered.
+// a URL protocol that only the OLD Install UCNPLBilling.bat ever registered.
 // The HTA launcher replaced that installer in v1.10.44 and registers nothing,
 // so on every install since then the button did nothing whatsoever - no
 // error, no window. Nothing in the packaged app may depend on a protocol we

@@ -1,11 +1,11 @@
 #!/bin/sh
 # UCNPL Billing - opens the app for the user who clicked it.
-# Used by the .deb (/opt/free-gst-billing, /usr/bin/free-gst-billing) and as
+# Used by the .deb (/opt/ucnpl-billing, /usr/bin/ucnpl-billing) and as
 # the AppImage's AppRun. No root, no system service: the server runs as this
 # user and answers 127.0.0.1 only.
 #
 # The program folder is read-only. The books live in FGSB_HOME, by default
-# ~/.local/share/free-gst-billing-data. (Not ~/.local/share/free-gst-billing:
+# ~/.local/share/ucnpl-billing-data. (Not ~/.local/share/ucnpl-billing:
 # the one-line ZIP install keeps its own copy there, and an earlier copy is
 # never written to.)
 #
@@ -15,7 +15,7 @@
 APP=$(CDPATH='' cd -- "$(dirname -- "$(readlink -f -- "$0")")" && pwd -P)
 NODE="$APP/node/bin/node"
 KIND=$(cat "$APP/install-kind.txt" 2>/dev/null)
-FGSB_HOME=${FGSB_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/free-gst-billing-data}
+FGSB_HOME=${FGSB_HOME:-${XDG_DATA_HOME:-$HOME/.local/share}/ucnpl-billing-data}
 export FGSB_HOME
 
 has_screen() { [ -z "${FGSB_NO_BROWSER:-}" ] && { [ -n "${DISPLAY:-}" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; }; }

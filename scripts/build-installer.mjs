@@ -130,7 +130,7 @@ if (arg('version')) {
   run(csc, ['/nologo', '/target:winexe', '/platform:x64', '/optimize+', `/win32icon:${join(APP, 'app-icon.ico')}`,
     `/out:${join(APP, 'UCNPL Billing.exe')}`, `/r:${join(APP, 'Microsoft.Web.WebView2.Core.dll')}`, ...wpf,
     `/r:${join(APP, 'Microsoft.Web.WebView2.WinForms.dll')}`, '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll', '/r:System.Web.Extensions.dll',
-    join(ROOT, 'installer', 'host', 'FreeGSTBilling.cs')]);
+    join(ROOT, 'installer', 'host', 'UCNPLBilling.cs')]);
 }
 
 // Microsoft's WebView2 Runtime installer (Evergreen bootstrapper, from
@@ -160,7 +160,7 @@ const bootstrapper = resolve(process.env.WEBVIEW2_BOOTSTRAPPER || join(ROOT, '.i
 const { exe: nodeExe, nodeVersion } = await portableNode();
 mkdirSync(OUT_DIR, { recursive: true });
 run(iscc, ['/Q', `/DAppVersion=${version}`, `/DStageDir=${APP}`, `/DNodeExe=${nodeExe}`, `/DBootstrapper=${bootstrapper}`, `/DOutputDir=${OUT_DIR}`,
-  join(ROOT, 'installer', 'free-gst-billing.iss')]);
+  join(ROOT, 'installer', 'ucnpl-billing.iss')]);
 rmSync(STAGE_ROOT, { recursive: true, force: true });
 
 const setup = join(OUT_DIR, 'UCNPL-GST-Billing-Setup.exe');

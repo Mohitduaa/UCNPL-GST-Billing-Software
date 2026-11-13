@@ -87,11 +87,11 @@ Updates come from the app's **Update** button. **Never drag a new folder over th
 
 ### Linux: Ubuntu, Linux Mint, Debian (.deb)
 
-1. On the [latest release](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest) page, under **Assets**, download **`free-gst-billing_<version>_amd64.deb`**.
-2. Double-click it, or in a Terminal: `sudo apt install ~/Downloads/free-gst-billing_*_amd64.deb`
+1. On the [latest release](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest) page, under **Assets**, download **`ucnpl-billing_<version>_amd64.deb`**.
+2. Double-click it, or in a Terminal: `sudo apt install ~/Downloads/ucnpl-billing_*_amd64.deb`
 3. Open **UCNPL Billing** from your applications menu.
 
-Your books are kept in `~/.local/share/free-gst-billing-data`; `sudo apt remove free-gst-billing` leaves them. To update, install the new .deb the same way.
+Your books are kept in `~/.local/share/ucnpl-billing-data`; `sudo apt remove ucnpl-billing` leaves them. To update, install the new .deb the same way.
 
 ### Linux: any 64-bit system
 
@@ -531,7 +531,7 @@ powershell -ExecutionPolicy Bypass -c "[Net.ServicePointManager]::SecurityProtoc
 curl -fsSL https://raw.githubusercontent.com/Mohitduaa/UCNPL-GST-Billing-Software/main/install.sh | bash
 ```
 
-It checks the computer, downloads the release (packages included), installs to `%LOCALAPPDATA%\Programs\UCNPL Billing` / `~/Applications/UCNPL Billing` / `~/.local/share/free-gst-billing`, adds an icon (Desktop + Start menu, a Mac app, a Linux menu entry) and opens the app in its own window. **The same line updates or repairs** an existing install in place: `_system/data` is backed up first and never touched. Remove with `-Uninstall` (Windows: `& ([scriptblock]::Create((irm <url>/install.ps1))) -Uninstall`) or `| bash -s -- --uninstall`; data is only deleted if you type `DELETE`.
+It checks the computer, downloads the release (packages included), installs to `%LOCALAPPDATA%\Programs\UCNPL Billing` / `~/Applications/UCNPL Billing` / `~/.local/share/ucnpl-billing`, adds an icon (Desktop + Start menu, a Mac app, a Linux menu entry) and opens the app in its own window. **The same line updates or repairs** an existing install in place: `_system/data` is backed up first and never touched. Remove with `-Uninstall` (Windows: `& ([scriptblock]::Create((irm <url>/install.ps1))) -Uninstall`) or `| bash -s -- --uninstall`; data is only deleted if you type `DELETE`.
 
 ### Option 1: Windows — extract, then double-click the launcher (no terminal)
 
@@ -558,7 +558,7 @@ $env:FREEGSTBILL_DIR = 'D:\Apps\UCNPL Billing'
 [Net.ServicePointManager]::SecurityProtocol='Tls12'; irm https://raw.githubusercontent.com/Mohitduaa/UCNPL-GST-Billing-Software/main/install.ps1 | iex
 ```
 
-On Mac / Linux: `curl -fsSL .../install.sh | FREEGSTBILL_DIR=/srv/free-gst-billing bash`. If the app is already in that folder it is updated in place; the data folder is never touched.
+On Mac / Linux: `curl -fsSL .../install.sh | FREEGSTBILL_DIR=/srv/ucnpl-billing bash`. If the app is already in that folder it is updated in place; the data folder is never touched.
 
 > **Why port 47371?** IANA-unassigned range, well above the 3000-range that every dev server fights over. If it's ever busy, the server auto-scans upward and writes the chosen port to `data/port.txt` — the Start launcher always opens the right URL. Always use the Desktop shortcut.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // UCNPL Billing - the Windows Setup's helper (v1.10.84).
 //
-// installer/free-gst-billing.iss runs this with the node.exe it carries,
+// installer/ucnpl-billing.iss runs this with the node.exe it carries,
 // unpacked to Setup's temp folder, before anything is installed:
 //
 //   node setup-helper.mjs detect <candidates.txt> <newAppDir> <testRoot or ""> <out.txt>

@@ -25,9 +25,9 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'release-build');
 const { version } = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
-const DEB = `free-gst-billing_${version}_amd64.deb`;
+const DEB = `ucnpl-billing_${version}_amd64.deb`;
 const APPIMAGE = 'UCNPL-GST-Billing-Linux-x86_64.AppImage';
-const IMAGE = `free-gst-billing:${version}`;
+const IMAGE = `ucnpl-billing:${version}`;
 const HOST_PORT = 47581;
 
 const want = new Set(process.argv.slice(2).length ? process.argv.slice(2) : ['deb', 'appimage', 'docker']);
@@ -44,7 +44,7 @@ H=/home/shop
 as() { runuser -u shop -- env HOME=$H FGSB_NO_BROWSER=1 "$@"; }
 # A fake earlier ZIP install (one-line install's folder) and an unzipped copy, with UCNPL demo books.
 as sh -c '
-  for S in "$HOME/.local/share/free-gst-billing/_system" "$HOME/UCNPL-GST-Billing/_system"; do
+  for S in "$HOME/.local/share/ucnpl-billing/_system" "$HOME/UCNPL-GST-Billing/_system"; do
     mkdir -p "$S/data/bills" "$S/Saved Invoices/UCNPL/2026-11"
     echo "// old server" > "$S/server.js"
     printf "{\"companyName\":\"UCNPL\",\"gstin\":\"29ABCDE1234F1ZW\"}" > "$S/data/profile.json"
@@ -52,36 +52,36 @@ as sh -c '
     printf "%%PDF-1.4 demo" > "$S/Saved Invoices/UCNPL/2026-11/INV-1.pdf"
     echo 47371 > "$S/data/port.txt"
   done'
-OLD="$H/.local/share/free-gst-billing $H/UCNPL-GST-Billing"
+OLD="$H/.local/share/ucnpl-billing $H/UCNPL-GST-Billing"
 snap() { find $OLD -printf '%p %M %u %s %T@\n' | sort; find $OLD -type f -exec sha256sum {} + | sort; }
 snap > /tmp/old-before
 echo "HASH old installs before: $(sha256sum < /tmp/old-before | cut -c1-16)"
-N=/opt/free-gst-billing/node/bin/node
+N=/opt/ucnpl-billing/node/bin/node
 api() { as $N -e "fetch('http://127.0.0.1:'+(process.argv[2]||47371)+process.argv[1]).then(r=>r.text()).then(t=>{console.log(t)}).catch(e=>{console.log('ERR '+e.message);process.exit(1)})" "$@"; }
 post() { as $N -e "fetch('http://127.0.0.1:47371'+process.argv[1],{method:'POST',headers:{'Content-Type':'application/json'},body:process.argv[2]}).then(r=>r.text()).then(t=>console.log(t))" "$1" "$2"; }
 servers() { n=0; for p in /proc/[0-9]*; do tr '\0' ' ' < $p/cmdline 2>/dev/null | grep -qE '^[^ ]*node/bin/node [^ ]*/server\.js' && n=$((n+1)); done; echo $n; }
 check_running() { # <kind>
   api /api/health | grep -q '"ok":true' || fail "health"
   S=$(api /api/control-panel/status)
-  echo "$S" | grep -q "\"dataFolder\":\"$H/.local/share/free-gst-billing-data/data\"" || fail "dataFolder: $S"
+  echo "$S" | grep -q "\"dataFolder\":\"$H/.local/share/ucnpl-billing-data/data\"" || fail "dataFolder: $S"
   echo "$S" | grep -q "\"installKind\":\"$1\"" || fail "installKind: $S"
-  echo "OK server answers on 127.0.0.1:47371, books in ~/.local/share/free-gst-billing-data, installKind=$1"
+  echo "OK server answers on 127.0.0.1:47371, books in ~/.local/share/ucnpl-billing-data, installKind=$1"
   # Listening on 127.0.0.1 only: 0100007F:B90B in /proc/net/tcp, never 00000000:B90B.
   grep -q ' 0100007F:B90B ' /proc/net/tcp || fail "not on 127.0.0.1:47371"
   if grep -q ' 00000000:B90B ' /proc/net/tcp || grep -qi ' 00000000000000000000000000000000:B90B ' /proc/net/tcp6 2>/dev/null; then fail "listens on all addresses"; fi
   echo "OK bound to 127.0.0.1 only"
   post /api/profile '{"companyName":"UCNPL","gstin":"29ABCDE1234F1ZW"}' | grep -q success || fail "save profile"
-  test -f "$H/.local/share/free-gst-billing-data/data/profile.json" || fail "profile not in FGSB_HOME"
-  test -d "$H/.local/share/free-gst-billing-data/Saved Invoices" && test -d "$H/.local/share/free-gst-billing-data/Trash" || fail "Saved Invoices/Trash not in FGSB_HOME"
-  [ "$(stat -c %U $H/.local/share/free-gst-billing-data/data/profile.json)" = shop ] || fail "books not owned by the user"
+  test -f "$H/.local/share/ucnpl-billing-data/data/profile.json" || fail "profile not in FGSB_HOME"
+  test -d "$H/.local/share/ucnpl-billing-data/Saved Invoices" && test -d "$H/.local/share/ucnpl-billing-data/Trash" || fail "Saved Invoices/Trash not in FGSB_HOME"
+  [ "$(stat -c %U $H/.local/share/ucnpl-billing-data/data/profile.json)" = shop ] || fail "books not owned by the user"
   echo "OK books written to FGSB_HOME as user shop"
   U=$(post /api/control-panel/launch-script '{"action":"update"}')
   echo "$U" | grep -q '"ok":false' && echo "$U" | grep -q "$2" || fail "update not redirected: $U"
   echo "OK Update says: $(echo "$U" | cut -c1-110)..."
   grep -q 'books from an earlier copy' /tmp/launch1.log || fail "no earlier-copy notice"
-  grep -q "$H/.local/share/free-gst-billing/_system/data" /tmp/launch1.log || fail "notice misses the one-line copy"
+  grep -q "$H/.local/share/ucnpl-billing/_system/data" /tmp/launch1.log || fail "notice misses the one-line copy"
   grep -q "$H/UCNPL-GST-Billing/_system/data" /tmp/launch1.log || fail "notice misses the unzipped copy"
-  test -f "$H/.local/share/free-gst-billing-data/OLD-BOOKS-FOUND.txt" || fail "no OLD-BOOKS-FOUND.txt"
+  test -f "$H/.local/share/ucnpl-billing-data/OLD-BOOKS-FOUND.txt" || fail "no OLD-BOOKS-FOUND.txt"
   echo "OK earlier copies reported:"; sed -n '1,12p' /tmp/launch1.log | sed 's/^/     | /'
 }
 check_old_untouched() {
@@ -101,27 +101,27 @@ function packageTest(image, script) {
 
 const DEB_SCRIPT = String.raw`
 dpkg -i /pkgs/${DEB} >/tmp/dpkg.log 2>&1 || { cat /tmp/dpkg.log; fail "dpkg -i"; }
-echo "OK dpkg -i (no maintainer scripts: $(ls /var/lib/dpkg/info/free-gst-billing.* | grep -c -E 'postinst|preinst|prerm|postrm') found)"
-dpkg -L free-gst-billing | grep -q '^/home' && fail "package owns files in /home"
-test -x /usr/bin/free-gst-billing && test -f /usr/share/applications/com.ucnpl.free-gst-billing.desktop || fail "launcher/menu entry"
-grep -q '^Name=UCNPL Billing$' /usr/share/applications/com.ucnpl.free-gst-billing.desktop || fail "menu name"
-[ ! -e /opt/free-gst-billing/data ] || fail "data folder inside /opt"
-echo "OK /usr/bin/free-gst-billing, menu entry 'UCNPL Billing', nothing in /home"
-as free-gst-billing > /tmp/launch1.log 2>&1 || { cat /tmp/launch1.log; fail "launch"; }
+echo "OK dpkg -i (no maintainer scripts: $(ls /var/lib/dpkg/info/ucnpl-billing.* | grep -c -E 'postinst|preinst|prerm|postrm') found)"
+dpkg -L ucnpl-billing | grep -q '^/home' && fail "package owns files in /home"
+test -x /usr/bin/ucnpl-billing && test -f /usr/share/applications/com.ucnpl.ucnpl-billing.desktop || fail "launcher/menu entry"
+grep -q '^Name=UCNPL Billing$' /usr/share/applications/com.ucnpl.ucnpl-billing.desktop || fail "menu name"
+[ ! -e /opt/ucnpl-billing/data ] || fail "data folder inside /opt"
+echo "OK /usr/bin/ucnpl-billing, menu entry 'UCNPL Billing', nothing in /home"
+as ucnpl-billing > /tmp/launch1.log 2>&1 || { cat /tmp/launch1.log; fail "launch"; }
 check_running deb '\.deb'
-as free-gst-billing > /tmp/launch2.log 2>&1 || fail "second launch"
+as ucnpl-billing > /tmp/launch2.log 2>&1 || fail "second launch"
 [ "$(servers)" = 1 ] || fail "second launch started another server ($(servers))"
 echo "OK second launch reuses the running server (1 server process)"
 check_old_untouched
 for p in /proc/[0-9]*; do tr '\0' ' ' < $p/cmdline 2>/dev/null | grep -qE '^[^ ]*node/bin/node [^ ]*/server\.js' && kill $(basename $p); done
 sleep 2
-( cd $H/.local/share/free-gst-billing-data && find . -type f ! -name last-start.log -exec sha256sum {} + | sort ) > /tmp/books-before
-apt-get remove -y free-gst-billing >/tmp/remove.log 2>&1 || { cat /tmp/remove.log; fail "apt remove"; }
-[ ! -e /opt/free-gst-billing ] && [ ! -e /usr/bin/free-gst-billing ] || fail "program left after remove"
-( cd $H/.local/share/free-gst-billing-data && find . -type f ! -name last-start.log -exec sha256sum {} + | sort ) > /tmp/books-after
+( cd $H/.local/share/ucnpl-billing-data && find . -type f ! -name last-start.log -exec sha256sum {} + | sort ) > /tmp/books-before
+apt-get remove -y ucnpl-billing >/tmp/remove.log 2>&1 || { cat /tmp/remove.log; fail "apt remove"; }
+[ ! -e /opt/ucnpl-billing ] && [ ! -e /usr/bin/ucnpl-billing ] || fail "program left after remove"
+( cd $H/.local/share/ucnpl-billing-data && find . -type f ! -name last-start.log -exec sha256sum {} + | sort ) > /tmp/books-after
 cmp -s /tmp/books-before /tmp/books-after || fail "books changed by apt remove"
 echo "HASH books before/after apt remove: $(sha256sum < /tmp/books-before | cut -c1-16) / $(sha256sum < /tmp/books-after | cut -c1-16)"
-echo "OK apt remove: program gone, ~/.local/share/free-gst-billing-data intact ($(wc -l < /tmp/books-after) files)"
+echo "OK apt remove: program gone, ~/.local/share/ucnpl-billing-data intact ($(wc -l < /tmp/books-after) files)"
 check_old_untouched
 echo ALL DONE
 `;
@@ -159,7 +159,7 @@ async function dockerTest() {
     // 1. The real docker-compose.yml, only its host port changed for this PC.
     const yml = readFileSync(join(OUT, 'docker-compose.yml'), 'utf8');
     if (!yml.includes('"127.0.0.1:47371:47371"')) throw new Error('compose does not publish to 127.0.0.1 only');
-    writeFileSync(compose, yml.replace('"127.0.0.1:47371:47371"', `"127.0.0.1:${HOST_PORT}:47371"`).replace('container_name: free-gst-billing', 'container_name: fgsbtest-app'));
+    writeFileSync(compose, yml.replace('"127.0.0.1:47371:47371"', `"127.0.0.1:${HOST_PORT}:47371"`).replace('container_name: ucnpl-billing', 'container_name: fgsbtest-app'));
     record('docker compose config is valid', docker(['compose', '-p', project, '-f', compose, 'config', '-q']).status === 0);
     const up = docker(['compose', '-p', project, '-f', compose, 'up', '-d']);
     if (up.status !== 0) throw new Error(up.stderr);

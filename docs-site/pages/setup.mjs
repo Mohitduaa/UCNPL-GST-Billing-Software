@@ -564,7 +564,7 @@ export default [
 <h2>Keeping a copy somewhere else</h2>
 <p><strong>Every day, automatically, on another drive.</strong> On the Backups tab of Settings, under <b>Also keep a copy of every daily backup in this folder</b>:</p>
 <ol class="steps">
-  <li><strong>Type a folder</strong>On another drive, a USB disk or a synced folder, such as <code>D:\\FreeGSTBill</code> or <code>E:\\</code>.</li>
+  <li><strong>Type a folder</strong>On another drive, a USB disk or a synced folder, such as <code>D:\\UCNPLBilling</code> or <code>E:\\</code>.</li>
   <li><strong>Save it</strong>Click ${ui('Save folder')}. The app checks it can write there and copies today's backup at once. The message says where the copies go.</li>
 </ol>
 <p>Each daily backup is then also copied into <code>UCNPL Billing Backups\\<i>date</i></code> inside that folder, keeping 30 days. The line under the box shows where. If a copy fails (a USB disk not plugged in), the card says so in red. ${ui('Stop copying')} turns it off; copies already made stay.</p>
@@ -755,7 +755,7 @@ export default [
 
 <section id="move">
 <h3>Move to Another PC</h3>
-<p><b>What it does.</b> Saves your data as one ZIP on your Desktop named <code>MOVE-FreeGSTBill-<i>date_time</i>.zip</code>, ready to carry to a new computer.</p>
+<p><b>What it does.</b> Saves your data as one ZIP on your Desktop named <code>MOVE-UCNPLBilling-<i>date_time</i>.zip</code>, ready to carry to a new computer.</p>
 <p><b>In the app installed with the Windows Setup:</b> this card is not there. Use ${ui('Backup Data')} on the old computer and ${ui('Restore Backup')} on the new one.</p>
 <p><b>When to use it.</b> When you buy a new computer, or want the same books on a second one.</p>
 <ol>

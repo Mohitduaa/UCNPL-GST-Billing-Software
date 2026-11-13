@@ -5,9 +5,9 @@
 //
 // Writes to release-build/ (none of these is a .zip: the Windows updater
 // takes the first .zip on a release):
-//   free-gst-billing_<version>_amd64.deb
+//   ucnpl-billing_<version>_amd64.deb
 //   UCNPL-GST-Billing-Linux-x86_64.AppImage
-//   docker-compose.yml                 (+ the local image free-gst-billing:<version>)
+//   docker-compose.yml                 (+ the local image ucnpl-billing:<version>)
 //
 // The app is staged by build-release-zip.mjs itself (into a temp folder), so
 // the packages carry exactly the server files and packages the ZIP carries.
@@ -116,7 +116,7 @@ if (pkgTargets.length) {
     cpSync(join(CACHE, 'runtime-x86_64'), join(WORK, 'runtime-x86_64'));
   }
   cpSync(join(ROOT, 'packaging'), join(WORK, 'packaging'), { recursive: true });
-  for (const f of ['free-gst-billing', 'build-in-container.sh', 'old-installs.mjs', 'free-gst-billing.desktop']) {
+  for (const f of ['ucnpl-billing', 'build-in-container.sh', 'old-installs.mjs', 'ucnpl-billing.desktop']) {
     if (readFileSync(join(WORK, 'packaging', 'linux', f), 'latin1').includes('\r')) fail(`packaging/linux/${f} has Windows (CRLF) line endings.`);
   }
   run('docker', ['run', '--rm', '-v', `${WORK}:/work`, '-e', `VERSION=${version}`, BASE_IMAGE,
@@ -129,15 +129,15 @@ if (targets.has('docker')) {
   const ctx = join(WORK, 'docker');
   mkdirSync(ctx);
   cpSync(app, join(ctx, 'app'), { recursive: true });
-  run('docker', ['build', '--pull=false', '-t', `free-gst-billing:${version}`, '-f', join(ROOT, 'packaging', 'docker', 'Dockerfile'), ctx]);
+  run('docker', ['build', '--pull=false', '-t', `ucnpl-billing:${version}`, '-f', join(ROOT, 'packaging', 'docker', 'Dockerfile'), ctx]);
   writeFileSync(join(OUT, 'docker-compose.yml'),
     readFileSync(join(ROOT, 'packaging', 'docker', 'docker-compose.yml'), 'utf8').replace(/\r/g, '').replace('__VERSION__', version));
 }
 
 console.log('\n  Built:');
-const outputs = [`free-gst-billing_${version}_amd64.deb`, 'UCNPL-GST-Billing-Linux-x86_64.AppImage', 'docker-compose.yml'];
+const outputs = [`ucnpl-billing_${version}_amd64.deb`, 'UCNPL-GST-Billing-Linux-x86_64.AppImage', 'docker-compose.yml'];
 for (const f of outputs.filter((n) => existsSync(join(OUT, n)))) {
   console.log(`    ${join(OUT, f)}  ${(statSync(join(OUT, f)).size / 1024 / 1024).toFixed(1)} MB`);
 }
-if (targets.has('docker')) console.log(`    docker image free-gst-billing:${version} (local)`);
+if (targets.has('docker')) console.log(`    docker image ucnpl-billing:${version} (local)`);
 console.log('');

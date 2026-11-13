@@ -515,7 +515,7 @@ export default [
 <h3>"Cannot write to that folder" (backup copy folder)</h3>
 <p>You may see: <strong>"Give the full folder path, for example D:\\Backups"</strong>, <strong>"Choose a folder outside the app's data folder."</strong>, <strong>"Cannot write to that folder: ..."</strong>, or <strong>"Folder saved, but copying today's backup failed: ..."</strong>.</p>
 <ol>
-  <li>Type the whole path, starting with the drive letter, such as <code>D:\\FreeGSTBill</code>; on a Mac or Linux, a path starting with <code>/</code>.</li>
+  <li>Type the whole path, starting with the drive letter, such as <code>D:\\UCNPLBilling</code>; on a Mac or Linux, a path starting with <code>/</code>.</li>
   <li>Choose a folder outside the app's own folder.</li>
   <li>For a USB disk, plug it in first. Settings says when a copy fails.</li>
   <li>For a permission code such as <code>EACCES</code>, choose a folder in your own Documents or another drive.</li>

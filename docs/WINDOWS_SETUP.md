@@ -1,7 +1,7 @@
 # The Windows Setup (`UCNPL-GST-Billing-Setup.exe`) - for maintainers
 
 From v1.10.84 there is a normal Windows installer beside the ZIP. It is built
-with Inno Setup 6 from `installer/free-gst-billing.iss`.
+with Inno Setup 6 from `installer/ucnpl-billing.iss`.
 
 ## The top rule
 
@@ -119,7 +119,7 @@ Updates from inside the app are not affected (a file Node.js downloads has no
 | Program | `%LOCALAPPDATA%\Programs\UCNPL Billing` (per user, no admin), with `node\node.exe`; `...\UCNPL Billing App` when the one-line installer's copy is in the first folder |
 | Books folder | `home.txt` next to `server.js` (one line, the full path); default `C:\Users\<name>\UCNPL Billing` (not Documents: Windows Security's Controlled folder access blocks unknown programs there, ERR-082) |
 | "Installed by Setup" marker | `installed.txt` next to `server.js` (test mode: `testroot=...`) |
-| Uninstall entry | `HKCU\...\Uninstall\FreeGSTBilling_is1` (test mode: `FreeGSTBilling-TEST_is1`) |
+| Uninstall entry | `HKCU\...\Uninstall\UCNPLBilling_is1` (test mode: `UCNPLBilling-TEST_is1`) |
 | Icons | Start menu, Desktop (task, ticked), Startup (task; ticked when the old copy had one) |
 | One server per books | `data/server.lock` (`{pid, port, at}`), `src/utils/serverLock.js` |
 
@@ -177,7 +177,7 @@ stand-in that fails).
 
 Only the Setup has it; the ZIP (Mac, Linux, Windows without installing) is
 unchanged and opens Edge's app window or the browser. Source:
-`installer/host/FreeGSTBilling.cs` (one file, WinForms + WebView2, the Edge
+`installer/host/UCNPLBilling.cs` (one file, WinForms + WebView2, the Edge
 engine every Windows 10/11 has).
 
 | What | How |
@@ -185,14 +185,14 @@ engine every Windows 10/11 has).
 | Start | Shows "Starting UCNPL Billing..." at once; runs `start-windows.ps1 -PrintUrl` and opens the address it prints. If the launcher fails, its text is shown in the window (never a blank page). |
 | No WebView2 Runtime (or it fails to start) | Setup installs it first (below). Still missing: hands over to `start-windows.ps1 -AppWindow -Hidden`, Edge's app window as before, else the default browser. That fallback has no tray icon. |
 | Close (X) | Hides the window to the tray (the icon near the clock); the app and its server keep running, no taskbar button. The first time, a tip says so (`tray-tip-shown.txt` in the window's folder). Click the icon, or start the app again, to show it. Windows shutting down / logging off and Task Manager's End task (a bare WM_CLOSE) close it for real. A window that only shows a start-up problem closes for real. |
-| Self-repair | While the window is open or in the tray it asks `/api/version` every 12 s (quietly, 8 s time limit). Three misses, or a page that cannot load: "Starting again...", `start-windows.ps1 -PrintUrl` (the same lock rules: never a second server for the books), then the page reloads - only if the server is a new process (its `pid`) or the page had failed: a server that was only slow keeps the page as it was, so nothing typed is lost. Not while a Setup runs (its `FreeGSTBillingSetup` mutex) or Quit runs; after 3 tries the launcher's own text is shown. |
+| Self-repair | While the window is open or in the tray it asks `/api/version` every 12 s (quietly, 8 s time limit). Three misses, or a page that cannot load: "Starting again...", `start-windows.ps1 -PrintUrl` (the same lock rules: never a second server for the books), then the page reloads - only if the server is a new process (its `pid`) or the page had failed: a server that was only slow keeps the page as it was, so nothing typed is lost. Not while a Setup runs (its `UCNPLBillingSetup` mutex) or Quit runs; after 3 tries the launcher's own text is shown. |
 | Notifications | The app's notifications (the Notification API: "an update is out") are shown near the clock through `NotificationReceived`, also while the window is hidden; a click opens the window. A hidden window keeps running (timers too). The overdue / low-stock notices are the bell inside the app, not Windows notifications. |
 | Jump list | Right-click the taskbar or Start icon: New Invoice, Dashboard, Clients, Reports = `UCNPL Billing.exe /view=<screen>` (the app's own `?view=`). A running window goes to that screen (`open-view.txt` in the window's folder + the `-show` event). Built with WPF's `JumpList` (part of .NET Framework), under the window's AppUserModelID. |
 | Tray menu | The version (greyed), **Open UCNPL Billing**, **Check for updates** (opens Settings on its Updates tab, the app's own check), **Open books folder** (the `home.txt` folder in Explorer), **Make a backup now** (the app's own backup, Control Panel > Backup Data: `backup-windows.ps1` into Documents\UCNPLBilling Backups; the result is shown near the clock), **Quit (stop the app)**: Quit closes the window and the tray icon and stops this install's server by its own id (`stop-app.ps1 -Sys`, as the uninstaller), never "all node.exe". |
 | Start with Windows | The Startup icon runs `UCNPL Billing.exe /tray`: the server starts and the app waits near the clock, no window. |
-| Events | `Local\FreeGSTBillingHost-<first 8 bytes of SHA-1 of the lower-case program folder>` + `-show` (a second start), `-close` (the uninstaller: `stop-app.ps1 -CloseWindow`, which kills only if the window has not closed within 5 s) and `-quit`. |
+| Events | `Local\UCNPLBillingHost-<first 8 bytes of SHA-1 of the lower-case program folder>` + `-show` (a second start), `-close` (the uninstaller: `stop-app.ps1 -CloseWindow`, which kills only if the window has not closed within 5 s) and `-quit`. |
 | Title | The page's `document.title` ("Invoices - UCNPL"). |
-| Taskbar | AppUserModelID `UCNPL.FreeGSTBilling` on the window and on the Setup's icons ([Icons] `AppUserModelID`), so a pin is this program with its icon (test mode: `UCNPL.FreeGSTBilling.Test`). |
+| Taskbar | AppUserModelID `UCNPL.UCNPLBilling` on the window and on the Setup's icons ([Icons] `AppUserModelID`), so a pin is this program with its icon (test mode: `UCNPL.UCNPLBilling.Test`). |
 | One window | A mutex per program folder; a second start brings the open window forward. |
 | Size and place | `%LOCALAPPDATA%\UCNPL Billing\window.txt` (place, size, maximized). |
 | WebView2 profile | `%LOCALAPPDATA%\UCNPL Billing\WebView2` (never Documents - ERR-082 - or the program folder). Test mode: `<test folder>\LocalAppData\UCNPL Billing`. |
@@ -232,7 +232,7 @@ starts those few with their defaults.
 `/TESTROOT=<folder>`: the program goes to `<folder>\Programs\UCNPL Billing`,
 books to `<folder>\UCNPL Billing`, icons to `<folder>\Desktop`,
 `\Programs`, `\Startup`; earlier copies are looked for **only** inside the
-folder; its own AppId (`FreeGSTBilling-TEST`), so its uninstall entry cannot
+folder; its own AppId (`UCNPLBilling-TEST`), so its uninstall entry cannot
 touch a real one; port 47461; no browser window opens (`FREEGSTBILL_TEST`);
 the app's own window opens only from its icons or the last page, with its
 profile in `<folder>\LocalAppData`; and the books folder must be inside the

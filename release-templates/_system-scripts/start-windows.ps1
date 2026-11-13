@@ -145,10 +145,10 @@ function Remove-ObsoleteFiles {
     @{ old = 'UCNPL Billing.command'; now = 'UCNPL Billing - MAC.command' },
     @{ old = 'UCNPL Billing.sh';      now = 'UCNPL Billing - LINUX.sh' },
     # batch launchers from before the one-file launcher (v1.10.44)
-    @{ old = 'Install FreeGSTBill.bat';  now = 'UCNPL Billing - WINDOWS.hta' },
-    @{ old = 'Start FreeGSTBill.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
-    @{ old = 'Stop FreeGSTBill.bat';     now = 'UCNPL Billing - WINDOWS.hta' },
-    @{ old = 'Update FreeGSTBill.bat';   now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Install UCNPLBilling.bat';  now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Start UCNPLBilling.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Stop UCNPLBilling.bat';     now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Update UCNPLBilling.bat';   now = 'UCNPL Billing - WINDOWS.hta' },
     @{ old = 'start-freegstbill.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
     @{ old = 'start-server-silent.bat';  now = 'UCNPL Billing - WINDOWS.hta' }
   )
@@ -300,7 +300,7 @@ if (-not $Installed -and -not (Test-PackagesReady)) {
 # folder's lock (held until this script ends) may start one.
 $serverJs = (Join-Path $SystemDir 'server.js').ToLower()
 $hash = [Security.Cryptography.SHA1]::Create().ComputeHash([Text.Encoding]::UTF8.GetBytes($serverJs))
-$folderId = 'FreeGSTBilling-' + (($hash[0..7] | ForEach-Object { $_.ToString('x2') }) -join '')
+$folderId = 'UCNPLBilling-' + (($hash[0..7] | ForEach-Object { $_.ToString('x2') }) -join '')
 $startLock = New-Object System.Threading.Mutex($false, "Local\$folderId")
 $haveLock = $false
 try { $haveLock = $startLock.WaitOne(0) } catch [System.Threading.AbandonedMutexException] { $haveLock = $true }

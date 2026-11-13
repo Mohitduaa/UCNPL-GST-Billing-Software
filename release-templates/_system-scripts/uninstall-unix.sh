@@ -23,8 +23,8 @@ while [ -n "$PID" ] && kill -0 "$PID" 2>/dev/null && [ $i -lt 20 ]; do sleep 1; 
 # Icons the install line made, only if they open this copy.
 for f in "$HOME/Applications/UCNPL Billing.app/Contents/MacOS/launch" \
          "$HOME/Library/LaunchAgents/com.ucnpl.freegstbilling.plist" \
-         "${XDG_DATA_HOME:-$HOME/.local/share}/applications/free-gst-billing.desktop" \
-         "${XDG_CONFIG_HOME:-$HOME/.config}/autostart/free-gst-billing.desktop"; do
+         "${XDG_DATA_HOME:-$HOME/.local/share}/applications/ucnpl-billing.desktop" \
+         "${XDG_CONFIG_HOME:-$HOME/.config}/autostart/ucnpl-billing.desktop"; do
   grep -qsF "$SYS" "$f" || continue
   case $f in */MacOS/launch) rm -rf "$HOME/Applications/UCNPL Billing.app" ;; *) rm -f "$f" ;; esac
 done

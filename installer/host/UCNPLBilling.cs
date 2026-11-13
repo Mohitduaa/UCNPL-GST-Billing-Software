@@ -33,7 +33,7 @@
 //   - Jump list (right-click the taskbar / Start icon): New Invoice, Dashboard,
 //     Clients, Reports = "/view=<screen>", the app's own ?view=; a running
 //     window is sent there (open-view.txt + the "-show" event).
-//   - Named events per program folder, "Local\FreeGSTBillingHost-<hash>-show",
+//   - Named events per program folder, "Local\UCNPLBillingHost-<hash>-show",
 //     "-close" (uninstall: stop-app.ps1 -CloseWindow) and "-quit".
 //   - FGSB_HOST_SMOKE=<file> (tests): load the app, open Settings, write what was
 //     seen to <file> and close. FGSB_HOST_TRACE=<file>: tray events, one a line.
@@ -77,7 +77,7 @@ static class Program
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "UCNPL Billing");
         // The same id is on the Setup's shortcuts ([Icons] AppUserModelID), so a
         // pinned taskbar icon is this program with its own icon.
-        Aumid = testRoot != null ? "UCNPL.FreeGSTBilling.Test" : "UCNPL.FreeGSTBilling";
+        Aumid = testRoot != null ? "UCNPL.UCNPLBilling.Test" : "UCNPL.UCNPLBilling";
         SmokeFile = Environment.GetEnvironmentVariable("FGSB_HOST_SMOKE");
         if (SmokeFile == "") SmokeFile = null;
         TraceFile = Environment.GetEnvironmentVariable("FGSB_HOST_TRACE");
@@ -95,7 +95,7 @@ static class Program
         SetCurrentProcessExplicitAppUserModelID(Aumid);
 
         bool first;
-        string name = @"Local\FreeGSTBillingHost-" + Hash(AppDir.ToLowerInvariant());
+        string name = @"Local\UCNPLBillingHost-" + Hash(AppDir.ToLowerInvariant());
         using (Mutex one = new Mutex(true, name, out first))
         {
             if (!first)
@@ -219,13 +219,13 @@ static class Program
     }
 
     // A Setup (an update) or its uninstaller is at work: never start the
-    // server under it. (SetupMutex=FreeGSTBillingSetup in the .iss.)
+    // server under it. (SetupMutex=UCNPLBillingSetup in the .iss.)
     public static bool SetupRunning()
     {
         try
         {
             Mutex m;
-            if (!Mutex.TryOpenExisting("FreeGSTBillingSetup", out m)) return false;
+            if (!Mutex.TryOpenExisting("UCNPLBillingSetup", out m)) return false;
             m.Dispose();
             return true;
         }

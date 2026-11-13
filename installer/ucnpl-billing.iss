@@ -4,7 +4,7 @@
 ; the app exactly like the release ZIP, adds the official portable node.exe
 ; and compiles this file:
 ;   ISCC.exe /DAppVersion=1.10.84 /DStageDir=<staged app> /DNodeExe=<node.exe>
-;            /DOutputDir=<release-build> installer\free-gst-billing.iss
+;            /DOutputDir=<release-build> installer\ucnpl-billing.iss
 ;
 ; What it does (docs/WINDOWS_SETUP.md has the long version):
 ;   - installs per user (no administrator) to
@@ -74,7 +74,7 @@ DisableDirPage=yes
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ; Review M1: two Setups at once never run (one could undo the other's copy).
-SetupMutex=FreeGSTBillingSetup
+SetupMutex=UCNPLBillingSetup
 OutputDir={#OutputDir}
 OutputBaseFilename=UCNPL-GST-Billing-Setup
 SetupIconFile={#StageDir}\app-icon.ico
@@ -170,7 +170,7 @@ end;
 
 function GetAppId(Param: String): String;
 begin
-  if IsTest then Result := 'FreeGSTBilling-TEST' else Result := 'FreeGSTBilling';
+  if IsTest then Result := 'UCNPLBilling-TEST' else Result := 'UCNPLBilling';
 end;
 
 function GetAppDir(Param: String): String;
@@ -178,11 +178,11 @@ begin
   Result := AppDirValue;
 end;
 
-{ The app window's taskbar identity (installer\host\FreeGSTBilling.cs uses
+{ The app window's taskbar identity (installer\host\UCNPLBilling.cs uses
   the same two) and its own folder: WebView2 profile, window place. }
 function GetAumid(Param: String): String;
 begin
-  if IsTest then Result := 'UCNPL.FreeGSTBilling.Test' else Result := 'UCNPL.FreeGSTBilling';
+  if IsTest then Result := 'UCNPL.UCNPLBilling.Test' else Result := 'UCNPL.UCNPLBilling';
 end;
 
 function HostDataDir(Param: String): String;

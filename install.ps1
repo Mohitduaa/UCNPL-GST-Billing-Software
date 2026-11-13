@@ -122,7 +122,7 @@ function Test-Online {
 function Save-Url([string]$url, [string]$out) {
   try {
     $req = [Net.HttpWebRequest]::Create($url)
-    $req.UserAgent = 'FreeGSTBill-Installer'
+    $req.UserAgent = 'UCNPLBilling-Installer'
     if ($req.Proxy) { $req.Proxy.Credentials = [Net.CredentialCache]::DefaultCredentials }
     $res = $req.GetResponse()
   } catch {

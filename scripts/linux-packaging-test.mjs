@@ -31,7 +31,7 @@ const snapshot = (dir) => {
 try {
   // ---- The earlier-copy finder ----
   const home = join(tmp, 'home');
-  const oneLine = join(home, '.local', 'share', 'free-gst-billing', '_system');
+  const oneLine = join(home, '.local', 'share', 'ucnpl-billing', '_system');
   put(join(oneLine, 'server.js'), '// old');
   put(join(oneLine, 'data', 'profile.json'), JSON.stringify({ name: 'UCNPL', gstin: '29ABCDE1234F1ZW' }));
   put(join(oneLine, 'data', 'bills', 'INV-1.json'), JSON.stringify({ id: 'INV-1', client: 'UCNPL' }));

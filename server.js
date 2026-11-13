@@ -141,7 +141,7 @@ function requirePermission(permissionKey) {
     next();
   };
 }
-// v1.10.84 - a copy installed by the Windows Setup (installer/free-gst-billing.iss
+// v1.10.84 - a copy installed by the Windows Setup (installer/ucnpl-billing.iss
 // writes this file) updates with the new Setup, never with update-windows.ps1.
 // In the Setup's test mode the file also names the test folder.
 const INSTALLED_FILE = path.join(__dirname, 'installed.txt');
@@ -1520,7 +1520,7 @@ const INSTALL_KIND = (() => {
   try { return fs.readFileSync(path.join(__dirname, 'install-kind.txt'), 'utf-8').trim(); } catch { return ''; }
 })();
 const updateHint = (latest) => ({
-  deb: `This copy was installed from the .deb package. To update, download free-gst-billing_${latest || '<version>'}_amd64.deb from the release page and open it (or run: sudo apt install ./free-gst-billing_${latest || '<version>'}_amd64.deb). Your invoices are kept.`,
+  deb: `This copy was installed from the .deb package. To update, download ucnpl-billing_${latest || '<version>'}_amd64.deb from the release page and open it (or run: sudo apt install ./ucnpl-billing_${latest || '<version>'}_amd64.deb). Your invoices are kept.`,
   appimage: 'This copy is the AppImage. To update, download the new UCNPL-GST-Billing-Linux-x86_64.AppImage from the release page and use it instead of the old file. Your invoices are kept.',
   docker: 'This copy runs in Docker. To update, put the new version in the image: line of docker-compose.yml and run: docker compose up -d. Your invoices stay in the /data volume.',
 }[INSTALL_KIND] || null);
@@ -1920,7 +1920,7 @@ app.get('/api/check-update', async (req, res) => {
       fetch('https://raw.githubusercontent.com/Mohitduaa/UCNPL-GST-Billing-Software/main/package.json', { signal: ctrl.signal }).catch(() => null),
       fetch('https://api.github.com/repos/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest', {
         signal: ctrl.signal,
-        headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'FreeGSTBill-update-check' },
+        headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'UCNPLBilling-update-check' },
       }).catch(() => null),
     ]);
     clearTimeout(t);
@@ -2145,7 +2145,7 @@ async function fetchFromGitHub(url, timeoutMs) {
   const signal = AbortSignal.timeout(timeoutMs);
   for (let hop = 0; hop < 6; hop += 1) {
     if (!allowedDownloadUrl(url)) throw new Error('The download was sent to a site that is not GitHub. Nothing was run.');
-    const res = await fetch(url, { redirect: 'manual', signal, headers: { 'User-Agent': 'FreeGSTBill-updater' } });
+    const res = await fetch(url, { redirect: 'manual', signal, headers: { 'User-Agent': 'UCNPLBilling-updater' } });
     if (res.status < 300 || res.status >= 400) return res;
     url = new URL(res.headers.get('location') || '', url).href;
   }
@@ -2168,7 +2168,7 @@ async function updateWithSetup() {
     let asset;
     try {
       const rel = await fetch('https://api.github.com/repos/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest', {
-        signal: AbortSignal.timeout(20000), headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'FreeGSTBill-updater' },
+        signal: AbortSignal.timeout(20000), headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'UCNPLBilling-updater' },
       });
       asset = rel.ok ? setupAssetFrom(await rel.json()) : null;
     } catch {

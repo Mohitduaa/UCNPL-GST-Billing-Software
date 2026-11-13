@@ -304,14 +304,14 @@ ${which}
 <h2>Ubuntu, Linux Mint, Debian: the .deb package</h2>
 <p>The easiest way. Everything the app needs is inside, including Node.js: nothing else to install.</p>
 <ol class="steps">
-  <li><strong>Download</strong>Open the <a href="${RELEASES}">latest release</a> and, under <b>Assets</b>, click <b>free-gst-billing_<i>version</i>_amd64.deb</b>. It goes into your <b>Downloads</b> folder.</li>
+  <li><strong>Download</strong>Open the <a href="${RELEASES}">latest release</a> and, under <b>Assets</b>, click <b>ucnpl-billing_<i>version</i>_amd64.deb</b>. It goes into your <b>Downloads</b> folder.</li>
   <li><strong>Install it</strong>Double-click the file. <b>Software Install</b> (Ubuntu) or <b>Package Installer</b> (Mint) opens: click ${ui('Install')} and type the password you use to log in. Or in the Terminal:
-<pre><code>sudo apt install ~/Downloads/free-gst-billing_*_amd64.deb</code></pre></li>
+<pre><code>sudo apt install ~/Downloads/ucnpl-billing_*_amd64.deb</code></pre></li>
   <li><strong>Open it</strong>Open your applications menu and click <b>UCNPL Billing</b>. The app opens in its own window if you have Chrome, Chromium or Edge, or in your browser otherwise.</li>
 </ol>
-<p><b>Your books</b> (invoices, clients, settings, saved PDFs) are kept in your home folder, in <code>~/.local/share/free-gst-billing-data</code>. Each person who logs in to the computer has their own. The app answers this computer only.</p>
+<p><b>Your books</b> (invoices, clients, settings, saved PDFs) are kept in your home folder, in <code>~/.local/share/ucnpl-billing-data</code>. Each person who logs in to the computer has their own. The app answers this computer only.</p>
 <p><b>To update:</b> download the new .deb from the release page and install it the same way. The app says so when a new version is out. Your books are not touched.</p>
-<p><b>To remove the program:</b> <code>sudo apt remove free-gst-billing</code>. Your books stay in <code>~/.local/share/free-gst-billing-data</code>; delete that folder yourself only if you want them gone.</p>
+<p><b>To remove the program:</b> <code>sudo apt remove ucnpl-billing</code>. Your books stay in <code>~/.local/share/ucnpl-billing-data</code>; delete that folder yourself only if you want them gone.</p>
 </section>
 
 <section id="appimage">
@@ -321,17 +321,17 @@ ${which}
   <li><strong>Allow it to run, once</strong>Right-click the file → ${ui('Properties')} → ${ui('Permissions')} → tick ${ui('Allow executing file as program')}. Or in the Terminal: <code>chmod +x ~/Downloads/UCNPL-GST-Billing-Linux-x86_64.AppImage</code></li>
   <li><strong>Double-click it</strong>The app opens. Keep the file somewhere you will find it again, for example your home folder.</li>
 </ol>
-<p>Your books are kept in <code>~/.local/share/free-gst-billing-data</code>, the same folder the .deb uses. <b>To update:</b> download the new AppImage and use it instead of the old file; your books are not touched.</p>
+<p>Your books are kept in <code>~/.local/share/ucnpl-billing-data</code>, the same folder the .deb uses. <b>To update:</b> download the new AppImage and use it instead of the old file; your books are not touched.</p>
 <p>If nothing happens on an older system, it is missing FUSE: run it once from the Terminal with <code>--appimage-extract-and-run</code> after the file name, or install the .deb instead.</p>
 </section>
 
 <section id="old-books">
 <h2>Used the app before? Your earlier books</h2>
-<p>If you used the ZIP or the one-line install before, the .deb and the AppImage start with <b>empty books</b> and leave the earlier copy exactly as it was. The first time they open, they show where the earlier books are (and keep that note in <code>~/.local/share/free-gst-billing-data/OLD-BOOKS-FOUND.txt</code>). To bring them across, before you enter anything new:</p>
+<p>If you used the ZIP or the one-line install before, the .deb and the AppImage start with <b>empty books</b> and leave the earlier copy exactly as it was. The first time they open, they show where the earlier books are (and keep that note in <code>~/.local/share/ucnpl-billing-data/OLD-BOOKS-FOUND.txt</code>). To bring them across, before you enter anything new:</p>
 <ol class="steps">
   <li><strong>Stop the new app</strong><b>Control Panel</b> in the app → ${ui('Stop Server')}.</li>
   <li><strong>Copy the books</strong>Paste the copy command from that note into the Terminal. For the one-line install it is:
-<pre><code>cp -a ~/.local/share/free-gst-billing/_system/data/. ~/.local/share/free-gst-billing-data/data/</code></pre>
+<pre><code>cp -a ~/.local/share/ucnpl-billing/_system/data/. ~/.local/share/ucnpl-billing-data/data/</code></pre>
   It <b>copies</b>: the earlier copy keeps its books too.</li>
   <li><strong>Open UCNPL Billing again</strong>Your invoices and clients are there.</li>
 </ol>
@@ -367,8 +367,8 @@ ${which}
   <li><strong>The app opens</strong>In its own window if you have Chrome, Chromium or Edge, or in your browser otherwise.</li>
 </ol>
 <p><b>Every day after that:</b> open <b>UCNPL Billing</b> from your applications menu. <b>To update or repair it:</b> run the same line again; your data is backed up to <code>~/Documents/UCNPL Billing Backups</code> first and never touched.</p>
-<p>If it says <i>curl: command not found</i>, run <code>sudo apt install -y curl</code> first. The app goes to <code>~/.local/share/free-gst-billing</code>; your data is in <code>_system/data</code> inside it.</p>
-<p><b>NAS or Alpine:</b> there may be no <code>bash</code>; end the line with <code>| sh</code> instead. Alpine needs Node.js from its own store first: <code>sudo apk add nodejs</code>. To choose the folder, put <code>FREEGSTBILL_DIR=/volume1/apps/free-gst-billing</code> just before <code>sh</code>.</p>
+<p>If it says <i>curl: command not found</i>, run <code>sudo apt install -y curl</code> first. The app goes to <code>~/.local/share/ucnpl-billing</code>; your data is in <code>_system/data</code> inside it.</p>
+<p><b>NAS or Alpine:</b> there may be no <code>bash</code>; end the line with <code>| sh</code> instead. Alpine needs Node.js from its own store first: <code>sudo apk add nodejs</code>. To choose the folder, put <code>FREEGSTBILL_DIR=/volume1/apps/ucnpl-billing</code> just before <code>sh</code>.</p>
 <p><b>To remove it</b> (your invoices are kept unless you type <code>DELETE</code> when asked):</p>
 <pre><code>${UNIX_REMOVE}</code></pre>
 </section>

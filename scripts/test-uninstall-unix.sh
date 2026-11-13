@@ -10,8 +10,8 @@ setup() {
   mkdir -p "$S/data/bills" "$S/Saved Invoices/A" "$S/Trash" "$S/node_modules/x" "$HOME/.local/share/applications" "$HOME/.config/autostart" "$HOME/Documents/UCNPL Billing Backups" "$HOME/Applications/UCNPL Billing.app/Contents/MacOS"
   echo 1 > "$S/server.js"; echo '[]' > "$S/data/bills.json"; echo p > "$S/Saved Invoices/A/1.pdf"
   echo l > "$R/UCNPL Billing - LINUX.sh"; echo r > "$R/READ ME FIRST.txt"; echo mine > "$R/notes.txt"
-  echo "Exec=sh \"$S/open-app.sh\"" > "$HOME/.local/share/applications/free-gst-billing.desktop"
-  echo "Exec=sh \"$S/open-app.sh\"" > "$HOME/.config/autostart/free-gst-billing.desktop"
+  echo "Exec=sh \"$S/open-app.sh\"" > "$HOME/.local/share/applications/ucnpl-billing.desktop"
+  echo "Exec=sh \"$S/open-app.sh\"" > "$HOME/.config/autostart/ucnpl-billing.desktop"
   echo "Exec=/other/place" > "$HOME/.local/share/applications/other.desktop"
   printf 'exec /bin/sh "%s/open-app.sh"\n' "$S" > "$HOME/Applications/UCNPL Billing.app/Contents/MacOS/launch"
   echo old > "$HOME/Documents/UCNPL Billing Backups/old.zip"
@@ -22,7 +22,7 @@ check "keep all: data kept" '[ -f "$S/data/bills.json" ]'
 check "keep all: pdfs kept" '[ -f "$S/Saved Invoices/A/1.pdf" ]'
 check "keep all: program gone" '[ ! -e "$S/server.js" ] && [ ! -e "$S/node_modules" ]'
 check "keep all: launchers gone, user file kept" '[ ! -e "$R/READ ME FIRST.txt" ] && [ ! -e "$R/UCNPL Billing - LINUX.sh" ] && [ -f "$R/notes.txt" ]'
-check "icons gone" '[ ! -e "$HOME/.local/share/applications/free-gst-billing.desktop" ] && [ ! -e "$HOME/.config/autostart/free-gst-billing.desktop" ] && [ ! -e "$HOME/Applications/UCNPL Billing.app" ]'
+check "icons gone" '[ ! -e "$HOME/.local/share/applications/ucnpl-billing.desktop" ] && [ ! -e "$HOME/.config/autostart/ucnpl-billing.desktop" ] && [ ! -e "$HOME/Applications/UCNPL Billing.app" ]'
 check "other menu entry kept" '[ -f "$HOME/.local/share/applications/other.desktop" ]'
 check "temp copy gone" '[ ! -e "$T" ]'
 setup; sh "$T/uninstall-unix.sh" "$S" 999999 data

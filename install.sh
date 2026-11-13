@@ -198,9 +198,9 @@ PLIST
 
 autostart_file() {
   if [ "$OS" = Darwin ]; then printf '%s\n' "$HOME/Library/LaunchAgents/com.ucnpl.freegstbilling.plist"
-  else printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}/autostart/free-gst-billing.desktop"; fi
+  else printf '%s\n' "${XDG_CONFIG_HOME:-$HOME/.config}/autostart/ucnpl-billing.desktop"; fi
 }
-menu_file() { printf '%s\n' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/free-gst-billing.desktop"; }
+menu_file() { printf '%s\n' "${XDG_DATA_HOME:-$HOME/.local/share}/applications/ucnpl-billing.desktop"; }
 
 write_desktop_entry() { # file
   mkdir -p "$(dirname "$1")"
@@ -349,7 +349,7 @@ install_app() {
     make_mac_app
   else
     menu=$(menu_file)
-    [ -z "$TEST" ] || menu="$TEST/applications/free-gst-billing.desktop"
+    [ -z "$TEST" ] || menu="$TEST/applications/ucnpl-billing.desktop"
     write_desktop_entry "$menu"
   fi
   ok
@@ -416,7 +416,7 @@ uninstall_app() {
 
 main() {
   if [ "$OS" = Darwin ]; then default_dir="$HOME/Applications/UCNPL Billing"
-  else default_dir="${XDG_DATA_HOME:-$HOME/.local/share}/free-gst-billing"; fi
+  else default_dir="${XDG_DATA_HOME:-$HOME/.local/share}/ucnpl-billing"; fi
   DIR=${FREEGSTBILL_DIR:-$default_dir}
   # A copy unzipped by hand, with invoices in it, is updated rather than
   # starting a second, empty one next to it (ERR-038).

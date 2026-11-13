@@ -741,7 +741,7 @@ the Desktop icon, Chrome/Edge app icons...).
 
 **Cause** - that screen is the app's own `serverDown` view (App.jsx), drawn in
 the page when `/api/profile` stops answering. An update stops the server for a
-moment. The window's guard (ERR-075 follow-up in FreeGSTBilling.cs) only looks
+moment. The window's guard (ERR-075 follow-up in UCNPLBilling.cs) only looks
 at page loads, and this view appears without one, so it was never covered.
 
 **Rule** - inside the Windows Setup's window (`window.chrome.webview`, WebView2)
@@ -1089,7 +1089,7 @@ easier one.
 **Rule** - the only icon the app offers is the installer's: Windows
 `app-shortcut.ps1` (`New-AppShortcut`, which runs start-windows.ps1
 -AppWindow -Hidden; install.ps1 has a copy), Mac `UCNPL Billing.app`, Linux
-`free-gst-billing.desktop`. Never offer the browser's install prompt again.
+`ucnpl-billing.desktop`. Never offer the browser's install prompt again.
 
 **Automated (30 Oct 2026):** `npm run release:check` fails if `beforeinstallprompt` appears anywhere in src/ ("ERR-072 ...").
 
@@ -2376,7 +2376,7 @@ Update Now**, the **Update Now** button in the update-available dialog, and
 
 **Cause** - all three were `<a href="freegstbill://…">` links. Those custom URL
 protocols were registered in the Windows registry by the old
-`Install FreeGSTBill.bat`. The HTA launcher replaced that installer in v1.10.44
+`Install UCNPLBilling.bat`. The HTA launcher replaced that installer in v1.10.44
 and registers no protocol at all, so from that release on the links resolved to
 nothing. A browser silently ignores an unregistered protocol - there is no
 error to notice, which is why it survived 25 releases. The ⚙ Control Panel was

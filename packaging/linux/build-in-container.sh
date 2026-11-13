@@ -12,39 +12,39 @@ P=/work/packaging/linux
 A=/build/app
 rm -rf /build && mkdir -p /build /work/out
 
-# --- The program tree: what goes to /opt/free-gst-billing ---
+# --- The program tree: what goes to /opt/ucnpl-billing ---
 cp -r /work/app "$A"
 tar -xzf /work/node.tar.gz -C /build
 mkdir -p "$A/node/bin" "$A/linux"
 cp /build/node-v*-linux-x64/bin/node "$A/node/bin/node"
 cp /build/node-v*-linux-x64/LICENSE "$A/node/LICENSE"
-cp "$P/free-gst-billing" "$A/free-gst-billing"
+cp "$P/ucnpl-billing" "$A/ucnpl-billing"
 cp "$P/old-installs.mjs" "$A/linux/old-installs.mjs"
 # Files from Windows carry no Unix modes: set them all.
 find "$A" -type d -exec chmod 755 {} +
 find "$A" -type f -exec chmod 644 {} +
-chmod 755 "$A/node/bin/node" "$A/free-gst-billing" "$A"/*.sh
+chmod 755 "$A/node/bin/node" "$A/ucnpl-billing" "$A"/*.sh
 "$A/node/bin/node" -e 'process.exit(process.versions.node.startsWith("20.") ? 0 : 1)'
 # A program file with Windows line endings fails on Linux.
-if grep -rlI "$(printf '\r')" "$A/free-gst-billing" "$A/linux" "$A"/*.sh; then echo 'CRLF line endings found' >&2; exit 1; fi
+if grep -rlI "$(printf '\r')" "$A/ucnpl-billing" "$A/linux" "$A"/*.sh; then echo 'CRLF line endings found' >&2; exit 1; fi
 
 build_deb() {
   R=/build/deb
-  O=/work/out/free-gst-billing_${V}_amd64.deb
+  O=/work/out/ucnpl-billing_${V}_amd64.deb
   rm -rf "$R"
-  mkdir -p "$R/DEBIAN" "$R/opt" "$R/usr/bin" "$R/usr/share/applications" "$R/usr/share/doc/free-gst-billing" \
+  mkdir -p "$R/DEBIAN" "$R/opt" "$R/usr/bin" "$R/usr/share/applications" "$R/usr/share/doc/ucnpl-billing" \
     "$R/usr/share/icons/hicolor/512x512/apps" "$R/usr/share/icons/hicolor/192x192/apps"
-  cp -a "$A" "$R/opt/free-gst-billing"
-  echo deb > "$R/opt/free-gst-billing/install-kind.txt"
-  ln -s /opt/free-gst-billing/free-gst-billing "$R/usr/bin/free-gst-billing"
-  install -m 644 "$P/free-gst-billing.desktop" "$R/usr/share/applications/com.ucnpl.free-gst-billing.desktop"
-  install -m 644 "$A/dist/icons/icon-512.png" "$R/usr/share/icons/hicolor/512x512/apps/free-gst-billing.png"
-  install -m 644 "$A/dist/icons/icon-192.png" "$R/usr/share/icons/hicolor/192x192/apps/free-gst-billing.png"
-  install -m 644 "$A/LICENSE" "$R/usr/share/doc/free-gst-billing/copyright"
+  cp -a "$A" "$R/opt/ucnpl-billing"
+  echo deb > "$R/opt/ucnpl-billing/install-kind.txt"
+  ln -s /opt/ucnpl-billing/ucnpl-billing "$R/usr/bin/ucnpl-billing"
+  install -m 644 "$P/ucnpl-billing.desktop" "$R/usr/share/applications/com.ucnpl.ucnpl-billing.desktop"
+  install -m 644 "$A/dist/icons/icon-512.png" "$R/usr/share/icons/hicolor/512x512/apps/ucnpl-billing.png"
+  install -m 644 "$A/dist/icons/icon-192.png" "$R/usr/share/icons/hicolor/192x192/apps/ucnpl-billing.png"
+  install -m 644 "$A/LICENSE" "$R/usr/share/doc/ucnpl-billing/copyright"
   # No maintainer scripts: installing and removing touch no one's home
   # folder, start nothing and ask nothing. dpkg's own triggers refresh the menu.
   cat > "$R/DEBIAN/control" <<EOF
-Package: free-gst-billing
+Package: ucnpl-billing
 Version: $V
 Architecture: amd64
 Maintainer: UCNPL <contact@ucnpl.com>
@@ -56,7 +56,7 @@ Homepage: https://github.com/Mohitduaa/UCNPL-GST-Billing-Software
 Description: UCNPL GST billing and invoicing software for India
  GST tax invoices, credit notes, delivery challans, GSTR-1 / GSTR-3B
  exports, e-Way Bill and reports. Runs on this computer only (127.0.0.1)
- and keeps each user's books in ~/.local/share/free-gst-billing-data.
+ and keeps each user's books in ~/.local/share/ucnpl-billing-data.
  Removing the package never deletes the books.
 EOF
   dpkg-deb --root-owner-group -Zxz --build "$R" "$O"
@@ -70,10 +70,10 @@ build_appimage() {
   rm -rf "$D"
   cp -a "$A" "$D"
   echo appimage > "$D/install-kind.txt"
-  ln -s free-gst-billing "$D/AppRun"
-  install -m 644 "$P/free-gst-billing.desktop" "$D/free-gst-billing.desktop"
-  install -m 644 "$A/dist/icons/icon-512.png" "$D/free-gst-billing.png"
-  ln -s free-gst-billing.png "$D/.DirIcon"
+  ln -s ucnpl-billing "$D/AppRun"
+  install -m 644 "$P/ucnpl-billing.desktop" "$D/ucnpl-billing.desktop"
+  install -m 644 "$A/dist/icons/icon-512.png" "$D/ucnpl-billing.png"
+  ln -s ucnpl-billing.png "$D/.DirIcon"
   install -m 755 /work/appimagetool /build/appimagetool
   # appimagetool refuses to start without the `file` command, which the slim
   # image lacks; ARCH is given, so it only needs one that answers.

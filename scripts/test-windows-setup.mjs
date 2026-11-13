@@ -64,7 +64,7 @@ const NEW_PORT = 47461;
 const OLD_PORT = 47462;
 const CDP_PORT = 47463; // H: the window's DevTools port (test only)
 const FORBIDDEN = [47371, 47372, 47373, 47398];
-const TEST_APP_ID = 'FreeGSTBilling-TEST_is1';
+const TEST_APP_ID = 'UCNPLBilling-TEST_is1';
 const UNINSTALL_KEY = 'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall';
 const BASE = fs.mkdtempSync(path.join(os.tmpdir(), 'fgsb-setup-e2e-'));
 
@@ -110,7 +110,7 @@ async function until(fn, ms) {
 const version = async (port) => (await (await answers(port))?.json())?.current;
 const bills = async (port) => (await (await answers(port, '/api/bills'))?.json() || []).length;
 // A real install's entry (the maintainer's PC has one): every value, read only.
-const realEntry = () => { try { return execFileSync('reg', ['query', `${UNINSTALL_KEY}\\FreeGSTBilling_is1`], { encoding: 'utf8' }).trim(); } catch { return ''; } };
+const realEntry = () => { try { return execFileSync('reg', ['query', `${UNINSTALL_KEY}\\UCNPLBilling_is1`], { encoding: 'utf8' }).trim(); } catch { return ''; } };
 const uninstallKeys = () => { try { return execFileSync('reg', ['query', UNINSTALL_KEY], { encoding: 'utf8' }).split(/\r?\n/).filter((l) => l.startsWith('HKEY')).map((l) => l.split('\\').pop()).sort(); } catch { return []; } };
 // A listener's process ids (remote port 0). Get-NetTCPConnection, not netstat: on
 // Windows 10.0.28020 "netstat -p TCP" sometimes leaves a 127.0.0.1 listener out.
@@ -253,7 +253,7 @@ try {
   ok(fs.existsSync(path.join(A, 'Desktop', 'UCNPL Billing.lnk')) && fs.existsSync(path.join(A, 'Programs', 'UCNPL Billing.lnk')) && !fs.existsSync(path.join(A, 'Startup', 'UCNPL Billing.lnk')),
     'A: Desktop and Start-menu icons (in the test folder), no Startup icon');
   ok(lnk(path.join(A, 'Desktop', 'UCNPL Billing.lnk')).trim() === path.join(appOf(A), 'UCNPL Billing.exe'), 'A: the icon opens the app in its own window (UCNPL Billing.exe)');
-  ok(aumidOf(path.join(A, 'Programs', 'UCNPL Billing.lnk')) === 'UCNPL.FreeGSTBilling.Test', 'A: the Start-menu icon carries the window\'s taskbar id (test: UCNPL.FreeGSTBilling.Test)');
+  ok(aumidOf(path.join(A, 'Programs', 'UCNPL Billing.lnk')) === 'UCNPL.UCNPLBilling.Test', 'A: the Start-menu icon carries the window\'s taskbar id (test: UCNPL.UCNPLBilling.Test)');
   const status = await (await answers(NEW_PORT, '/api/control-panel/status')).json();
   ok(status.installed === true && status.actions.update === true && status.actions.move === false, 'A: the app knows it is a Setup copy (update by Setup, no Move)');
   fs.copyFileSync(UPGRADE, path.join(A, 'UCNPL-GST-Billing-Setup.exe'));
@@ -466,7 +466,7 @@ try {
   // The X button: WM_SYSCOMMAND SC_CLOSE. (A bare WM_CLOSE, as Task Manager sends, closes it for real.)
   const xClose = (pid) => ps(`Add-Type -Name W -Namespace FgsbTest -MemberDefinition '[DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint m, IntPtr w, IntPtr l);'; [FgsbTest.W]::PostMessage((Get-Process -Id ${Number(pid)}).MainWindowHandle, 0x112, [IntPtr]0xF060, [IntPtr]::Zero)`);
   const hostVisible = (pid) => ps(`(Get-Process -Id ${Number(pid)} -ErrorAction SilentlyContinue).MainWindowHandle -ne 0`) === 'True';
-  const hostEvent = (what) => ps(`$e = [System.Threading.EventWaitHandle]::OpenExisting('Local\\FreeGSTBillingHost-${crypto.createHash('sha1').update(appH.toLowerCase(), 'utf8').digest('hex').slice(0, 16)}-${what}'); [void]$e.Set(); 'ok'`);
+  const hostEvent = (what) => ps(`$e = [System.Threading.EventWaitHandle]::OpenExisting('Local\\UCNPLBillingHost-${crypto.createHash('sha1').update(appH.toLowerCase(), 'utf8').digest('hex').slice(0, 16)}-${what}'); [void]$e.Set(); 'ok'`);
   // A PC without the WebView2 Runtime (test hook): a stand-in for Microsoft's
   // installer that writes down how it was called and fails (offline).
   const fakeWv = path.join(H, 'fake-webview2', 'fake-webview2.exe');
@@ -487,7 +487,7 @@ try {
   const s1 = await until(() => readSmoke(smoke1), 180000) || {};
   ok(s1.mode === 'webview2' && s1.url === `http://localhost:${NEW_PORT}/`, `H: the Desktop icon opens the app in its window (WebView2 ${s1.runtime}, ${s1.url})`, JSON.stringify(s1));
   ok(/^Dashboard - /.test(s1.title1 || '') && /^Settings - /.test(s1.title2 || ''), `H: the window title follows the page ("${s1.title1}" -> "${s1.title2}")`);
-  ok(s1.aumid === 'UCNPL.FreeGSTBilling.Test' && aumidOf(iconH) === s1.aumid, 'H: the window and its icon have the same taskbar id');
+  ok(s1.aumid === 'UCNPL.UCNPLBilling.Test' && aumidOf(iconH) === s1.aumid, 'H: the window and its icon have the same taskbar id');
   ok(s1.userdata === path.join(hostData, 'WebView2') && fs.existsSync(s1.userdata) && !fs.existsSync(path.join(appH, 'WebView2')) && !fs.existsSync(path.join(H, 'Documents')),
     'H: its WebView2 profile is in (test) LocalAppData\\UCNPL Billing - not in the program folder or Documents');
   ok(await until(() => !hostPids(appH) && fs.existsSync(path.join(hostData, 'window.txt')), 30000), 'H: the window closed and kept its size and place (window.txt)');
@@ -636,7 +636,7 @@ try {
 } finally {
   stopTestServers();
   await sleep(1000);
-  // The test windows' jump lists (taskbar id UCNPL.FreeGSTBilling.Test) name this run's folder.
+  // The test windows' jump lists (taskbar id UCNPL.UCNPLBilling.Test) name this run's folder.
   const jd = path.join(process.env.APPDATA || '', 'Microsoft', 'Windows', 'Recent', 'CustomDestinations');
   try { for (const f of fs.readdirSync(jd)) { if (fs.readFileSync(path.join(jd, f)).indexOf(Buffer.from(BASE, 'utf16le')) >= 0) fs.rmSync(path.join(jd, f), { force: true }); } } catch { /* none */ }
   for (const root of ['A', 'A-second', 'B', 'C', 'D', 'D2', 'E', 'F', path.join('G', 'Rām\'s ‘Shop’ दुकान'), 'H']) {
@@ -649,7 +649,7 @@ try {
 
 console.log('\nThis PC (nothing real may change):');
 ok(JSON.stringify(uninstallKeys()) === JSON.stringify(realBefore.keys) && realEntry() === realBefore.entry,
-  `Windows' uninstall list is as before (${realBefore.keys.length} entries; the real FreeGSTBilling_is1 ${realBefore.entry ? 'unchanged, every value' : 'absent'})`, uninstallKeys().filter((k) => /freegst/i.test(k)).join(','));
+  `Windows' uninstall list is as before (${realBefore.keys.length} entries; the real UCNPLBilling_is1 ${realBefore.entry ? 'unchanged, every value' : 'absent'})`, uninstallKeys().filter((k) => /freegst/i.test(k)).join(','));
 ok(realIcons() === realBefore.icons, 'The real Desktop, Start-menu and Startup icons are as before (names and times)');
 ok(listenerPid(47373) === realBefore.p47373, `Port 47373 (the real app) has the same process as before (${realBefore.p47373 || 'none'})`);
 
