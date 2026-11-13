@@ -1055,7 +1055,7 @@ const InvoicePreview = React.forwardRef(({ profile: profileProp, client, details
       const hex = accent.startsWith('#') ? accent.slice(1) : '';
       const rgb = hex.length === 6
         ? `${parseInt(hex.slice(0,2),16)}, ${parseInt(hex.slice(2,4),16)}, ${parseInt(hex.slice(4,6),16)}`
-        : '30, 64, 175';  // fallback to default blue
+        : '201, 100, 66';  // fallback to terracotta
       return {
         '--pdf-primary-text': _ps_final.pdfPrimaryText || '#0f172a',
         '--pdf-muted-text':   _ps_final.pdfMutedText   || '#334155',

@@ -627,7 +627,7 @@ export default function ReportsView() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* KPI Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-              <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid #3b82f6' }}>
+              <div className="glass-panel" style={{ padding: '1.25rem', borderLeft: '4px solid var(--primary, #c96442)' }}>
                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Total Billed Sales</div>
                 <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text)', marginTop: '0.3rem' }}>
                   {formatCurrency(totalSales, shownCurrency)}
@@ -768,7 +768,7 @@ export default function ReportsView() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1rem' }}>
             {/* Customer Retention & Loyalty KPI Bar */}
             <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem' }}>
-              <div className="glass-panel" style={{ padding: '1rem', borderLeft: '3px solid #3b82f6' }}>
+              <div className="glass-panel" style={{ padding: '1rem', borderLeft: '3px solid var(--primary, #c96442)' }}>
                 <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Total Named Clients</div>
                 <div style={{ fontSize: '1.35rem', fontWeight: 700, marginTop: '0.2rem' }}>{insights.totalCustomers}</div>
               </div>

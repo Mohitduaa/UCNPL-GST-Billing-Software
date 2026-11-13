@@ -1046,7 +1046,7 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `freegstbill-bills-${sel.length}-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `ucnpl-bills-${sel.length}-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast(`Exported ${sel.length} invoice${sel.length !== 1 ? 's' : ''} as JSON`, 'success');
@@ -1212,7 +1212,7 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
         document.body.appendChild(a); a.click(); a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 10000);
       } else {
-        doc.save(`freegstbill-invoices-${ok}-${localToday()}.pdf`);
+        doc.save(`ucnpl-invoices-${ok}-${localToday()}.pdf`);
       }
       toast(`Exported ${ok} of ${sel.length} invoices`, 'success');
     } catch (e) {

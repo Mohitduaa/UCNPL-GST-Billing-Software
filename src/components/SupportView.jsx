@@ -10,7 +10,7 @@ const SITE = 'https://ucnpl.com';
 
 const SERVICES = [
   { icon: Code, title: 'Custom software & web apps', text: 'Websites, web apps and business tools built for how you work.' },
-  { icon: Wrench, title: 'Customising this app', text: 'Your own invoice layout, reports or features in Free GST Billing.' },
+  { icon: Wrench, title: 'Customising this app', text: 'Your own invoice layout, reports or features in UCNPL Billing.' },
   { icon: Database, title: 'Setup & data migration', text: 'Installation, moving your data from Tally or Excel, and training.' },
   { icon: LifeBuoy, title: 'Support plans for businesses', text: 'Priority help and updates on a yearly plan.' },
   { icon: Cpu, title: 'AI integration', text: 'Add AI to your product: assistants, document reading, smart search.' },
@@ -62,7 +62,7 @@ export default function SupportView() {
           ))}
         </div>
         <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-          <a className="btn btn-primary" href={`mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry (from Free GST Billing)')}`}>
+          <a className="btn btn-primary" href={`mailto:${EMAIL}?subject=${encodeURIComponent('Project enquiry (from UCNPL Billing)')}`}>
             <Mail size={16} /> Email {EMAIL}
           </a>
           <a className="btn btn-secondary" href={SITE} target="_blank" rel="noopener noreferrer"><Globe size={16} /> ucnpl.com</a>

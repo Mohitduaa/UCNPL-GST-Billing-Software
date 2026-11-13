@@ -4118,8 +4118,8 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
             const saving = autoSaveStatus === 'saving';
             const saved = autoSaveStatus === 'saved';
             const isDraft = autoSaveStatus === 'idle' && !isMeaningfulInvoice();
-            const color = saving ? '#3b82f6' : saved ? '#059669' : isDraft ? '#d97706' : '#94a3b8';
-            const bg = saving ? 'rgba(59, 130, 246, 0.12)'
+            const color = saving ? 'var(--primary)' : saved ? '#059669' : isDraft ? '#d97706' : '#94a3b8';
+            const bg = saving ? 'rgba(var(--primary-rgb, 201, 100, 66), 0.12)'
               : saved ? 'rgba(5, 150, 105, 0.12)'
               : isDraft ? 'rgba(217, 119, 6, 0.12)'
               : 'var(--bg-secondary)';

@@ -277,7 +277,7 @@ export default function CashBook({ onOpenView }) {
             <Banknote size={16} strokeWidth={1.75} />
             <span>Cash in Hand</span>
           </div>
-          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.inHand < 0 ? '#dc2626' : '#0f172a' }}>
+          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.inHand < 0 ? '#dc2626' : 'var(--text)' }}>
             {formatCurrency(summary.inHand)}
           </div>
         </div>
@@ -299,7 +299,7 @@ export default function CashBook({ onOpenView }) {
             <Landmark size={16} strokeWidth={1.75} />
             <span>Bank & UPI</span>
           </div>
-          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.bank < 0 ? '#dc2626' : '#0f172a' }}>
+          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.bank < 0 ? '#dc2626' : 'var(--text)' }}>
             {formatCurrency(summary.bank)}
           </div>
         </div>
@@ -321,7 +321,7 @@ export default function CashBook({ onOpenView }) {
             <Wallet size={16} strokeWidth={1.75} />
             <span>Total Available</span>
           </div>
-          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.totalFunds < 0 ? '#dc2626' : '#0f172a' }}>
+          <div style={{ marginTop: 4, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.02em', color: summary.totalFunds < 0 ? '#dc2626' : 'var(--text)' }}>
             {formatCurrency(summary.totalFunds)}
           </div>
         </div>
@@ -372,7 +372,7 @@ export default function CashBook({ onOpenView }) {
               fontSize: '0.82rem',
               fontWeight: accountTab === 'all' ? 600 : 500,
               background: accountTab === 'all' ? '#ffffff' : 'transparent',
-              color: accountTab === 'all' ? '#0f172a' : '#64748b',
+              color: accountTab === 'all' ? 'var(--text)' : '#64748b',
               border: 'none',
               cursor: 'pointer',
               boxShadow: accountTab === 'all' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none',
@@ -396,7 +396,7 @@ export default function CashBook({ onOpenView }) {
               fontSize: '0.82rem',
               fontWeight: accountTab === 'cash' ? 600 : 500,
               background: accountTab === 'cash' ? '#ffffff' : 'transparent',
-              color: accountTab === 'cash' ? '#0f172a' : '#64748b',
+              color: accountTab === 'cash' ? 'var(--text)' : '#64748b',
               border: 'none',
               cursor: 'pointer',
               boxShadow: accountTab === 'cash' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none',
@@ -420,7 +420,7 @@ export default function CashBook({ onOpenView }) {
               fontSize: '0.82rem',
               fontWeight: accountTab === 'bank' ? 600 : 500,
               background: accountTab === 'bank' ? '#ffffff' : 'transparent',
-              color: accountTab === 'bank' ? '#0f172a' : '#64748b',
+              color: accountTab === 'bank' ? 'var(--text)' : '#64748b',
               border: 'none',
               cursor: 'pointer',
               boxShadow: accountTab === 'bank' ? '0 1px 2px rgba(0, 0, 0, 0.05)' : 'none',
@@ -961,7 +961,7 @@ export default function CashBook({ onOpenView }) {
                     <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 600, color: '#dc2626', whiteSpace: 'nowrap' }}>
                       {l.type === 'out' ? formatCurrency(l.amount) : ''}
                     </td>
-                    <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 600, color: l.balance < 0 ? '#dc2626' : '#0f172a', whiteSpace: 'nowrap' }}>
+                    <td style={{ padding: '10px 16px', textAlign: 'right', fontWeight: 600, color: l.balance < 0 ? '#dc2626' : 'var(--text)', whiteSpace: 'nowrap' }}>
                       {formatCurrency(l.balance)}
                     </td>
                     <td style={{ padding: '10px 12px', textAlign: 'center', whiteSpace: 'nowrap' }}>
@@ -1000,7 +1000,7 @@ export default function CashBook({ onOpenView }) {
                   <td style={{ padding: '12px 16px', textAlign: 'right', color: '#dc2626', whiteSpace: 'nowrap' }}>
                     {formatCurrency(book.totals.out)}
                   </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', color: book.closing < 0 ? '#dc2626' : '#0f172a', whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: '12px 16px', textAlign: 'right', color: book.closing < 0 ? '#dc2626' : 'var(--text)', whiteSpace: 'nowrap' }}>
                     {search.trim() ? '' : formatCurrency(book.closing)}
                   </td>
                   <td />

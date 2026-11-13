@@ -287,7 +287,7 @@ export default function BarcodeLabelsModal({ products = [], initialCounts = null
                           </div>
                         )}
                         {showProductName && (
-                          <div style={{ fontSize: isCompact ? '0.62rem' : '0.74rem', fontWeight: 600, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%', lineHeight: 1.2, marginBottom: 2 }}>
+                          <div style={{ fontSize: isCompact ? '0.62rem' : '0.74rem', fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%', lineHeight: 1.2, marginBottom: 2 }}>
                             {item.name}
                           </div>
                         )}

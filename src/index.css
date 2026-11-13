@@ -1601,7 +1601,7 @@ textarea.form-input { resize: vertical; min-height: 60px; }
   width: 40px;
   height: 40px;
   border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), #3b82f6);
+  background: linear-gradient(135deg, var(--primary), var(--primary-darker, #964227));
   color: white;
   display: flex;
   align-items: center;

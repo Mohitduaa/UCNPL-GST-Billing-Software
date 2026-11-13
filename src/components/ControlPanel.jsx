@@ -139,7 +139,7 @@ export default function ControlPanel() {
       <div className="dashboard-container">
         <div className="glass-panel p-6" style={{ maxWidth: 560, margin: '3rem auto' }}>
           <h2 style={{ marginTop: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <CheckCircle size={22} color="#22c55e" /> Free GST Billing is being removed
+            <CheckCircle size={22} color="var(--success, #22c55e)" /> UCNPL Billing is being removed
           </h2>
           <p>The app has closed and its files and icons are being deleted. You can close this window.</p>
           {removed.kept && (
@@ -288,7 +288,7 @@ export default function ControlPanel() {
           <ActionCard
             icon={<Trash2 size={22} />}
             title="Remove the App" doc="control-panel#remove"
-            body="Remove it like other Windows programs: Settings → Apps → Installed apps → Free GST Billing → Uninstall. It asks before deleting your books; the answer is No unless you choose Yes."
+            body="Remove it like other Windows programs: Settings → Apps → Installed apps → UCNPL Billing → Uninstall. It asks before deleting your books; the answer is No unless you choose Yes."
             buttonLabel="Open Windows Apps"
             disabled={!!busy}
             onClick={() => runAction('open-apps-settings')}
@@ -374,7 +374,7 @@ export default function ControlPanel() {
 
           <div style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
             {/* Method 1: Portable */}
-            <div style={{ background: 'var(--bg-secondary)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid #3b82f6' }}>
+            <div style={{ background: 'var(--bg-secondary)', padding: '1.2rem', borderRadius: '8px', borderLeft: '4px solid var(--primary, #c96442)' }}>
               <h4 style={{ margin: '0 0 0.5rem', color: 'var(--text-primary)', fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 📁 Portable Folder / Pen Drive
               </h4>

@@ -266,22 +266,22 @@ export default function ReceiptVoucher() {
       printWindow.document.write(`
         <html><head><title>Receipt ${String(receipt.receiptNo ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</title>
         <style>
-          body { font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 2rem; color: #1a1a2e; }
-          .receipt-box { max-width: 600px; margin: 0 auto; border: 2px solid #e2e8f0; border-radius: 8px; padding: 2rem; }
-          .receipt-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 1rem; }
-          .receipt-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; margin: 0; }
-          .receipt-subtitle { font-size: 0.8rem; color: #64748b; margin: 0.25rem 0 0; }
-          .receipt-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid #f1f5f9; }
-          .receipt-label { color: #64748b; font-weight: 500; }
-          .receipt-value { color: #1e293b; font-weight: 600; }
-          .receipt-amount { font-size: 1.5rem; font-weight: 800; color: #1e40af; text-align: center; margin: 1.5rem 0; padding: 1rem; background: #eff6ff; border-radius: 8px; }
-          .receipt-words { font-size: 0.85rem; color: #334155; font-style: italic; text-align: center; margin-bottom: 1.5rem; }
+          body { font-family: 'Montserrat', system-ui, Arial, sans-serif; margin: 0; padding: 2rem; color: #141413; }
+          .receipt-box { max-width: 600px; margin: 0 auto; border: 2px solid #dad9d4; border-radius: 8px; padding: 2rem; }
+          .receipt-header { text-align: center; margin-bottom: 1.5rem; border-bottom: 2px solid #dad9d4; padding-bottom: 1rem; }
+          .receipt-title { font-size: 1.5rem; font-weight: 800; color: #141413; margin: 0; }
+          .receipt-subtitle { font-size: 0.8rem; color: #6e6d68; margin: 0.25rem 0 0; }
+          .receipt-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.9rem; border-bottom: 1px solid #f5f4ee; }
+          .receipt-label { color: #6e6d68; font-weight: 500; }
+          .receipt-value { color: #141413; font-weight: 600; }
+          .receipt-amount { font-size: 1.5rem; font-weight: 800; color: #c96442; text-align: center; margin: 1.5rem 0; padding: 1rem; background: #fdf6f2; border-radius: 8px; border: 1px solid #f4e3da; }
+          .receipt-words { font-size: 0.85rem; color: #535146; font-style: italic; text-align: center; margin-bottom: 1.5rem; }
           .receipt-footer { display: flex; justify-content: space-between; margin-top: 3rem; padding-top: 1rem; }
           .receipt-sig { text-align: center; }
-          .receipt-sig-line { width: 180px; border-bottom: 1.5px solid #1e293b; margin-bottom: 0.25rem; }
-          .receipt-sig-label { font-size: 0.75rem; color: #64748b; }
+          .receipt-sig-line { width: 180px; border-bottom: 1.5px solid #141413; margin-bottom: 0.25rem; }
+          .receipt-sig-label { font-size: 0.75rem; color: #6e6d68; }
           .business-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem; }
-          .business-details { font-size: 0.75rem; color: #64748b; }
+          .business-details { font-size: 0.75rem; color: #6e6d68; }
           @media print { body { margin: 0; } .receipt-box { border: none; } }
         </style></head><body>
         ${el.innerHTML}
