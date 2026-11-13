@@ -12,7 +12,6 @@ async function main() {
 
   const browser = await chromium.launch({ channel: 'msedge', headless: true });
   
-  // Helper to get fresh page with consistent settings
   async function createPage(theme = 'light') {
     const context = await browser.newContext({
       viewport: { width: 1366, height: 800 },
@@ -29,10 +28,12 @@ async function main() {
     return { page, context };
   }
 
-  // Helper to remove any floating toasts
-  async function dismissToasts(page) {
+  async function cleanUI(page) {
     await page.evaluate(() => {
       document.querySelectorAll('.toast, .toast-container, [role="alert"]').forEach(el => el.remove());
+      document.querySelectorAll('button').forEach(b => {
+        if (b.innerText && b.innerText.includes('Finish setup')) b.remove();
+      });
     });
   }
 
@@ -40,23 +41,20 @@ async function main() {
   console.log('Capturing app-dashboard.png...');
   {
     const { page, context } = await createPage('light');
-    await dismissToasts(page);
-    await page.waitForTimeout(500);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-dashboard.png') });
     await context.close();
   }
 
   // 2. Invoice Editor (Light)
-  console.log('Capturing app-invoice-editor.png...');
+  console.log('Capturing app-invoice-editor.png & invoice-lut-export.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button[aria-label="Edit"]');
     await page.waitForTimeout(1200);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-invoice-editor.png') });
 
-    // 3. Invoice Preview element close-up (replacing invoice-lut-export.png)
-    console.log('Capturing invoice-lut-export.png (preview)...');
     const previewEl = await page.$('#invoice-preview');
     if (previewEl) {
       await previewEl.screenshot({ path: path.join(TARGET_DIR, 'invoice-lut-export.png') });
@@ -64,88 +62,88 @@ async function main() {
     await context.close();
   }
 
-  // 4. GST Returns
+  // 3. GST Returns
   console.log('Capturing app-gstr1.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("GST Returns")');
     await page.waitForTimeout(1200);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-gstr1.png') });
     await context.close();
   }
 
-  // 5. Cash Book
+  // 4. Cash Book
   console.log('Capturing cash-book.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("Cash book")');
     await page.waitForTimeout(1200);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'cash-book.png') });
     await context.close();
   }
 
-  // 6. Invoice Editor (Dark)
+  // 5. Invoice Editor (Dark)
   console.log('Capturing invoice-editor-dark.png...');
   {
     const { page, context } = await createPage('dark');
     await page.click('button[aria-label="Edit"]');
     await page.waitForTimeout(1200);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'invoice-editor-dark.png') });
     await context.close();
   }
 
-  // 7. Dashboard (Dark)
+  // 6. Dashboard (Dark)
   console.log('Capturing dashboard-dark.png...');
   {
     const { page, context } = await createPage('dark');
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'dashboard-dark.png') });
     await context.close();
   }
 
-  // 8. Clients
+  // 7. Clients
   console.log('Capturing app-clients.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("Clients")');
     await page.waitForTimeout(1000);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-clients.png') });
     await context.close();
   }
 
-  // 9. Products
+  // 8. Products
   console.log('Capturing app-products.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("Products")');
     await page.waitForTimeout(1000);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-products.png') });
     await context.close();
   }
 
-  // 10. Reports
+  // 9. Reports
   console.log('Capturing app-reports.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("Reports")');
     await page.waitForTimeout(1000);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-reports.png') });
     await context.close();
   }
 
-  // 11. Control Panel
+  // 10. Control Panel
   console.log('Capturing app-control-panel.png...');
   {
     const { page, context } = await createPage('light');
     await page.click('button:has-text("Control Panel")');
     await page.waitForTimeout(1000);
-    await dismissToasts(page);
+    await cleanUI(page);
     await page.screenshot({ path: path.join(TARGET_DIR, 'app-control-panel.png') });
     await context.close();
   }
