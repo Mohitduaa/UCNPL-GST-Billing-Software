@@ -30,7 +30,7 @@ const put = (p, text = '{}') => { fs.mkdirSync(path.dirname(path.join(T, p)), { 
 const at = (p) => path.join(T, p);
 // Every file and its SHA-256: the "was it touched?" proof.
 const fingerprint = (dir) => [...listFiles(dir).keys()].sort().map((r) => `${r}:${crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, r))).digest('hex')}`).join('\n');
-const APP_PKG = JSON.stringify({ name: 'free-gst-billing-software', version: '1.10.80' });
+const APP_PKG = JSON.stringify({ name: 'UCNPL-GST-Billing-Software', version: '1.10.80' });
 
 try {
   // ---- home ----------------------------------------------------------
@@ -48,9 +48,9 @@ try {
   throws(() => resolveAppHome(at('app1'), {}), /not there/, 'A missing books folder is refused (not silently started empty)');
 
   // ---- finding an earlier copy ----------------------------------------
-  // A ZIP copy: Downloads/Free-GST-Billing/_system with 3 invoices.
-  const zipRoot = 'Downloads/Free-GST-Billing';
-  put(`${zipRoot}/Free GST Billing - WINDOWS.hta`, '');
+  // A ZIP copy: Downloads/UCNPL-GST-Billing/_system with 3 invoices.
+  const zipRoot = 'Downloads/UCNPL-GST-Billing';
+  put(`${zipRoot}/UCNPL Billing - WINDOWS.hta`, '');
   put(`${zipRoot}/_system/server.js`, '');
   put(`${zipRoot}/_system/package.json`, APP_PKG);
   put(`${zipRoot}/_system/start-windows.ps1`, '');
@@ -59,7 +59,7 @@ try {
   put(`${zipRoot}/_system/Saved Invoices/General/INV-1.pdf`, '%PDF-1.4 demo');
   put(`${zipRoot}/_system/data/backups/2026-11-01/bills/INV-1.json`, '{}');
   const zipSys = at(`${zipRoot}/_system`);
-  const fromHta = findOldInstalls([at(`${zipRoot}/Free GST Billing - WINDOWS.hta`)]);
+  const fromHta = findOldInstalls([at(`${zipRoot}/UCNPL Billing - WINDOWS.hta`)]);
   eq(fromHta.map((f) => [f.sys, f.home, f.invoices]), [[zipSys, zipSys, 3]], 'A launcher shortcut (.hta) leads to the ZIP copy and its 3 invoices');
   eq(findOldInstalls([path.join(zipSys, 'start-windows.ps1')]).length, 1, 'So does an app icon (_system\\start-windows.ps1)');
   // A source checkout run from a shortcut deep inside it (the maintainer's own).
@@ -80,16 +80,16 @@ try {
   fs.mkdirSync(at('empty/_system/data/bills'), { recursive: true });
   eq(findOldInstalls([at('empty')]).length, 0, 'A copy without any books is not offered');
   // Books kept after an uninstall (no server.js) count only when named.
-  put('Documents/Free GST Billing/data/bills/a.json');
-  eq(findOldInstalls([at('Documents/Free GST Billing')]).map((f) => [f.sys, f.invoices]), [[null, 1]], 'A books folder on its own, named directly');
-  eq(findOldInstalls([at('Documents/Free GST Billing/data/bills/a.json')]).length, 0, '...but not found by walking up from a file in it');
+  put('Documents/UCNPL Billing/data/bills/a.json');
+  eq(findOldInstalls([at('Documents/UCNPL Billing')]).map((f) => [f.sys, f.invoices]), [[null, 1]], 'A books folder on its own, named directly');
+  eq(findOldInstalls([at('Documents/UCNPL Billing/data/bills/a.json')]).length, 0, '...but not found by walking up from a file in it');
   // A copy installed by the Setup: its home.txt says where its books are.
-  put('Programs/Free GST Billing/server.js', '');
-  put('Programs/Free GST Billing/package.json', APP_PKG);
-  put('Programs/Free GST Billing/home.txt', at('Documents/Free GST Billing'));
-  eq(findOldInstalls([at('Programs/Free GST Billing')]).map((f) => f.home), [at('Documents/Free GST Billing')], 'A Setup copy: its books are where its home.txt says');
-  eq(findOldInstalls([at('Programs/Free GST Billing')], { newAppDir: at('Programs/Free GST Billing') }).length, 0, 'The copy being installed now is never "an earlier copy"');
-  const all = findOldInstalls([at('repo'), zipSys, at(zipRoot), at('Documents/Free GST Billing')]);
+  put('Programs/UCNPL Billing/server.js', '');
+  put('Programs/UCNPL Billing/package.json', APP_PKG);
+  put('Programs/UCNPL Billing/home.txt', at('Documents/UCNPL Billing'));
+  eq(findOldInstalls([at('Programs/UCNPL Billing')]).map((f) => f.home), [at('Documents/UCNPL Billing')], 'A Setup copy: its books are where its home.txt says');
+  eq(findOldInstalls([at('Programs/UCNPL Billing')], { newAppDir: at('Programs/UCNPL Billing') }).length, 0, 'The copy being installed now is never "an earlier copy"');
+  const all = findOldInstalls([at('repo'), zipSys, at(zipRoot), at('Documents/UCNPL Billing')]);
   eq(all.map((f) => f.invoices).sort(), [0, 1, 3], 'Several: each books folder once');
   eq(findOldInstalls([zipSys, at('repo')], { testRoot: at('Downloads') }).map((f) => f.home), [zipSys], 'Test mode: nothing outside the test folder is even looked at');
 
@@ -160,7 +160,7 @@ try {
 
   // ---- review M3: a Setup copy without home.txt never falls back --------
   put('app2/server.js', '');
-  put('app2/installed.txt', 'Installed by Free GST Billing Setup');
+  put('app2/installed.txt', 'Installed by UCNPL Billing Setup');
   throws(() => resolveAppHome(at('app2'), {}), /home\.txt/, 'Installed by the Setup but home.txt is missing: an error, not books in the program folder');
   put('app2/home.txt', '  ');
   throws(() => resolveAppHome(at('app2'), {}), /home\.txt/, '...or empty');
@@ -222,7 +222,7 @@ try {
   eq(checkSetupBytes(exe, { size: 102, sha256: 'f'.repeat(64) }).ok, false, 'Another SHA-256: refused');
   eq(checkSetupBytes(Buffer.from('<html>'), {}).ok, false, 'Not a Windows program (an error page): refused');
   eq(checkSetupBytes(exe, { size: 102 }), { ok: true, checked: 'size only (no SHA-256 published)' }, 'No SHA-256 published: the gap is said');
-  eq(setupAssetFrom({ assets: [{ name: 'Free-GST-Billing.zip' }, { name: 'UCNPL-GST-Billing-Setup.exe', size: 9, digest: `sha256:${sum}`,
+  eq(setupAssetFrom({ assets: [{ name: 'UCNPL-GST-Billing.zip' }, { name: 'UCNPL-GST-Billing-Setup.exe', size: 9, digest: `sha256:${sum}`,
     browser_download_url: 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/download/v1.10.85/UCNPL-GST-Billing-Setup.exe' }] }),
   { url: 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/download/v1.10.85/UCNPL-GST-Billing-Setup.exe', size: 9, sha256: sum }, 'The Setup is found in the release, with its size and SHA-256');
   eq(setupAssetFrom({ assets: [{ name: 'UCNPL-GST-Billing-Setup.exe', browser_download_url: 'https://github.com/someone-else/x/releases/download/v1/UCNPL-GST-Billing-Setup.exe' }] }), null, 'A Setup from another repository is never used');
@@ -257,7 +257,7 @@ try {
     // Setup quotes paths the way Windows programs read them: "E:\" would end
     // in \" (an escaped quote), so a trailing backslash is doubled (iss Q()).
     const q = (s) => `"${s.endsWith('\\') ? `${s}\\` : s}"`;
-    const args = ['E:\\', 'C:\\Users\\x\\Documents\\Free GST Billing', odd, ''];
+    const args = ['E:\\', 'C:\\Users\\x\\Documents\\UCNPL Billing', odd, ''];
     const got = spawnSync(process.execPath, ['-e', 'console.log(JSON.stringify(process.argv.slice(1)))', ...args.map(q)],
       { encoding: 'utf8', windowsVerbatimArguments: true, argv0: `"${process.execPath}"` });
     eq(JSON.parse(got.stdout || 'null'), args, 'Quoted like Setup does, a program gets "E:\\", spaces, Hindi and an empty argument back exactly');

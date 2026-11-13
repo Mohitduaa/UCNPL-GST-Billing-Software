@@ -44,7 +44,7 @@ H=/home/shop
 as() { runuser -u shop -- env HOME=$H FGSB_NO_BROWSER=1 "$@"; }
 # A fake earlier ZIP install (one-line install's folder) and an unzipped copy, with UCNPL demo books.
 as sh -c '
-  for S in "$HOME/.local/share/free-gst-billing/_system" "$HOME/Free-GST-Billing/_system"; do
+  for S in "$HOME/.local/share/free-gst-billing/_system" "$HOME/UCNPL-GST-Billing/_system"; do
     mkdir -p "$S/data/bills" "$S/Saved Invoices/UCNPL/2026-11"
     echo "// old server" > "$S/server.js"
     printf "{\"companyName\":\"UCNPL\",\"gstin\":\"29ABCDE1234F1ZW\"}" > "$S/data/profile.json"
@@ -52,7 +52,7 @@ as sh -c '
     printf "%%PDF-1.4 demo" > "$S/Saved Invoices/UCNPL/2026-11/INV-1.pdf"
     echo 47371 > "$S/data/port.txt"
   done'
-OLD="$H/.local/share/free-gst-billing $H/Free-GST-Billing"
+OLD="$H/.local/share/free-gst-billing $H/UCNPL-GST-Billing"
 snap() { find $OLD -printf '%p %M %u %s %T@\n' | sort; find $OLD -type f -exec sha256sum {} + | sort; }
 snap > /tmp/old-before
 echo "HASH old installs before: $(sha256sum < /tmp/old-before | cut -c1-16)"
@@ -80,7 +80,7 @@ check_running() { # <kind>
   echo "OK Update says: $(echo "$U" | cut -c1-110)..."
   grep -q 'books from an earlier copy' /tmp/launch1.log || fail "no earlier-copy notice"
   grep -q "$H/.local/share/free-gst-billing/_system/data" /tmp/launch1.log || fail "notice misses the one-line copy"
-  grep -q "$H/Free-GST-Billing/_system/data" /tmp/launch1.log || fail "notice misses the unzipped copy"
+  grep -q "$H/UCNPL-GST-Billing/_system/data" /tmp/launch1.log || fail "notice misses the unzipped copy"
   test -f "$H/.local/share/free-gst-billing-data/OLD-BOOKS-FOUND.txt" || fail "no OLD-BOOKS-FOUND.txt"
   echo "OK earlier copies reported:"; sed -n '1,12p' /tmp/launch1.log | sed 's/^/     | /'
 }
@@ -104,9 +104,9 @@ dpkg -i /pkgs/${DEB} >/tmp/dpkg.log 2>&1 || { cat /tmp/dpkg.log; fail "dpkg -i";
 echo "OK dpkg -i (no maintainer scripts: $(ls /var/lib/dpkg/info/free-gst-billing.* | grep -c -E 'postinst|preinst|prerm|postrm') found)"
 dpkg -L free-gst-billing | grep -q '^/home' && fail "package owns files in /home"
 test -x /usr/bin/free-gst-billing && test -f /usr/share/applications/com.ucnpl.free-gst-billing.desktop || fail "launcher/menu entry"
-grep -q '^Name=Free GST Billing$' /usr/share/applications/com.ucnpl.free-gst-billing.desktop || fail "menu name"
+grep -q '^Name=UCNPL Billing$' /usr/share/applications/com.ucnpl.free-gst-billing.desktop || fail "menu name"
 [ ! -e /opt/free-gst-billing/data ] || fail "data folder inside /opt"
-echo "OK /usr/bin/free-gst-billing, menu entry 'Free GST Billing', nothing in /home"
+echo "OK /usr/bin/free-gst-billing, menu entry 'UCNPL Billing', nothing in /home"
 as free-gst-billing > /tmp/launch1.log 2>&1 || { cat /tmp/launch1.log; fail "launch"; }
 check_running deb '\.deb'
 as free-gst-billing > /tmp/launch2.log 2>&1 || fail "second launch"

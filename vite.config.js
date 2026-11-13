@@ -60,9 +60,9 @@ export default defineConfig({
       manifest: {
         name: 'UCNPL Billing',
         short_name: 'UCNPL Billing',
-        description: 'Open-source, offline GST invoicing for India and 21 other countries. Tax invoices, GSTR-1 / GSTR-3B / GSTR-2B, TDS / TCS, multi-currency, multi-account payments, recurring billing. Your data stays on your computer. Free forever.',
-        theme_color: '#1e40af',
-        background_color: '#f8fafc',
+        description: 'Open-source, offline GST invoicing for India and 21 other countries. Tax invoices, GSTR-1 / GSTR-3B / GSTR-2B, TDS / TCS, multi-currency, multi-account payments, recurring billing. Your data stays on your computer.',
+        theme_color: '#c96442',
+        background_color: '#faf9f5',
         display: 'standalone',
         // display_override gives Edge / Chrome the option to render in a
         // tighter "Window Controls Overlay" mode (the title bar disappears,

@@ -2,7 +2,7 @@
 // Previous / Next order at the foot of each page.
 
 export const SITE = {
-  name: 'Free GST Billing',
+  name: 'UCNPL Billing',
   // The folder is also the web address, so it carries the words people search.
   folder: 'free-gst-software-documentation',
   // Where the folder is published. Used for canonical links, the sitemap,
@@ -13,18 +13,18 @@ export const SITE = {
   repo: 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software',
   // Always the newest release: GitHub resolves this to the latest release's
   // file of exactly this name (see docs/RELEASE_CHECKLIST.md, step 4b).
-  download: 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/Free-GST-Billing.zip',
+  download: 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip',
 };
 
 // Search-result titles and descriptions for the pages people search for most.
 // Other pages use their own title and the first ~155 characters of their lead.
 export const SEO = {
   index: {
-    title: 'Free GST Billing Software for India: documentation and user guide',
+    title: 'UCNPL GST Billing Software for India: documentation and user guide',
     description: 'Free, open-source GST billing software for Windows, Mac and Linux. Make GST invoices, track payments and stock, and prepare GSTR-1 and GSTR-3B. No signup, works offline.',
   },
   install: {
-    title: 'How to install Free GST Billing Software on Windows, Mac and Linux',
+    title: 'How to install UCNPL GST Billing Software on Windows, Mac and Linux',
     description: 'Download one ZIP, extract it and click Install. Sets up everything on Windows without admin rights. Step-by-step install for Windows, macOS and Linux.',
   },
   'first-invoice': {

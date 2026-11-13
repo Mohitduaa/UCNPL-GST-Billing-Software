@@ -1,6 +1,6 @@
 // v1.10.81 - a welcome for new users at the top of the Dashboard (asked for by
 // the maintainer): thanks them, and whoever told them about the app, says it
-// is free for good, and that support of any amount is welcome but never
+// is free, and that support of any amount is welcome but never
 // needed. On the page, not a popup; shown until closed and only while the
 // business has fewer than 10 invoices (from 10 the daily support card takes
 // over, so the two never show together).
@@ -32,7 +32,7 @@ export default function WelcomeCard({ invoiceCount, onOpenSupport }) {
         because shop owners, accountants and CAs recommend it to each other.
       </p>
       <ul className="welcome-card-points">
-        <li><strong>Free, for good.</strong> No subscription, no ads, no locked features.</li>
+        <li><strong></strong> No subscription, no ads, no locked features.</li>
         <li><strong>Your data stays yours.</strong> Everything is saved on this PC and works offline.</li>
         <li><strong>A new update every Saturday.</strong> Fixes and new features each week; tell us what you need on GitHub (Support &amp; About).</li>
         <li><strong>Support is welcome, never needed.</strong> If the app saves you time, any amount by UPI keeps it going.</li>

@@ -390,7 +390,7 @@ function App() {
   // v1.10.83 - the "Install as Desktop App" banner is gone. The browser icon
   // it made opens only a browser window: it cannot start the app's server, so
   // after a restart it showed "Needs a Quick Start". The installers' own
-  // Free GST Billing icon starts the server and opens the app.
+  // UCNPL Billing icon starts the server and opens the app.
 
   useEffect(() => {
     sessionStorage.setItem('gst_currentView', currentView);
@@ -409,6 +409,8 @@ function App() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
     localStorage.setItem('freegstbill_theme', darkMode ? 'dark' : 'light');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', darkMode ? '#1c1c1a' : '#c96442');
   }, [darkMode]);
 
   // Load all saved business profiles
@@ -959,7 +961,7 @@ function App() {
               : ownBrand ? <span className="sidebar-logo-letter">{brand.businessName.trim().charAt(0).toUpperCase()}</span>
                 : <ReceiptText size={22} color="#ffffff" />}
           </div>
-          {/* "Free forever" is
+          {/* "Free" is
               in the top bar; on a phone (no top bar) it stays here. */}
           <div className="sidebar-brand-text">
             <h2 className={`sidebar-title${ownBrand ? ' sidebar-title-own' : ''}`} title={ownBrand ? `${brand.businessName} - UCNPL Billing` : undefined}>{ownBrand ? brand.businessName : 'UCNPL Billing'}</h2>

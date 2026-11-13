@@ -709,8 +709,8 @@ console.log('\n[V73] Customize options, order details, Quotation, docs links');
   eq(INVOICE_TYPES.quotation.prefix, 'QUO', 'Quotations number as QUO');
   eq(salesSign({ invoiceType: 'quotation', totalAmount: 100 }), 0, 'A quotation is not a sale');
 
-  eq(docsLink('invoices#toolbar'), 'https://ucnpl.com/', 'Help links go to the docs section');
-  eq(docsLink('index'), 'https://ucnpl.com/', 'The docs home link');
+  eq(docsLink('invoices#toolbar'), 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md', 'Help links go to the docs section');
+  eq(docsLink('index'), 'https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/blob/main/docs/USER_GUIDE.md', 'The docs home link');
   eq(TCS_SECTIONS.some((t) => t.code === '206C(1H)'), false, '206C(1H) (omitted from 1 April 2025) is not offered on new invoices');
 }
 
@@ -1026,9 +1026,9 @@ console.log('\n[Audit 2026-10] Income tax marginal relief');
 
 console.log('\n[V80] Support page: UPI payment note and the supporters tracker');
 {
-  eq(upiNote('UCNPL'), 'Free GST Billing support - UCNPL', 'The payment note names the business that paid');
-  eq(upiNote(''), 'Free GST Billing support', 'No business name: the plain note');
-  eq(upiNote('M/S Sharma & Sons #12'), 'Free GST Billing support - M S Sharma Sons 12', 'Characters some UPI apps refuse are dropped');
+  eq(upiNote('UCNPL'), 'UCNPL Billing support - UCNPL', 'The payment note names the business that paid');
+  eq(upiNote(''), 'UCNPL Billing support', 'No business name: the plain note');
+  eq(upiNote('M/S Sharma & Sons #12'), 'UCNPL Billing support - M S Sharma Sons 12', 'Characters some UPI apps refuse are dropped');
   eq(upiNote('A Very Long Business Name Private Limited Company of India').length <= 50, true, 'The note is kept to 50 characters');
 
   const t = parseSupporters({ totalReceived: 12450.4, supporters: 37, goal: { amount: 50000, label: 'Balance sheet' }, thanks: ['Asha', '  Ravi  ', 42, ''], updated: '2026-10-19' });

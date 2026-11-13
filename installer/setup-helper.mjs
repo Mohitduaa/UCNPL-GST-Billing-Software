@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Free GST Billing - the Windows Setup's helper (v1.10.84).
+// UCNPL Billing - the Windows Setup's helper (v1.10.84).
 //
 // installer/free-gst-billing.iss runs this with the node.exe it carries,
 // unpacked to Setup's temp folder, before anything is installed:
@@ -29,7 +29,7 @@ import { fileURLToPath } from 'url';
 import { spawnSync } from 'child_process';
 
 export const BOOK_FOLDERS = ['data', 'Saved Invoices', 'Trash'];
-const APP_PACKAGE_NAME = 'free-gst-billing-software';
+const APP_PACKAGE_NAME = 'UCNPL-GST-Billing-Software';
 const WIN = process.platform === 'win32';
 
 const norm = (p) => (WIN ? path.resolve(p).toLowerCase() : path.resolve(p));
@@ -45,7 +45,7 @@ const isDir = (p) => { try { return fs.statSync(p).isDirectory(); } catch { retu
 // 4 Nov 2026 on the maintainer's PC: Setup stuck on "Preparing to install").
 // So folders are made one level at a time, which fails at once.
 export const BLOCKED_HINT = 'If Windows Security\'s "Controlled folder access" (ransomware protection) is on, it blocks this. '
-  + 'Choose a folder outside Documents and Desktop (for example C:\\Users\\<your name>\\Free GST Billing), or allow the app in '
+  + 'Choose a folder outside Documents and Desktop (for example C:\\Users\\<your name>\\UCNPL Billing), or allow the app in '
   + 'Windows Security > Virus & threat protection > Ransomware protection > Allow an app through Controlled folder access.';
 
 // Makes dir and any missing parents; returns the folders it made, top first.

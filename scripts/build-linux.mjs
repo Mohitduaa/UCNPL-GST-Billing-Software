@@ -68,7 +68,7 @@ async function download(url, file, expected) {
 }
 
 // --- 1. Stage the app exactly as the ZIP does ---
-console.log(`\n  Free GST Billing - Linux packages v${version}\n`);
+console.log(`\n  UCNPL Billing - Linux packages v${version}\n`);
 rmSync(WORK, { recursive: true, force: true });
 mkdirSync(WORK, { recursive: true });
 mkdirSync(OUT, { recursive: true });

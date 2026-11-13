@@ -1,4 +1,4 @@
-# Free GST Billing - image for a NAS or server. Built by `npm run release:docker`
+# UCNPL Billing - image for a NAS or server. Built by `npm run release:docker`
 # (scripts/build-linux.mjs), whose build context holds the staged app in app/.
 #
 # Books: the /data volume (FGSB_HOME=/data). Runs as the unprivileged "node"

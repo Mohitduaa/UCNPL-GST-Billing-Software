@@ -440,7 +440,7 @@ export default [
 <ul>
   <li><b>"The two PINs do not match"</b> or <b>"The PIN must be 6 digits"</b>: type the same PIN, of the length you chose, in both boxes.</li>
   <li><b>"Current PIN is wrong"</b>: check Caps Lock is not the problem (PINs are digits only) and try again; after five tries, wait 30 seconds.</li>
-  <li><b>Forgot the PIN?</b> Open the Free-GST-Billing folder (where you start the app), make a new empty file there named <code>RESET-PIN</code>, and reload the app. The PIN is removed and the file deleted. Your invoices are not touched.</li>
+  <li><b>Forgot the PIN?</b> Open the UCNPL-GST-Billing folder (where you start the app), make a new empty file there named <code>RESET-PIN</code>, and reload the app. The PIN is removed and the file deleted. Your invoices are not touched.</li>
 </ul>
 </section>
 
@@ -628,7 +628,7 @@ export default [
 <p>Records in the file <b>replace the matching records</b> in the app; records the file does not have are left alone, and parts you did not tick are untouched. Export your current data first, just in case.</p>
 <h3>Something wrong?</h3>
 <ul>
-  <li><b>"This file doesn't look like a Free GST Billing backup"</b>: you picked a different file. Backups are named <code>ucnpl-billing-backup-<i>date</i>.json</code>. A ZIP from the Control Panel is restored there, with ${ui('Choose Backup ZIP')}.</li>
+  <li><b>"This file doesn't look like a UCNPL Billing backup"</b>: you picked a different file. Backups are named <code>ucnpl-billing-backup-<i>date</i>.json</code>. A ZIP from the Control Panel is restored there, with ${ui('Choose Backup ZIP')}.</li>
   <li><b>Restored, but I do not see it</b>: reload the page, and check the business selected at the top of the sidebar.</li>
 </ul>
 </section>
@@ -789,7 +789,7 @@ export default [
   <li>Finish and save any bill you are typing. Then click ${ui('Stop Server')}.</li>
   <li><b>Windows:</b> it finds the app's process on your port and ends it. <b>Mac and Linux:</b> the app stops itself a moment after replying; the result panel says <b>Stopped. Open the app again from its icon or launcher.</b></li>
   <li>The browser page will then show errors such as "Failed to fetch". That is normal.</li>
-  <li>Open the app again: double-click <b>Free GST Billing</b> on your Desktop (Mac: <b>Free GST Billing - MAC</b>; Linux: your start command).</li>
+  <li>Open the app again: double-click <b>UCNPL Billing</b> on your Desktop (Mac: <b>UCNPL Billing - MAC</b>; Linux: your start command).</li>
 </ol>
 <p><b>Is it safe?</b> Yes. Everything is saved as you work, so nothing already saved is lost. A bill still being typed and not saved is not kept. If the app runs as a service or in Docker, it may start again by itself.</p>
 <p><b>Something wrong?</b> If it will not start again, see <a href="troubleshooting.html#cannot-connect">Failed to fetch, App Not Running</a> and <a href="troubleshooting.html#not-answered">the server has not answered</a>. Mac and Linux: <a href="troubleshooting.html#mac">Mac</a>, <a href="troubleshooting.html#linux">Linux and NAS</a>.</p>
@@ -797,8 +797,8 @@ export default [
 
 <section id="remove">
 <h3>Remove the App</h3>
-<p><b>What it does.</b> Uninstalls Free GST Billing from this computer in one go: the app, its Desktop and Start-menu icons (Mac: the app in Applications; Linux: the menu entry) and the start-with-computer entry. You choose what else goes.</p>
-<p><b>In the app installed with the Windows Setup:</b> the button is ${ui('Open Windows Apps')}. It opens Windows' <b>Settings → Apps → Installed apps</b>: find Free GST Billing, click the three dots, then <b>Uninstall</b>. It asks whether to delete your books too; the answer is No unless you choose Yes.</p>
+<p><b>What it does.</b> Uninstalls UCNPL Billing from this computer in one go: the app, its Desktop and Start-menu icons (Mac: the app in Applications; Linux: the menu entry) and the start-with-computer entry. You choose what else goes.</p>
+<p><b>In the app installed with the Windows Setup:</b> the button is ${ui('Open Windows Apps')}. It opens Windows' <b>Settings → Apps → Installed apps</b>: find UCNPL Billing, click the three dots, then <b>Uninstall</b>. It asks whether to delete your books too; the answer is No unless you choose Yes.</p>
 <ol>
   <li>Click ${ui('Remove…')}. A list opens below the cards. (On Windows the launcher window has the same: <b>More options</b> → ${ui('Remove the app...')}.)</li>
   <li>Tick what to delete as well. Nothing is ticked at first, so by default <b>only the program goes and your books stay</b>:

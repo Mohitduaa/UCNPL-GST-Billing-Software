@@ -6,31 +6,31 @@ import { SITE } from '../site.mjs';
 const ui = (s) => `<span class="ui">${s}</span>`;
 const UPI_ID = 'princeramgarhiaa-1@okaxis';
 const upi = (amount) => `upi://pay?pa=${encodeURIComponent(UPI_ID)}&pn=UCNPL&cu=INR`
-  + `&tn=${encodeURIComponent('Free GST Billing support')}${amount ? `&am=${amount}.00` : ''}`;
+  + `&tn=${encodeURIComponent('UCNPL Billing support')}${amount ? `&am=${amount}.00` : ''}`;
 // Drawn at build time: the page needs no script, and the QR works offline once saved.
 const qrSvg = await QRCode.toString(upi(0), { type: 'svg', margin: 1, errorCorrectionLevel: 'M' });
 
 const SERVICES = [
   ['Custom software &amp; web apps', 'Websites, web apps and business tools built for how you work.'],
-  ['Customising this app', 'Your own invoice layout, reports or features in Free GST Billing.'],
+  ['Customising this app', 'Your own invoice layout, reports or features in UCNPL Billing.'],
   ['Setup &amp; data migration', 'Installation, moving your data from Tally or Excel, and training.'],
   ['Support plans for businesses', 'Priority help and updates on a yearly plan.'],
   ['AI integration', 'Add AI to your product: assistants, document reading, smart search.'],
   ['AI automation', 'Automate the repetitive work in the software you already use.'],
   ['Mobile apps', 'Android and iPhone apps for your business or customers.'],
 ];
-const share = encodeURIComponent(`I make my GST invoices with Free GST Billing Software. It's free, works offline and keeps data on your own computer: ${SITE.repo}`);
+const share = encodeURIComponent(`I make my GST invoices with UCNPL GST Billing Software. It's free, works offline and keeps data on your own computer: ${SITE.repo}`);
 
 export default [
 {
   slug: 'support',
   title: 'Support & About',
   nav: 'Support & About',
-  lead: 'Who makes Free GST Billing, how you can help it grow, and what UCNPL builds for businesses.',
+  lead: 'Who makes UCNPL Billing, how you can help it grow, and what UCNPL builds for businesses.',
   body: `
 <section id="about">
-<h2>Free, and it stays free</h2>
-<p>Free GST Billing is built and maintained by <a href="${SITE.publisher.url}">UCNPL</a> in India. No ads, no account, no locked features, and your invoices never leave your computer. The full source code is on <a href="${SITE.repo}">GitHub</a> under the MIT licence.</p>
+<h2>About UCNPL Billing</h2>
+<p>UCNPL Billing is built and maintained by <a href="${SITE.publisher.url}">UCNPL</a> in India. No ads, no account, no locked features, and your invoices never leave your computer. The full source code is on <a href="${SITE.repo}">GitHub</a> under the MIT licence.</p>
 <p>After the ways to support, <b>Safe and private</b> lists what happens to your data: it stays on this computer, no account, works offline, no tracking, other computers cannot open it, open source, a safe install, daily backups, the PIN lock, problem reports, security fixes, and your part. Each point opens its part of <a href="security.html">Is it safe? Security and privacy</a>.</p>
 <p>If it saves you time every month, you can help keep the fixes and new features coming.</p>
 </section>
@@ -47,7 +47,7 @@ export default [
       <a href="${upi(200)}">₹200</a> <a href="${upi(500)}">₹500</a> <a href="${upi(1000)}">₹1,000</a> <a href="${upi(0)}">Any amount</a></p>
   </div>
 </div>
-<p>The payment note says "Free GST Billing support". Paying from the app's Support &amp; About page adds your business name to it, so UCNPL can thank you.</p>
+<p>The payment note says "UCNPL Billing support". Paying from the app's Support &amp; About page adds your business name to it, so UCNPL can thank you.</p>
 
 <h3>The Support with UPI card in the app</h3>
 <p>Giving money is completely optional. Nothing in the app is locked, and nothing is ever printed on your invoices, whatever you choose. The QR code is drawn inside the app, so the card works even without internet.</p>
@@ -56,7 +56,7 @@ export default [
   <tr><td>${ui('₹200')} ${ui('₹500')} ${ui('₹1000')} ${ui('Any amount')}</td><td>Picks the amount the QR code asks for. <b>Any amount</b> leaves it blank so you type it in your UPI app.</td></tr>
   <tr><td>The QR code</td><td>Scan it with GPay, PhonePe, Paytm, BHIM or your bank's app. The payee is <b>UCNPL</b>.</td></tr>
   <tr><td><b>UPI ID</b> and ${ui('Copy UPI ID')}</td><td>To pay from a phone that cannot scan this screen: copy the ID and paste it in your UPI app as "Pay to UPI ID". It shows <b>Copied</b> for two seconds.</td></tr>
-  <tr><td><b>Payment note</b></td><td>The note your UPI app fills in: "Free GST Billing support", plus your business name from Settings.</td></tr>
+  <tr><td><b>Payment note</b></td><td>The note your UPI app fills in: "UCNPL Billing support", plus your business name from Settings.</td></tr>
   <tr><td><b>Include my business name, so UCNPL can thank you</b></td><td>Shown when your business name is saved. Untick it to pay without your name in the note.</td></tr>
 </table></div>
 <ol class="steps">
@@ -72,7 +72,7 @@ export default [
 
 <section id="supporters-card">
 <h2>Received so far, and the supporters list</h2>
-<p>In the app, below the two support cards, a card shows how much users have given so far and from how many supporters, or <b>Be the first to support Free GST Billing</b> before anyone has. The figures come from a list the maintainer keeps on GitHub. The app reads it when the page opens and keeps the last figures it saw, so they still show when you are offline (the card is left out until it has been read once).</p>
+<p>In the app, below the two support cards, a card shows how much users have given so far and from how many supporters, or <b>Be the first to support UCNPL Billing</b> before anyone has. The figures come from a list the maintainer keeps on GitHub. The app reads it when the page opens and keeps the last figures it saw, so they still show when you are offline (the card is left out until it has been read once).</p>
 <ul>
   <li><b>Goal</b>, when there is one: what the money is going towards, with a bar showing how far it has got.</li>
   <li>${ui('Thank you to our N supporters - see all')} opens the list of names, newest first, with the date and amount where known. ${ui('Hide the list')} closes it.</li>
@@ -137,15 +137,15 @@ export default [
 <div class="service-grid">
 ${SERVICES.map(([t, d]) => `  <div class="service"><strong>${t}</strong><span>${d}</span></div>`).join('\n')}
 </div>
-<p>Email <a href="mailto:contact@ucnpl.com?subject=${encodeURIComponent('Project enquiry (from the Free GST Billing docs)')}">contact@ucnpl.com</a> or visit <a href="${SITE.publisher.url}">ucnpl.com</a>.</p>
-<p>In the app, ${ui('Email contact@ucnpl.com')} opens your email program with the subject "Project enquiry (from Free GST Billing)" filled in; say what you need and roughly when. ${ui('ucnpl.com')} opens the website. This is paid work and separate from the free app: the app stays free whether or not you hire us. For a problem with the app itself, use <a href="troubleshooting.html#report-problem">Reporting a problem</a> instead.</p>
+<p>Email <a href="mailto:contact@ucnpl.com?subject=${encodeURIComponent('Project enquiry (from the UCNPL Billing docs)')}">contact@ucnpl.com</a> or visit <a href="${SITE.publisher.url}">ucnpl.com</a>.</p>
+<p>In the app, ${ui('Email contact@ucnpl.com')} opens your email program with the subject "Project enquiry (from UCNPL Billing)" filled in; say what you need and roughly when. ${ui('ucnpl.com')} opens the website. This is paid work and separate from the free app: the app stays free whether or not you hire us. For a problem with the app itself, use <a href="troubleshooting.html#report-problem">Reporting a problem</a> instead.</p>
 </section>
 
 <section id="in-the-app">
 <h2>In the app</h2>
 <p>The same page is in the app: <b>Support &amp; About</b>, near the bottom of the sidebar. From top to bottom it has these cards, each with a small ? that opens its part of this page:</p>
 <ul>
-  <li><a href="#about">Free, and it stays free</a></li>
+  <li><a href="#about">About UCNPL Billing</a></li>
   <li><a href="#upi">Support with UPI</a> and <a href="#free-ways">Help without paying</a>, side by side</li>
   <li><a href="#supporters-card">Received so far</a>, with the supporters list</li>
   <li><a href="#weekly">A new update every Saturday</a> and <a href="#whats-new">What's new</a></li>

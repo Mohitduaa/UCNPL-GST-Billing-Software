@@ -2,7 +2,7 @@
 // live together in one "home" folder, chosen by (first that is set):
 //   1. the FGSB_HOME environment variable (Linux packages, the NAS image);
 //   2. home.txt next to server.js (the Windows Setup writes the folder the
-//      user chose: Documents\Free GST Billing, or their earlier copy's folder);
+//      user chose: Documents\UCNPL Billing, or their earlier copy's folder);
 //   3. server.js's own folder - as it always was, so the ZIP is unchanged.
 //
 // Standalone on purpose (Node built-ins only): server.js imports it and the

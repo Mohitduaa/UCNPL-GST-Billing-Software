@@ -44,7 +44,7 @@ export function extractGstrItems(inv) {
 }
 
 /**
- * Converts a single GSTR-2B / 2A invoice into a Free GST Billing purchase bill record.
+ * Converts a single GSTR-2B / 2A invoice into a UCNPL Billing purchase bill record.
  */
 export function convertGstrInvoiceToPurchase(inv, supplier = {}, profile = {}) {
   const ctin = String(supplier.ctin || supplier.gstin || '').trim().toUpperCase();

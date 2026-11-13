@@ -84,7 +84,7 @@ async function portableNode() {
   return { exe, nodeVersion };
 }
 
-console.log(`\n  Free GST Billing - Windows Setup builder (v${version})\n`);
+console.log(`\n  UCNPL Billing - Windows Setup builder (v${version})\n`);
 const iscc = findIscc();
 if (!iscc) fail('Inno Setup 6 is not installed (ISCC.exe not found). Install it from https://jrsoftware.org/isdl.php, or set ISCC=<path to ISCC.exe>.');
 
@@ -103,7 +103,7 @@ if (arg('version')) {
   writeFileSync(p, JSON.stringify({ ...JSON.parse(readFileSync(p, 'utf8')), version }, null, 2));
 }
 
-// 3. The app's own window, Free GST Billing.exe (installer/host): compiled with
+// 3. The app's own window, UCNPL Billing.exe (installer/host): compiled with
 // the C# compiler that is part of Windows (.NET Framework 4.x, no SDK), with
 // Microsoft's WebView2 SDK (NuGet Microsoft.Web.WebView2 1.0.4258.31, its
 // files checked against these SHA-256s; a new SDK version: new hashes here).
@@ -128,7 +128,7 @@ if (arg('version')) {
   // WPF's assemblies (part of .NET Framework 4) for the taskbar jump list only.
   const wpf = ['WPF\\PresentationFramework.dll', 'WPF\\PresentationCore.dll', 'WPF\\WindowsBase.dll', 'System.Xaml.dll'].map((f) => `/r:${join(fw, f)}`);
   run(csc, ['/nologo', '/target:winexe', '/platform:x64', '/optimize+', `/win32icon:${join(APP, 'app-icon.ico')}`,
-    `/out:${join(APP, 'Free GST Billing.exe')}`, `/r:${join(APP, 'Microsoft.Web.WebView2.Core.dll')}`, ...wpf,
+    `/out:${join(APP, 'UCNPL Billing.exe')}`, `/r:${join(APP, 'Microsoft.Web.WebView2.Core.dll')}`, ...wpf,
     `/r:${join(APP, 'Microsoft.Web.WebView2.WinForms.dll')}`, '/r:System.Windows.Forms.dll', '/r:System.Drawing.dll', '/r:System.Web.Extensions.dll',
     join(ROOT, 'installer', 'host', 'FreeGSTBilling.cs')]);
 }

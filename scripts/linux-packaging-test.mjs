@@ -36,7 +36,7 @@ try {
   put(join(oneLine, 'data', 'profile.json'), JSON.stringify({ name: 'UCNPL', gstin: '29ABCDE1234F1ZW' }));
   put(join(oneLine, 'data', 'bills', 'INV-1.json'), JSON.stringify({ id: 'INV-1', client: 'UCNPL' }));
   put(join(oneLine, 'Saved Invoices', 'UCNPL', 'INV-1.pdf'), '%PDF-1.4 demo');
-  const unzipped = join(home, 'Downloads', 'Free-GST-Billing', '_system');
+  const unzipped = join(home, 'Downloads', 'UCNPL-GST-Billing', '_system');
   put(join(unzipped, 'server.js'), '// old, never used');
   mkdirSync(join(unzipped, 'data', 'bills'), { recursive: true }); // empty: nothing to report
   put(join(home, '.cache', 'x', '_system', 'server.js'));           // hidden: not searched

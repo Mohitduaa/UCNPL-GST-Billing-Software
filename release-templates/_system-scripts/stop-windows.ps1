@@ -1,10 +1,10 @@
-# Free GST Billing - Windows stop-server.
+# UCNPL Billing - Windows stop-server.
 #
 # Finds any node.exe process listening on our port and kills it.
 # Safe if nothing is running (no error, quick exit).
 
 $ErrorActionPreference = 'SilentlyContinue'
-$Host.UI.RawUI.WindowTitle = 'Free GST Billing - Stop Server'
+$Host.UI.RawUI.WindowTitle = 'UCNPL Billing - Stop Server'
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 # v1.10.84 - the books folder: FGSB_HOME, else home.txt, else this folder (as server.js).

@@ -6,10 +6,10 @@
 // launcher files. This script combines them into a distributable
 // with the "one visible file" flat layout the user asked for:
 //
-//   Free-GST-Billing/
-//   ├── Free GST Billing - WINDOWS.hta
-//   ├── Free GST Billing - MAC.command
-//   ├── Free GST Billing - LINUX.sh
+//   UCNPL-GST-Billing/
+//   ├── UCNPL Billing - WINDOWS.hta
+//   ├── UCNPL Billing - MAC.command
+//   ├── UCNPL Billing - LINUX.sh
 //   └── _system/
 //       ├── package.json
 //       ├── server.js
@@ -349,7 +349,7 @@ try {
     // Compress-Archive stores entry names with BACKSLASHES, which the ZIP
     // specification forbids. Windows tolerates that; unzip on Linux and macOS
     // warns, and BusyBox or Archive Utility create single files literally
-    // named "Free-GST-Billing\_system\server.js". Every Linux / NAS install,
+    // named "UCNPL-GST-Billing\_system\server.js". Every Linux / NAS install,
     // and the new update-unix.sh, had to fight the package itself (#59).
     const tarExe = join(process.env.SystemRoot || 'C:\\Windows', 'System32', 'tar.exe');
     if (!existsSync(tarExe)) {
@@ -371,7 +371,7 @@ assertPortableZip(zipPath);
 
 /**
  * v1.10.82 (#120) - Windows has no "executable" bit, so tar.exe stores every
- * file as 0666. macOS then refused the launcher: "Free GST Billing -
+ * file as 0666. macOS then refused the launcher: "UCNPL Billing -
  * MAC.command could not be executed because you do not have appropriate
  * access privileges" (Archive Utility restores the mode stored in the ZIP),
  * and the Linux launcher and scripts came out the same. The Unix mode lives in

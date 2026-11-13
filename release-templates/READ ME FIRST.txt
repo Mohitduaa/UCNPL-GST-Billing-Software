@@ -210,7 +210,7 @@
 
   "The app cannot write to its own folder"
       Do not keep it in C:\Program Files. Move the whole
-      Free-GST-Billing folder to Documents or D:\ and open
+      UCNPL-GST-Billing folder to Documents or D:\ and open
       it from there.
 
   "Drive ... is almost full"

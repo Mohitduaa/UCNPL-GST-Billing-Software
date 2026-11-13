@@ -33,7 +33,7 @@ export default function SupportView() {
       <div className="glass-panel" style={{ ...card, marginBottom: '1.25rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
         <Heart size={28} style={{ color: '#e11d48', flexShrink: 0, marginTop: 2 }} />
         <div>
-          <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.05rem' }}>Free, and it stays free <HelpButton title="Free, and it stays free" doc="support#about" size={16} /></h3>
+          <h3 style={{ margin: '0 0 0.4rem', fontSize: '1.05rem' }}>About UCNPL Billing <HelpButton title="About UCNPL Billing" doc="support#about" size={16} /></h3>
           <p style={{ margin: 0, color: 'var(--text-secondary)', lineHeight: 1.6, maxWidth: '70ch' }}>
             UCNPL Billing is built and maintained in India. No ads, no account, no locked features,
             and your invoices never leave this computer.

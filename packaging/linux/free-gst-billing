@@ -1,5 +1,5 @@
 #!/bin/sh
-# Free GST Billing - opens the app for the user who clicked it.
+# UCNPL Billing - opens the app for the user who clicked it.
 # Used by the .deb (/opt/free-gst-billing, /usr/bin/free-gst-billing) and as
 # the AppImage's AppRun. No root, no system service: the server runs as this
 # user and answers 127.0.0.1 only.
@@ -21,10 +21,10 @@ export FGSB_HOME
 has_screen() { [ -z "${FGSB_NO_BROWSER:-}" ] && { [ -n "${DISPLAY:-}" ] || [ -n "${WAYLAND_DISPLAY:-}" ]; }; }
 
 problem() {
-  msg="Free GST Billing could not start: $1"
+  msg="UCNPL Billing could not start: $1"
   printf '  %s\n' "$msg" >&2
   if has_screen && command -v zenity >/dev/null 2>&1; then
-    zenity --error --no-markup --title='Free GST Billing' --text="$msg" >/dev/null 2>&1
+    zenity --error --no-markup --title='UCNPL Billing' --text="$msg" >/dev/null 2>&1
   fi
   exit 1
 }
@@ -38,7 +38,7 @@ if [ ! -d "$FGSB_HOME/data" ]; then
   if [ -n "$NOTE" ]; then
     printf '\n%s\n\n' "$NOTE"
     if has_screen && command -v zenity >/dev/null 2>&1; then
-      zenity --info --no-wrap --no-markup --title='Free GST Billing' --text="$NOTE" >/dev/null 2>&1 &
+      zenity --info --no-wrap --no-markup --title='UCNPL Billing' --text="$NOTE" >/dev/null 2>&1 &
     fi
   fi
 fi
@@ -61,7 +61,7 @@ ours() {
 PID=''
 read_port
 if ! ours; then
-  printf '  Starting Free GST Billing...\n'
+  printf '  Starting UCNPL Billing...\n'
   cd "$FGSB_HOME" || problem "the folder $FGSB_HOME could not be opened."
   if [ "$KIND" = appimage ]; then
     "$NODE" "$APP/server.js" > "$FGSB_HOME/last-start.log" 2>&1 &
@@ -79,7 +79,7 @@ if ! ours; then
 fi
 
 if [ -n "${FGSB_NO_BROWSER:-}" ] || ! has_screen; then
-  printf '  Free GST Billing is running at %s\n  Books: %s\n' "$URL" "$FGSB_HOME"
+  printf '  UCNPL Billing is running at %s\n  Books: %s\n' "$URL" "$FGSB_HOME"
 else
   opened=''
   for b in google-chrome google-chrome-stable chromium chromium-browser microsoft-edge microsoft-edge-stable brave-browser; do

@@ -1,4 +1,4 @@
-; Free GST Billing - Windows Setup (v1.10.84). Inno Setup 6.
+; UCNPL Billing - Windows Setup (v1.10.84). Inno Setup 6.
 ;
 ; Built by `npm run release:exe` (scripts/build-installer.mjs), which stages
 ; the app exactly like the release ZIP, adds the official portable node.exe
@@ -8,12 +8,12 @@
 ;
 ; What it does (docs/WINDOWS_SETUP.md has the long version):
 ;   - installs per user (no administrator) to
-;     %LOCALAPPDATA%\Programs\Free GST Billing, with its own node.exe - or to
-;     "...\Free GST Billing App" when the one-line installer's copy already
+;     %LOCALAPPDATA%\Programs\UCNPL Billing, with its own node.exe - or to
+;     "...\UCNPL Billing App" when the one-line installer's copy already
 ;     lives in the first folder (never into another program's folder);
 ;   - asks where the books are: every earlier copy found on this PC is listed
 ;     (last changed first) and the user picks one: keep it where it is, or
-;     COPY it to C:\Users\<name>\Free GST Billing; or new books there;
+;     COPY it to C:\Users\<name>\UCNPL Billing; or new books there;
 ;   - checks first that the app can write there (Controlled folder access,
 ;     ERR-082) and that PowerShell is present; Node.js comes inside Setup;
 ;   - the top rule: NOTHING inside an earlier installation is ever written,
@@ -108,18 +108,18 @@ Source: "{#StageDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs c
 ; (No [InstallDelete]: old program files go only after the new ones are in -
 ; see "prune" in CurStepChanged. A failed update leaves a working app.)
 
-; The icons open the app's own window, Free GST Billing.exe (installer\host):
+; The icons open the app's own window, UCNPL Billing.exe (installer\host):
 ; it starts the server through start-windows.ps1 and shows the app with
 ; WebView2 (without WebView2: Edge's app window, as before). The same
 ; AppUserModelID as the window, so a pinned taskbar icon is this program.
 [Icons]
-Name: "{code:IconDir|programs}\UCNPL Billing"; Filename: "{app}\Free GST Billing.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "Free GST Billing Software"; AppUserModelID: "{code:GetAumid}"
-Name: "{code:IconDir|desktop}\UCNPL Billing"; Filename: "{app}\Free GST Billing.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "Free GST Billing Software"; AppUserModelID: "{code:GetAumid}"; Tasks: desktopicon; Check: DesktopOK
+Name: "{code:IconDir|programs}\UCNPL Billing"; Filename: "{app}\UCNPL Billing.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "UCNPL GST Billing Software"; AppUserModelID: "{code:GetAumid}"
+Name: "{code:IconDir|desktop}\UCNPL Billing"; Filename: "{app}\UCNPL Billing.exe"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "UCNPL GST Billing Software"; AppUserModelID: "{code:GetAumid}"; Tasks: desktopicon; Check: DesktopOK
 ; At Windows start-up: the server starts and the app waits near the clock (/tray).
-Name: "{code:IconDir|startup}\UCNPL Billing"; Filename: "{app}\Free GST Billing.exe"; Parameters: "/tray"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "Free GST Billing Software"; AppUserModelID: "{code:GetAumid}"; Tasks: startup
+Name: "{code:IconDir|startup}\UCNPL Billing"; Filename: "{app}\UCNPL Billing.exe"; Parameters: "/tray"; WorkingDir: "{app}"; IconFilename: "{app}\app-icon.ico"; Comment: "UCNPL GST Billing Software"; AppUserModelID: "{code:GetAumid}"; Tasks: startup
 
 [Run]
-Filename: "{app}\Free GST Billing.exe"; WorkingDir: "{app}"; Description: "Open UCNPL Billing now"; Flags: postinstall nowait skipifsilent; Check: MayStart
+Filename: "{app}\UCNPL Billing.exe"; WorkingDir: "{app}"; Description: "Open UCNPL Billing now"; Flags: postinstall nowait skipifsilent; Check: MayStart
 ; A silent run (an update started from the app): start the server, open no
 ; second window - the app's window reloads by itself.
 Filename: "{win}\System32\WindowsPowerShell\v1.0\powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\start-windows.ps1"" -NoWindow -Hidden"; WorkingDir: "{app}"; Flags: nowait runhidden; Check: MayStartSilent
@@ -141,8 +141,8 @@ Type: dirifempty; Name: "{code:HostDataDir}"
 [Code]
 const
   TestPortDefault = '47461';
-  LogName = 'Free GST Billing - install log.txt';
-  IconName = 'Free GST Billing.lnk';
+  LogName = 'UCNPL Billing - install log.txt';
+  IconName = 'UCNPL Billing.lnk';
 
 var
   TestRoot, TestPort, AppDirValue: String;
@@ -187,8 +187,8 @@ end;
 
 function HostDataDir(Param: String): String;
 begin
-  if IsTest then Result := TestRoot + '\LocalAppData\Free GST Billing'
-  else Result := ExpandConstant('{localappdata}\Free GST Billing');
+  if IsTest then Result := TestRoot + '\LocalAppData\UCNPL Billing'
+  else Result := ExpandConstant('{localappdata}\UCNPL Billing');
 end;
 
 function IconDir(Param: String): String;
@@ -206,14 +206,14 @@ begin
   end;
 end;
 
-{ The user's own folder (C:\Users\<name>\Free GST Billing), not Documents:
+{ The user's own folder (C:\Users\<name>\UCNPL Billing), not Documents:
   Windows Security's "Controlled folder access" blocks unknown programs from
   writing in Documents and Desktop, so books there could not be saved (seen on
   the maintainer's PC, 4 Nov 2026). }
 function BooksHome: String;
 begin
-  if IsTest then Result := TestRoot + '\Free GST Billing'
-  else Result := ExpandConstant('{%USERPROFILE}\Free GST Billing');
+  if IsTest then Result := TestRoot + '\UCNPL Billing'
+  else Result := ExpandConstant('{%USERPROFILE}\UCNPL Billing');
 end;
 
 { A desktop that Windows will not let Setup write on: skip the Desktop icon
@@ -334,14 +334,14 @@ begin
 end;
 
 { Review H1: never install into a folder that is not ours. The one-line
-  installer (v1.10.83) put its ZIP copy in ...\Programs\Free GST Billing\_system,
-  so a Setup copy then goes to "...\Free GST Billing App". }
+  installer (v1.10.83) put its ZIP copy in ...\Programs\UCNPL Billing\_system,
+  so a Setup copy then goes to "...\UCNPL Billing App". }
 procedure SettleAppDir;
 var
   Base: String;
 begin
-  if IsTest then Base := TestRoot + '\Programs\Free GST Billing'
-  else Base := ExpandConstant('{localappdata}\Programs\Free GST Billing');
+  if IsTest then Base := TestRoot + '\Programs\UCNPL Billing'
+  else Base := ExpandConstant('{localappdata}\Programs\UCNPL Billing');
   if FileExists(Base + '\installed.txt') then AppDirValue := Base
   else if FileExists(Base + ' App\installed.txt') then AppDirValue := Base + ' App'
   else if DirExists(Base) then AppDirValue := Base + ' App'
@@ -429,7 +429,7 @@ var
   F, Dest: String;
 begin
   Result := '';
-  AddStr(Names, 'Free GST Billing.exe');
+  AddStr(Names, 'UCNPL Billing.exe');
   AddStr(Names, 'Microsoft.Web.WebView2.Core.dll');
   AddStr(Names, 'Microsoft.Web.WebView2.WinForms.dll');
   AddStr(Names, 'WebView2Loader.dll');
@@ -440,7 +440,7 @@ begin
     if FileExists(Dest) and not DeleteFile(Dest) then
       Dest := F + '.' + GetDateTimeString('yyyymmddhhnnss', #0, #0) + '.old';
     if not RenameFile(F, Dest) then begin
-      Result := 'The file ' + F + ' could not be set aside for the update. Close Free GST Billing and run the update again.';
+      Result := 'The file ' + F + ' could not be set aside for the update. Close UCNPL Billing and run the update again.';
       exit;
     end;
     AddStr(SetAside, F);
@@ -555,7 +555,7 @@ begin
   Root := Sys;
   if Lowercase(ExtractFileName(Sys)) = '_system' then Root := ExtractFileDir(Sys);
   Result := (Pos(Lowercase(AddBackslash(Sys)), Text) > 0) or
-            (Pos(Lowercase(AddBackslash(Root)) + 'free gst billing', Text) > 0);
+            (Pos(Lowercase(AddBackslash(Root)) + 'ucnpl billing', Text) > 0);
 end;
 
 function IsOurs(Text: String): Boolean;
@@ -704,12 +704,12 @@ begin
   AddCandidatesFrom(IconDir('taskbar'), C, False);
   AddStr(C, BooksHome);
   if IsTest then begin
-    AddStr(C, TestRoot + '\Programs\Free GST Billing');
+    AddStr(C, TestRoot + '\Programs\UCNPL Billing');
     AddGstFolders(TestRoot + '\Downloads', C);
     AddGstFolders(TestRoot + '\Desktop', C);
     AddGstFolders(TestRoot + '\Documents', C);
   end else begin
-    AddStr(C, ExpandConstant('{localappdata}\Programs\Free GST Billing'));
+    AddStr(C, ExpandConstant('{localappdata}\Programs\UCNPL Billing'));
     AddGstFolders(ExpandConstant('{%USERPROFILE}\Downloads'), C);
     AddGstFolders(ExpandConstant('{userdesktop}'), C);
     AddGstFolders(ExpandConstant('{userdocs}'), C);
@@ -775,7 +775,7 @@ begin
   SrcSys := '';
   if (Mode = 'keep') or (Mode = 'move') then begin
     if OldHome = '' then begin
-      Result := 'No earlier copy of Free GST Billing with books was found. Use /DATAMODE=new or /DATAMODE=choose.';
+      Result := 'No earlier copy of UCNPL Billing with books was found. Use /DATAMODE=new or /DATAMODE=choose.';
       exit;
     end;
     SrcHome := OldHome;
@@ -811,7 +811,7 @@ end;
 
 { Where the install log, the backup ZIP and the old shortcuts go: the new
   books folder - but never inside an earlier installation (keep / choose
-  point at one), then Documents\Free GST Billing (or "... Setup"). }
+  point at one), then Documents\UCNPL Billing (or "... Setup"). }
 procedure SettleLogDir;
 begin
   LogDir := Home;
@@ -842,7 +842,7 @@ begin
   if (OldCount > 1) and ((Mode = '') or (((Mode = 'keep') or (Mode = 'move')) and (OldDir = ''))) then begin
     List := '';
     for I := 0 to OldCount - 1 do List := List + #13#10 + '  ' + CopyHome[I] + ' (' + CopyInv[I] + ' invoices, last changed ' + CopyChanged[I] + ')';
-    Result := 'Free GST Billing was found more than once:' + List + #13#10 +
+    Result := 'UCNPL Billing was found more than once:' + List + #13#10 +
       'Run Setup without /SILENT to choose, or give /DATAMODE=keep or move with /OLDDIR=<one of these folders>. Nothing was changed.';
     exit;
   end;
@@ -863,7 +863,7 @@ begin
     Edge is optional (the default browser is used without it). PowerShell
     starts the app, and is part of every Windows 10/11 - unless removed. }
   if not FileExists(ExpandConstant('{sys}\WindowsPowerShell\v1.0\powershell.exe')) then begin
-    MsgBox('Windows PowerShell is missing on this computer, and Free GST Billing needs it to start.' + #13#10#13#10 +
+    MsgBox('Windows PowerShell is missing on this computer, and UCNPL Billing needs it to start.' + #13#10#13#10 +
       'Turn it back on in Settings > System > Optional features (Windows PowerShell), then run Setup again. Nothing was changed.', mbError, MB_OK);
     Result := False;
     exit;
@@ -888,8 +888,8 @@ begin
   end;
   SettleAppDir;
   IsUpgrade := FileExists(GetAppDir('') + '\installed.txt') and (ReadFirstLine(GetAppDir('') + '\home.txt') <> '');
-  if IsTest then AddLog('Free GST Billing Setup {#AppVersion} - TEST MODE in ' + TestRoot)
-  else AddLog('Free GST Billing Setup {#AppVersion}');
+  if IsTest then AddLog('UCNPL Billing Setup {#AppVersion} - TEST MODE in ' + TestRoot)
+  else AddLog('UCNPL Billing Setup {#AppVersion}');
   AddLog('Program folder: ' + GetAppDir(''));
   if IsUpgrade then begin
     Home := ReadFirstLine(GetAppDir('') + '\home.txt');
@@ -905,7 +905,7 @@ end;
 
 function DataIntro: String;
 begin
-  Result := 'Free GST Billing is already on this computer. Its books (' + OldInvoices + ' invoices) are in:' + #13#10 + OldHome + #13#10#13#10 +
+  Result := 'UCNPL Billing is already on this computer. Its books (' + OldInvoices + ' invoices) are in:' + #13#10 + OldHome + #13#10#13#10 +
     'Setup never changes or deletes anything in that folder. What should the new app use?';
 end;
 
@@ -917,7 +917,7 @@ begin
   if IsUpgrade then exit;
   After := wpWelcome;
   if OldCount > 1 then begin
-    WhichPage := CreateInputOptionPage(wpWelcome, 'Your books', 'Free GST Billing was found more than once',
+    WhichPage := CreateInputOptionPage(wpWelcome, 'Your books', 'UCNPL Billing was found more than once',
       'Which books do you use now? The one changed last is first. Nothing in any of these folders is changed.', True, False);
     for I := 0 to OldCount - 1 do
       WhichPage.Add(CopyHome[I] + '  -  ' + CopyInv[I] + ' invoices, last changed ' + CopyChanged[I]);
@@ -933,7 +933,7 @@ begin
   end else begin
     DataPage := CreateInputOptionPage(After, 'Your books', 'Where your invoices, clients and settings are kept',
       'Your invoices, clients and settings will be kept in:' + #13#10 + BooksHome + #13#10#13#10 +
-      'If you already use Free GST Billing on this computer, choose the folder that holds its books instead.', True, False);
+      'If you already use UCNPL Billing on this computer, choose the folder that holds its books instead.', True, False);
     DataPage.Add('Start new books in ' + BooksHome);
     DataPage.Add('I already have my books in another folder (browse)');
     DataPage.SelectedValueIndex := 0;
@@ -1121,7 +1121,7 @@ begin
     SaveStringsToUTF8File(ExpandConstant('{app}\home.txt'), A, False);
   end;
   SetArrayLength(A, 0);
-  AddStr(A, 'Installed by Free GST Billing Setup {#AppVersion}. Updates come as a new Setup (Update now in the app).');
+  AddStr(A, 'Installed by UCNPL Billing Setup {#AppVersion}. Updates come as a new Setup (Update now in the app).');
   if IsTest then AddStr(A, 'testroot=' + TestRoot);
   SaveStringsToUTF8File(ExpandConstant('{app}\installed.txt'), A, False);
   { Review M5: the old version's leftovers go only now, with every new file in place. }
@@ -1135,7 +1135,7 @@ begin
       AddLog('No Desktop icon: Windows did not let Setup write on the Desktop (Controlled folder access?). The Start menu icon was made.');
       if not WizardSilent then
         MsgBox('Windows Security did not let Setup put an icon on the Desktop (its "Controlled folder access" protection is on).' + #13#10#13#10 +
-          'Open Free GST Billing from the Start menu instead. Everything else was installed.', mbInformation, MB_OK);
+          'Open UCNPL Billing from the Start menu instead. Everything else was installed.', mbInformation, MB_OK);
     end;
     MoveOldShortcutsIn(IconDir('programs'), 'Start menu', True);
     MoveOldShortcutsIn(IconDir('startup'), 'Startup', False);
@@ -1206,7 +1206,7 @@ begin
       DeleteBooks := Lowercase(ExpandConstant('{param:DELETEBOOKS|no}')) = 'yes'
     else if not FileExists(AddBackslash(UHome) + 'server.js') then
       DeleteBooks := MsgBox('Also delete your books (invoices, clients, settings and saved PDFs)?' + #13#10#13#10 + UHome + #13#10#13#10 +
-        'Choose No to keep them (recommended): installing Free GST Billing again finds them.', mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES;
+        'Choose No to keep them (recommended): installing UCNPL Billing again finds them.', mbConfirmation, MB_YESNO or MB_DEFBUTTON2) = IDYES;
     { Even after a Yes, only a folder that plainly holds books, and only its
       data, Saved Invoices and Trash. }
     Why := '';

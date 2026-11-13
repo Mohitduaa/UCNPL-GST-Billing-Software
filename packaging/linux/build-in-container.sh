@@ -1,5 +1,5 @@
 #!/bin/sh
-# Free GST Billing - builds the .deb and the AppImage. Runs INSIDE a
+# UCNPL Billing - builds the .deb and the AppImage. Runs INSIDE a
 # debian:bookworm-slim container started by scripts/build-linux.mjs:
 #   /work/app             the staged app (server.js, dist, node_modules ...)
 #   /work/node.tar.gz     Node.js linux-x64 (SHA256 checked by build-linux.mjs)
@@ -53,7 +53,7 @@ Section: misc
 Priority: optional
 Recommends: xdg-utils, zip
 Homepage: https://github.com/Mohitduaa/UCNPL-GST-Billing-Software
-Description: Free GST billing and invoicing software for India
+Description: UCNPL GST billing and invoicing software for India
  GST tax invoices, credit notes, delivery challans, GSTR-1 / GSTR-3B
  exports, e-Way Bill and reports. Runs on this computer only (127.0.0.1)
  and keeps each user's books in ~/.local/share/free-gst-billing-data.

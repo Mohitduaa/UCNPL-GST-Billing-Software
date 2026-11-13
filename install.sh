@@ -1,5 +1,5 @@
 #!/bin/sh
-# Free GST Billing - one-line install, update and repair for macOS and Linux.
+# UCNPL Billing - one-line install, update and repair for macOS and Linux.
 #
 #   Open Terminal, paste this line, press Return:
 #   curl -fsSL https://raw.githubusercontent.com/Mohitduaa/UCNPL-GST-Billing-Software/main/install.sh | bash
@@ -158,7 +158,7 @@ JS
 }
 
 make_mac_app() {
-  if [ -n "$TEST" ]; then APP="$TEST/Free GST Billing.app"; else APP="$HOME/Applications/Free GST Billing.app"; fi
+  if [ -n "$TEST" ]; then APP="$TEST/UCNPL Billing.app"; else APP="$HOME/Applications/UCNPL Billing.app"; fi
   rm -rf "$APP"
   mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
   printf '#!/bin/sh\nexec /bin/sh "%s/open-app.sh"\n' "$SYS" > "$APP/Contents/MacOS/launch"
@@ -179,8 +179,8 @@ make_mac_app() {
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-<key>CFBundleName</key><string>Free GST Billing</string>
-<key>CFBundleDisplayName</key><string>Free GST Billing</string>
+<key>CFBundleName</key><string>UCNPL Billing</string>
+<key>CFBundleDisplayName</key><string>UCNPL Billing</string>
 <key>CFBundleIdentifier</key><string>com.ucnpl.freegstbilling</string>
 <key>CFBundleExecutable</key><string>launch</string>
 <key>CFBundlePackageType</key><string>APPL</string>
@@ -207,7 +207,7 @@ write_desktop_entry() { # file
   cat > "$1" <<DESKTOP
 [Desktop Entry]
 Type=Application
-Name=Free GST Billing
+Name=UCNPL Billing
 Comment=GST invoices and billing, on this computer
 Exec=/bin/sh "$SYS/open-app.sh"
 Icon=$SYS/dist/icons/icon-512.png
@@ -241,7 +241,7 @@ add_to_dock() {
 }
 
 install_app() {
-  printf '\n  Free GST Billing - install or update\n\n'
+  printf '\n  UCNPL Billing - install or update\n\n'
 
   # --- [1/4] ---------------------------------------------------------------
   step '[1/4] Checking this computer'
@@ -267,7 +267,7 @@ install_app() {
   [ -f "$SYS/server.js" ] && IS_UPDATE=1
   rm -rf "$DIR"/.install-tmp.* 2>/dev/null || true   # left by an interrupted run
   ok
-  [ -z "$IS_UPDATE" ] || printf '        Found Free GST Billing in %s - updating it. Your data stays as it is.\n' "$DIR"
+  [ -z "$IS_UPDATE" ] || printf '        Found UCNPL Billing in %s - updating it. Your data stays as it is.\n' "$DIR"
 
   # --- [2/4] ---------------------------------------------------------------
   # Inside the app folder, so the files are moved into place, not copied.
@@ -284,10 +284,10 @@ install_app() {
   fi
   PATH="$(dirname "$NODE"):$PATH"; export PATH
   if [ -n "${FREEGSTBILL_ZIP:-}" ]; then
-    printf '        Free GST Billing: using %s\n' "$FREEGSTBILL_ZIP"
+    printf '        UCNPL Billing: using %s\n' "$FREEGSTBILL_ZIP"
     cp "$FREEGSTBILL_ZIP" "$WORK/app.zip" || fail "Could not read $FREEGSTBILL_ZIP" 'Check the path.'
   else
-    printf '        Free GST Billing (about 25 MB):\n'
+    printf '        UCNPL Billing (about 25 MB):\n'
     download "$ZIP_URL" "$WORK/app.zip" || fail 'The app could not be downloaded from GitHub.' 'Check the internet connection, then run the install line again.'
   fi
 
@@ -297,7 +297,7 @@ install_app() {
     || fail "The download could not be unpacked ($(tail -n 1 "$WORK/unpack.err")). It may be damaged, or the disk is full." 'Run the install line again.'
   NEW_SYS=$(find "$WORK/unpacked" -maxdepth 2 -type d -name _system | head -n 1)
   if [ -z "$NEW_SYS" ] || [ ! -f "$NEW_SYS/server.js" ] || [ ! -f "$NEW_SYS/node_modules/express/package.json" ]; then
-    fail 'The download is not a complete Free GST Billing package.' 'Run the install line again. If it happens again: https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues'
+    fail 'The download is not a complete UCNPL Billing package.' 'Run the install line again. If it happens again: https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues'
   fi
   BACKUP=''
   [ -z "$IS_UPDATE" ] || backup_data
@@ -314,7 +314,7 @@ install_app() {
     case "$name" in data | 'Saved Invoices' | Trash | node | node-dir.txt) continue ;; esac
     [ -e "$NEW_SYS/$name" ] || rm -rf "${SYS:?}/$name"
   done
-  for f in "$DIR"/'Free GST Billing - '* "$DIR/READ ME FIRST.txt"; do
+  for f in "$DIR"/'UCNPL Billing - '* "$DIR/READ ME FIRST.txt"; do
     [ -f "$f" ] || continue
     [ -e "$(dirname "$NEW_SYS")/$(basename "$f")" ] || rm -f "$f"
   done
@@ -354,31 +354,31 @@ install_app() {
   fi
   ok
   if [ -z "$IS_UPDATE" ]; then
-    if [ "$OS" = Darwin ] && ask 'Add Free GST Billing to the Dock?'; then add_to_dock; fi
-    if ask 'Open Free GST Billing by itself when this computer starts?'; then
+    if [ "$OS" = Darwin ] && ask 'Add UCNPL Billing to the Dock?'; then add_to_dock; fi
+    if ask 'Open UCNPL Billing by itself when this computer starts?'; then
       add_autostart
       printf '        It will open by itself when this computer starts.\n'
     fi
   fi
 
-  printf '\n  Done! Opening Free GST Billing...\n'
+  printf '\n  Done! Opening UCNPL Billing...\n'
   sh "$SYS/open-app.sh" || true
   if [ "$OS" = Darwin ]; then
-    printf '\n  Next time, click the Free GST Billing icon (in Launchpad, or in Applications in your home folder).\n\n'
+    printf '\n  Next time, click the UCNPL Billing icon (in Launchpad, or in Applications in your home folder).\n\n'
   else
-    printf '\n  Next time, open Free GST Billing from your applications menu.\n\n'
+    printf '\n  Next time, open UCNPL Billing from your applications menu.\n\n'
   fi
 }
 
 uninstall_app() {
-  [ -f "$DIR/_system/server.js" ] || fail "Free GST Billing is not installed in $DIR." 'Nothing was changed.'
+  [ -f "$DIR/_system/server.js" ] || fail "UCNPL Billing is not installed in $DIR." 'Nothing was changed.'
   SYS=$(CDPATH='' cd -- "$DIR" && pwd -P)/_system
-  printf '\n  Removing Free GST Billing from %s\n' "$DIR"
+  printf '\n  Removing UCNPL Billing from %s\n' "$DIR"
   stop_app
   if [ -z "$TEST" ]; then
-    rm -rf "$HOME/Applications/Free GST Billing.app" "$(menu_file)" "$(autostart_file)"
+    rm -rf "$HOME/Applications/UCNPL Billing.app" "$(menu_file)" "$(autostart_file)"
   else
-    rm -rf "$TEST/Free GST Billing.app" "$TEST/applications" "$TEST/autostart"
+    rm -rf "$TEST/UCNPL Billing.app" "$TEST/applications" "$TEST/autostart"
   fi
   # The program goes; the books stay unless the user says otherwise.
   for entry in "$SYS"/* "$SYS"/.[!.]*; do
@@ -389,7 +389,7 @@ uninstall_app() {
   # Only the app's own files beside _system: the folder may be one the user
   # chose (FREEGSTBILL_DIR, a NAS share) with their own files in it. The same
   # rule as uninstall-unix.sh.
-  for entry in "$DIR"/'Free GST Billing - '* "$DIR/READ ME FIRST.txt"; do
+  for entry in "$DIR"/'UCNPL Billing - '* "$DIR/READ ME FIRST.txt"; do
     [ -e "$entry" ] && rm -rf "$entry"
   done
   printf '  The app and its icons are removed.\n'
@@ -415,13 +415,13 @@ uninstall_app() {
 }
 
 main() {
-  if [ "$OS" = Darwin ]; then default_dir="$HOME/Applications/Free GST Billing"
+  if [ "$OS" = Darwin ]; then default_dir="$HOME/Applications/UCNPL Billing"
   else default_dir="${XDG_DATA_HOME:-$HOME/.local/share}/free-gst-billing"; fi
   DIR=${FREEGSTBILL_DIR:-$default_dir}
   # A copy unzipped by hand, with invoices in it, is updated rather than
   # starting a second, empty one next to it (ERR-038).
   if [ -z "${FREEGSTBILL_DIR:-}" ] && [ ! -f "$DIR/_system/server.js" ]; then
-    for c in "$HOME/Free-GST-Billing" "$HOME/Documents/Free-GST-Billing" "$HOME/Desktop/Free-GST-Billing" "$HOME/Downloads/Free-GST-Billing"; do
+    for c in "$HOME/UCNPL-GST-Billing" "$HOME/Documents/UCNPL-GST-Billing" "$HOME/Desktop/UCNPL-GST-Billing" "$HOME/Downloads/UCNPL-GST-Billing"; do
       if [ -f "$c/_system/server.js" ] && [ -n "$(ls -A "$c/_system/data" 2>/dev/null)" ]; then DIR=$c; break; fi
     done
   fi

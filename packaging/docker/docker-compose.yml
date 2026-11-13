@@ -1,4 +1,4 @@
-# Free GST Billing on a NAS or home server, with Docker.
+# UCNPL Billing on a NAS or home server, with Docker.
 #   Start:  docker compose up -d
 #   Open:   http://localhost:47371  (on the NAS itself, or through the tunnel below)
 #   Stop:   docker compose down     (your books stay in the volume)

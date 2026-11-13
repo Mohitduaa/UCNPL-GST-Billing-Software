@@ -1,4 +1,4 @@
-// Free GST Billing - finds copies of the ZIP install under a home folder, so
+// UCNPL Billing - finds copies of the ZIP install under a home folder, so
 // the .deb / AppImage can tell the user where their earlier books are.
 //
 // READ-ONLY: it lists folders and counts files. It never moves, copies,
@@ -57,7 +57,7 @@ const q = (s) => `"${s.replace(/(["\\$`])/g, '\\$1')}"`;
 export function noticeText(installs, newHome) {
   if (!installs.length) return '';
   const lines = [
-    'Free GST Billing: books from an earlier copy of the app were found.',
+    'UCNPL Billing: books from an earlier copy of the app were found.',
     'They were NOT moved or changed. This app keeps its books in:',
     `  ${newHome}`,
     '',
@@ -77,7 +77,7 @@ export function noticeText(installs, newHome) {
   );
   if (fs.existsSync(i.pdfDir)) lines.push(`     mkdir -p ${q(path.join(newHome, 'Saved Invoices'))} && cp -a ${q(`${i.pdfDir}/.`)} ${q(path.join(newHome, 'Saved Invoices'))}/`);
   lines.push(
-    '  3. Open Free GST Billing again.',
+    '  3. Open UCNPL Billing again.',
     'This copies; the earlier copy stays exactly as it is.',
     'Or: in the earlier copy, Settings > Data Management > Export Backup, then import that file in this app.',
     `This note is kept in ${path.join(newHome, 'OLD-BOOKS-FOUND.txt')}`,

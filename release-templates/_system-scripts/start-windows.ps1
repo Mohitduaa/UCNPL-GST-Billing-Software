@@ -1,4 +1,4 @@
-# Free GST Billing - Windows start-server + open-browser.
+# UCNPL Billing - Windows start-server + open-browser.
 #
 # Invoked by the HTA launcher's "Open App" button and by the
 # Desktop shortcut. Idempotent - safe to click multiple times.
@@ -16,13 +16,13 @@
 # reloads by itself).
 # v1.10.84 - -PrintUrl starts (or finds) the server like the icon does, opens
 # nothing and prints "URL=http://localhost:<port>/"; a problem is printed and
-# the exit code is 1. The Setup's own window (Free GST Billing.exe) uses it.
+# the exit code is 1. The Setup's own window (UCNPL Billing.exe) uses it.
 
 param([switch]$AppWindow, [switch]$Hidden, [switch]$NoWindow, [switch]$PrintUrl)
 if ($PrintUrl) { try { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) } catch { } }
 
 $ErrorActionPreference = 'Continue'
-$Host.UI.RawUI.WindowTitle = 'Free GST Billing - Server'
+$Host.UI.RawUI.WindowTitle = 'UCNPL Billing - Server'
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SystemDir = $ScriptDir
@@ -46,8 +46,8 @@ function Get-NormPath([string]$p) {
 # A Setup copy never keeps books in its program folder (src/utils/appHome.js).
 $HomeMissing = $Installed -and (-not $env:FGSB_HOME) -and ((Get-NormPath $HomeDir) -eq (Get-NormPath $SystemDir))
 
-# v1.10.69 - the Windows launcher was renamed from "Free GST Billing.hta" to
-# "Free GST Billing - WINDOWS.hta". An update to this version is carried out
+# v1.10.69 - the Windows launcher was renamed from "UCNPL Billing.hta" to
+# "UCNPL Billing - WINDOWS.hta". An update to this version is carried out
 # by the PREVIOUS version's updater, which copies the new launcher in but
 # knows nothing of the rename: it leaves the old file beside the new one, and
 # the Desktop and Start-Menu shortcuts still pointing at the old one. That
@@ -62,8 +62,8 @@ $HomeMissing = $Installed -and (-not $env:FGSB_HOME) -and ((Get-NormPath $HomeDi
 # broken shortcut.
 function Move-ToRenamedLauncher {
   $RootDir = Split-Path -Parent $SystemDir
-  $oldHta = Join-Path $RootDir 'Free GST Billing.hta'
-  $newHta = Join-Path $RootDir 'Free GST Billing - WINDOWS.hta'
+  $oldHta = Join-Path $RootDir 'UCNPL Billing.hta'
+  $newHta = Join-Path $RootDir 'UCNPL Billing - WINDOWS.hta'
   if (-not ((Test-Path -LiteralPath $oldHta) -and (Test-Path -LiteralPath $newHta))) { return }
   try {
     $wsh = New-Object -ComObject WScript.Shell
@@ -98,7 +98,7 @@ if (-not $Installed) { Move-ToRenamedLauncher }
 # app icons. Others (another copy, anything the user made) are left alone.
 function Move-IconsToApp {
   if ((Split-Path -Leaf $SystemDir) -ne '_system') { return }
-  $hta = Join-Path (Split-Path -Parent $SystemDir) 'Free GST Billing - WINDOWS.hta'
+  $hta = Join-Path (Split-Path -Parent $SystemDir) 'UCNPL Billing - WINDOWS.hta'
   try {
     . (Join-Path $SystemDir 'app-shortcut.ps1')
     $wsh = New-Object -ComObject WScript.Shell
@@ -126,7 +126,7 @@ function Remove-ObsoleteFiles {
   # own folder.
   if ((Split-Path -Leaf $SystemDir) -ne '_system') { return }
   $RootDir = Split-Path -Parent $SystemDir
-  $hta = Join-Path $RootDir 'Free GST Billing - WINDOWS.hta'
+  $hta = Join-Path $RootDir 'UCNPL Billing - WINDOWS.hta'
   if (-not (Test-Path -LiteralPath $hta)) { return }   # not the current layout: leave everything
   # Anything a shortcut still points at stays (an old Start-Menu or Startup
   # shortcut would otherwise be left pointing at nothing).
@@ -142,15 +142,15 @@ function Remove-ObsoleteFiles {
   } catch { return }   # cannot tell what is still in use: leave everything
   $obsolete = @(
     # renamed launchers (v1.10.69); the old .hta is handled above, once no shortcut uses it
-    @{ old = 'Free GST Billing.command'; now = 'Free GST Billing - MAC.command' },
-    @{ old = 'Free GST Billing.sh';      now = 'Free GST Billing - LINUX.sh' },
+    @{ old = 'UCNPL Billing.command'; now = 'UCNPL Billing - MAC.command' },
+    @{ old = 'UCNPL Billing.sh';      now = 'UCNPL Billing - LINUX.sh' },
     # batch launchers from before the one-file launcher (v1.10.44)
-    @{ old = 'Install FreeGSTBill.bat';  now = 'Free GST Billing - WINDOWS.hta' },
-    @{ old = 'Start FreeGSTBill.bat';    now = 'Free GST Billing - WINDOWS.hta' },
-    @{ old = 'Stop FreeGSTBill.bat';     now = 'Free GST Billing - WINDOWS.hta' },
-    @{ old = 'Update FreeGSTBill.bat';   now = 'Free GST Billing - WINDOWS.hta' },
-    @{ old = 'start-freegstbill.bat';    now = 'Free GST Billing - WINDOWS.hta' },
-    @{ old = 'start-server-silent.bat';  now = 'Free GST Billing - WINDOWS.hta' }
+    @{ old = 'Install FreeGSTBill.bat';  now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Start FreeGSTBill.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Stop FreeGSTBill.bat';     now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'Update FreeGSTBill.bat';   now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'start-freegstbill.bat';    now = 'UCNPL Billing - WINDOWS.hta' },
+    @{ old = 'start-server-silent.bat';  now = 'UCNPL Billing - WINDOWS.hta' }
   )
   foreach ($f in $obsolete) {
     $oldPath = Join-Path $RootDir $f.old
@@ -266,7 +266,7 @@ if ($Installed) {
   # v1.10.84 - the Setup put Node.js and the packages in place; nothing to fetch.
   $NodeExe = Join-Path $SystemDir 'node\node.exe'
   if (-not (Test-Path -LiteralPath $NodeExe)) {
-    Write-Host "  $NodeExe is missing. Run Free-GST-Billing-Setup.exe again to repair the app (your books are kept)." -ForegroundColor Yellow
+    Write-Host "  $NodeExe is missing. Run UCNPL-GST-Billing-Setup.exe again to repair the app (your books are kept)." -ForegroundColor Yellow
     Exit-WithProblem
   }
 } else {

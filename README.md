@@ -1,6 +1,6 @@
 <div align="center">
 
-# UCNPL GST Billing Software — Free Forever, Works Offline, No Tracking
+# UCNPL GST Billing Software — Works Offline, No Tracking
 
 ### The only GST invoicing software you'll never have to pay for.
 
@@ -13,7 +13,7 @@
 
 **Create GST-compliant invoices, file GSTR-1 / GSTR-3B / GSTR-2B reconciliation, track TDS / TCS, bill international clients in 22 currencies, manage inventory — all without paying a single rupee. Ever.**
 
-**Free forever. Works on your computer, even offline. No tracking. No ads. No signup.**
+**Works on your computer, even offline. No tracking. No ads. No signup.**
 
 Your data never leaves your computer. No cloud and no limits. Open source, so you can [check every claim yourself](#dont-trust-us-check-it-in-2-minutes).
 
@@ -299,7 +299,7 @@ Most billing software in India — Zoho Invoice, Vyapar, Tally, myBillBook — c
 - **Your data stays on YOUR computer** — invoices, GSTIN, bank details, client records stored as local JSON files. No cloud, no third-party servers
 - **GST compliant** — auto-calculates CGST/SGST/IGST, generates GSTR-1 & GSTR-3B data, exports JSON for GST portal upload
 - **Self-file your GST returns** — built-in step-by-step filing guide so you don't need a CA for basic filing
-- **Install once, use forever** — MIT licensed, open-source, community-driven
+- **Install once, use anytime** — MIT licensed, open-source, community-driven
 
 > **If you're paying for billing software, you can stop now.**
 
@@ -309,7 +309,7 @@ Every 🆕 row below is a feature we shipped in v1.10 that competitors either pa
 
 | Feature | **UCNPL GST Billing Software** | Tally Prime | Vyapar | Zoho Books | ClearTax GST |
 |---|---|---|---|---|---|
-| **Price** | ✅ **Free forever** | ₹22,500–₹67,500 one-time | ₹2,599+/year | ₹899–₹2,999/month | ~₹3,599/year+ |
+| **Price** | ✅ **Free** | ₹22,500–₹67,500 one-time | ₹2,599+/year | ₹899–₹2,999/month | ~₹3,599/year+ |
 | **GST invoices (CGST/SGST/IGST)** | ✅ | ✅ | ✅ | ✅ | ✅ |
 | 🆕 **UTGST for intra-UT supplies** | ✅ Auto-detected | ⚠ Manual | ❌ | ⚠ Manual | ⚠ Manual |
 | **GSTR-1 / GSTR-3B JSON export** | ✅ | ✅ (paid tier) | ⚠ CSV only | ✅ (Standard+) | ✅ |
@@ -361,7 +361,7 @@ If we priced every 🆕 feature at the going rate on the paid alternatives:
 - **ITR module** (with 234B/C, surcharge cap, 80D senior tiers): ClearTax sells this as a separate ~₹1,500/yr product
 - **Multi-language invoices**: Tally paid module
 
-**Total that would cost you ~₹8,000–₹15,000/year on the competing stack.** Here: **₹0, forever, MIT-licensed.**
+**Total that would cost you ~₹8,000–₹15,000/year on the competing stack.** Here: **₹0, MIT-licensed open source.**
 
 ---
 
@@ -719,7 +719,7 @@ We believe every business in India deserves professional billing software withou
 
 **So what's the catch? There isn't one, and your data is not the product.**
 
-- **It stays free, forever.** No paid version, no locked features, no ads, no tracking. And because it is MIT-licensed open source, the app you have today can always be used, copied and kept by anyone, even if we stopped working on it. Nobody can take it away or start charging for it.
+- **** No paid version, no locked features, no ads, no tracking. And because it is MIT-licensed open source, the app you have today can always be used, copied and kept by anyone, even if we stopped working on it. Nobody can take it away or start charging for it.
 - **It costs very little to keep going.** The app runs on your computer: there are no servers or cloud bills for us to pay.
 - **How we earn:** paid work for businesses that want it (custom features, setup and moving data in, support plans) and people who choose to support the project.
 - **Tracking you would gain us nothing.** We sell no ads and no data, so there is nothing to collect. And the code is public, so you can check this instead of believing it.
@@ -927,7 +927,7 @@ This project is licensed under the [MIT License](LICENSE) — free to use, modif
 
 **UCNPL GST Billing Software** by [UCNPL](mailto:contact@ucnpl.com) · MIT Licensed · v1.10.42
 
-<sub>Free GST billing software India · Free GST invoice software for small business · Open source GST billing software · Free alternative to Tally Prime Vyapar Zoho Books ClearTax myBillBook Marg ERP · No subscription invoice software · Offline billing software India · GSTR-1 GSTR-3B filing software free · GSTR-2B reconciliation tool free · TDS Form 26Q TCS Form 27EQ software · Section 194Q 206C(1H) TCS calculator with ₹50 lakh threshold · UTGST invoice software · CGST SGST IGST auto calculator · E-way bill JSON generator free · HSN SAC code invoice generator · Bill of Supply generator · Delivery Challan software · Credit Note Debit Note software · Proforma invoice estimate software · Composition scheme invoice · UPI QR invoice maker · Thermal receipt printer software 58mm 80mm · Direct vector thermal print software · POS billing software free India · Retail shop kirana billing software · Restaurant cafe billing software · Freelancer consultant invoice software India · Multi-currency invoice generator (USD EUR GBP AED SGD AUD JPY) 22 countries · Country-aware VAT SST MwSt TVA PPN tax labels · Recurring invoice software · Payment receipt voucher software · Bulk PDF invoice export · Google Drive backup billing software · Automatic daily backup + Trash bin · Multi-business multi-GSTIN switcher · Multi-language invoice Hindi Tamil Marathi Bengali · Dark mode PWA billing app · Rich-text Terms & Conditions with 13 India presets · OCR bill scan tesseract · Ctrl+K command palette · Split-view live PDF preview · Income Tax (ITR) computation old vs new regime 234B 234C · Client credit balance carry-forward · Watermark DUPLICATE DRAFT PDF · Rule 48 multi-copy (Original Duplicate Triplicate) · WhatsApp share invoice PDF · Self-file GST return software · GST invoice software without subscription · No signup no login billing software · Vyapar alternative open source · Tally alternative free · Zoho Books alternative · ClearTax alternative · myBillBook alternative · Marg ERP alternative · Made in India</sub>
+<sub>UCNPL GST Billing Software India · Free GST invoice software for small business · Open source GST billing software · Free alternative to Tally Prime Vyapar Zoho Books ClearTax myBillBook Marg ERP · No subscription invoice software · Offline billing software India · GSTR-1 GSTR-3B filing software free · GSTR-2B reconciliation tool free · TDS Form 26Q TCS Form 27EQ software · Section 194Q 206C(1H) TCS calculator with ₹50 lakh threshold · UTGST invoice software · CGST SGST IGST auto calculator · E-way bill JSON generator free · HSN SAC code invoice generator · Bill of Supply generator · Delivery Challan software · Credit Note Debit Note software · Proforma invoice estimate software · Composition scheme invoice · UPI QR invoice maker · Thermal receipt printer software 58mm 80mm · Direct vector thermal print software · POS billing software free India · Retail shop kirana billing software · Restaurant cafe billing software · Freelancer consultant invoice software India · Multi-currency invoice generator (USD EUR GBP AED SGD AUD JPY) 22 countries · Country-aware VAT SST MwSt TVA PPN tax labels · Recurring invoice software · Payment receipt voucher software · Bulk PDF invoice export · Google Drive backup billing software · Automatic daily backup + Trash bin · Multi-business multi-GSTIN switcher · Multi-language invoice Hindi Tamil Marathi Bengali · Dark mode PWA billing app · Rich-text Terms & Conditions with 13 India presets · OCR bill scan tesseract · Ctrl+K command palette · Split-view live PDF preview · Income Tax (ITR) computation old vs new regime 234B 234C · Client credit balance carry-forward · Watermark DUPLICATE DRAFT PDF · Rule 48 multi-copy (Original Duplicate Triplicate) · WhatsApp share invoice PDF · Self-file GST return software · GST invoice software without subscription · No signup no login billing software · Vyapar alternative open source · Tally alternative free · Zoho Books alternative · ClearTax alternative · myBillBook alternative · Marg ERP alternative · Made in India</sub>
 
 Made in India 🇮🇳 · [UCNPL](https://ucnpl.com)
 

@@ -18,14 +18,14 @@
 //   C  the same earlier copy: "move" (copy + check, its own port, taskbar pin
 //      and Start-menu subfolder icons moved); update; the new icon never opens
 //      the OLD copy's server on the old port; uninstall.
-//   D  the one-line installer's copy in ...\Programs\Free GST Billing: the
-//      Setup goes to "...\Free GST Billing App"; keep, update, uninstall;
+//   D  the one-line installer's copy in ...\Programs\UCNPL Billing: the
+//      Setup goes to "...\UCNPL Billing App"; keep, update, uninstall;
 //      D2 copy from there.
 //   E  two earlier copies: a silent Setup without a choice stops; /OLDDIR picks.
 //   F  "choose" refuses a folder without books; delete-my-books refuses the
 //      Documents folder itself.
 //   G  a test folder named with spaces, ' ‘ ’ and Hindi letters.
-//   H  the app's own window (Free GST Billing.exe, WebView2), from an earlier
+//   H  the app's own window (UCNPL Billing.exe, WebView2), from an earlier
 //      copy's books (copy): the Desktop icon opens it (title follows the page,
 //      its profile in the test folder's LocalAppData); one window only;
 //      "Update now" with the window open (driven in the real window over the
@@ -122,8 +122,8 @@ const realIcons = () => ps("foreach ($d in @([Environment]::GetFolderPath('Deskt
 const psq = (s) => s.replace(/['\u2018\u2019\u201A\u201B]/g, (c) => c + c);
 const lnk = (file) => ps(`$l = (New-Object -ComObject Shell.Application).NameSpace('${psq(path.dirname(file))}').ParseName('${psq(path.basename(file))}').GetLink; $l.Path + ' ' + $l.Arguments`);
 const nodePathOf = (pid) => ps(`(Get-Process -Id ${Number(pid)}).Path`);
-// The app window (Free GST Billing.exe) processes of one program folder.
-const hostPids = (app) => ps(`@(Get-Process -Name 'Free GST Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.ToLower().StartsWith('${psq(app.toLowerCase())}\\') } | ForEach-Object { $_.Id }) -join ','`);
+// The app window (UCNPL Billing.exe) processes of one program folder.
+const hostPids = (app) => ps(`@(Get-Process -Name 'UCNPL Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.ToLower().StartsWith('${psq(app.toLowerCase())}\\') } | ForEach-Object { $_.Id }) -join ','`);
 const aumidOf = (file) => ps(`(New-Object -ComObject Shell.Application).NameSpace('${psq(path.dirname(file))}').ParseName('${psq(path.basename(file))}').ExtendedProperty('System.AppUserModel.ID')`);
 // Opens a shortcut as Explorer does (ShellExecute); the window gets this env.
 const openIcon = (file, env = {}) => spawnSync('powershell.exe', ['-NoProfile', '-Command', `Start-Process -FilePath '${psq(file)}'`],
@@ -138,7 +138,7 @@ function runSetup(exe, root, extra = []) {
   const r = spawnSync(exe, ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', `/TESTROOT=${root}`, `/PORT=${NEW_PORT}`, `/LOG=${log}`, ...extra], { encoding: 'utf8' });
   return { code: r.status, log };
 }
-const appOf = (root, name = 'Free GST Billing') => path.join(root, 'Programs', name);
+const appOf = (root, name = 'UCNPL Billing') => path.join(root, 'Programs', name);
 async function runUninstall(root, extra = [], app = appOf(root)) {
   spawnSync(path.join(app, 'unins000.exe'), ['/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', ...extra]);
   // The uninstaller hands itself to a copy in TEMP and returns at once.
@@ -160,7 +160,7 @@ function startNode(serverJs, env = {}) {
 // Every node.exe a test started inside the test folder: stopped at the end.
 function stopTestServers() {
   for (const c of started) { try { c.kill('SIGKILL'); } catch { /* gone */ } }
-  ps(`Get-Process -Name 'Free GST Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.ToLower().StartsWith('${psq(BASE.toLowerCase())}') } | Stop-Process -Force; exit 0`);
+  ps(`Get-Process -Name 'UCNPL Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -and $_.Path.ToLower().StartsWith('${psq(BASE.toLowerCase())}') } | Stop-Process -Force; exit 0`);
   ps(`Get-CimInstance Win32_Process -Filter "Name='node.exe'" -OperationTimeoutSec 10 | Where-Object { $_.ExecutablePath -and $_.CommandLine -and $_.CommandLine.ToLower().Contains('${BASE.toLowerCase().replace(/['\u2018\u2019\u201A\u201B]/g, (c) => c + c)}') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`);
 }
 
@@ -169,7 +169,7 @@ function stopTestServers() {
 // a Desktop icon on its launcher and a Startup icon - all inside root.
 let zipStage = null;
 const icon = (dir, name, target, args) => ps(`$t = Join-Path $env:TEMP ('fgsb-lnk-' + [guid]::NewGuid() + '.lnk'); $w = (New-Object -ComObject WScript.Shell).CreateShortcut($t); $w.TargetPath = 'C:\\Windows\\System32\\notepad.exe'; $w.Save(); [IO.Directory]::CreateDirectory('${psq(dir)}') | Out-Null; Move-Item -LiteralPath $t -Destination '${psq(path.join(dir, name))}' -Force; $l = (New-Object -ComObject Shell.Application).NameSpace('${psq(dir)}').ParseName('${psq(name)}').GetLink; $l.Path = '${target}'; $l.Arguments = '${psq(args)}'; $l.Save()`);
-// opts: dir (default <root>\Downloads\Free-GST-Billing), running (its server
+// opts: dir (default <root>\Downloads\UCNPL-GST-Billing), running (its server
 // started and the books made through it; else written as files), invoices,
 // changed (the invoices' file time), icons (Desktop + Startup).
 async function makeOldZipCopy(root, opts = {}) {
@@ -178,8 +178,8 @@ async function makeOldZipCopy(root, opts = {}) {
     zipStage = path.join(BASE, 'zip-stage');
     execFileSync(process.execPath, [path.join(ROOT, 'scripts', 'build-release-zip.mjs'), `--outDir=${zipStage}`, '--no-zip'], { stdio: 'ignore' });
   }
-  const old = dir || path.join(root, 'Downloads', 'Free-GST-Billing');
-  fs.cpSync(path.join(zipStage, 'Free-GST-Billing'), old, { recursive: true });
+  const old = dir || path.join(root, 'Downloads', 'UCNPL-GST-Billing');
+  fs.cpSync(path.join(zipStage, 'UCNPL-GST-Billing'), old, { recursive: true });
   const sys = path.join(old, '_system');
   fs.writeFileSync(path.join(sys, 'data', 'port.txt'), String(OLD_PORT));
   fs.mkdirSync(path.join(sys, 'Trash'), { recursive: true });
@@ -206,8 +206,8 @@ async function makeOldZipCopy(root, opts = {}) {
   await fetch(`http://127.0.0.1:${OLD_PORT}/api/save-pdf?name=INV-001.pdf&client=Demo%20Client&month=November%202026`, { method: 'POST', headers: { 'Content-Type': 'application/pdf' }, body: '%PDF-1.4 UCNPL demo' });
   await sleep(7000); // the daily backup (5 s after start) is the server's last write
   if (icons) {
-    icon(path.join(root, 'Desktop'), 'Free GST Billing.lnk', 'C:\\Windows\\System32\\mshta.exe', `"${path.join(old, 'Free GST Billing - WINDOWS.hta')}"`);
-    icon(path.join(root, 'Startup'), 'Free GST Billing.lnk', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', `-NoProfile -File "${path.join(sys, 'start-windows.ps1')}" -AppWindow -Hidden`);
+    icon(path.join(root, 'Desktop'), 'UCNPL Billing.lnk', 'C:\\Windows\\System32\\mshta.exe', `"${path.join(old, 'UCNPL Billing - WINDOWS.hta')}"`);
+    icon(path.join(root, 'Startup'), 'UCNPL Billing.lnk', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', `-NoProfile -File "${path.join(sys, 'start-windows.ps1')}" -AppWindow -Hidden`);
   }
   return { old, sys, srv };
 }
@@ -219,7 +219,7 @@ function checkInstallFiles(root, home, logDir, label, app = appOf(root)) {
   ok(/testroot=/.test(fs.readFileSync(path.join(app, 'installed.txt'), 'utf8')), `${label}: installed.txt marks a Setup copy (test mode)`);
   ok(uninstallKeys().includes(TEST_APP_ID) && JSON.stringify(uninstallKeys().filter((k) => k !== TEST_APP_ID)) === JSON.stringify(realBefore.keys) && realEntry() === realBefore.entry,
     `${label}: the TEST uninstall entry (${TEST_APP_ID}) exists; the real ones are as before`);
-  ok(fs.existsSync(path.join(logDir, 'Free GST Billing - install log.txt')), `${label}: install log in ${logDir}`);
+  ok(fs.existsSync(path.join(logDir, 'UCNPL Billing - install log.txt')), `${label}: install log in ${logDir}`);
 }
 
 // ---------------------------------------------------------------- run
@@ -229,7 +229,7 @@ try {
   // ======== A: no earlier copy =========================================
   console.log('A. New books, update from inside the app, uninstall');
   const A = path.join(BASE, 'A');
-  const docsA = path.join(A, 'Free GST Billing');
+  const docsA = path.join(A, 'UCNPL Billing');
   // Review M1: a second Setup while one runs does not run. (Inno needs the
   // folder of a /LOG file to exist.)
   fs.mkdirSync(A, { recursive: true });
@@ -245,15 +245,15 @@ try {
   let r = { code: firstCode, log: path.join(A, 'first.log') };
   ok(r.code === 0, 'A: silent install exit 0', r.log);
   checkInstallFiles(A, docsA, docsA, 'A');
-  ok(/Test mode: the WebView2 Runtime is not checked or installed/.test(fs.readFileSync(path.join(docsA, 'Free GST Billing - install log.txt'), 'utf8')), 'A: test mode never installs the real WebView2 Runtime');
+  ok(/Test mode: the WebView2 Runtime is not checked or installed/.test(fs.readFileSync(path.join(docsA, 'UCNPL Billing - install log.txt'), 'utf8')), 'A: test mode never installs the real WebView2 Runtime');
   ok(await until(() => answers(NEW_PORT), 90000), `A: the app answers on test port ${NEW_PORT}`);
   const lockA = JSON.parse(fs.readFileSync(path.join(docsA, 'data', 'server.lock'), 'utf8'));
-  ok(nodePathOf(lockA.pid).toLowerCase() === path.join(A, 'Programs', 'Free GST Billing', 'node', 'node.exe').toLowerCase(), 'A: served by the installed node.exe');
+  ok(nodePathOf(lockA.pid).toLowerCase() === path.join(A, 'Programs', 'UCNPL Billing', 'node', 'node.exe').toLowerCase(), 'A: served by the installed node.exe');
   ok(/<div id="root"/.test(await (await answers(NEW_PORT, '/')).text()), 'A: serves the app page');
-  ok(fs.existsSync(path.join(A, 'Desktop', 'Free GST Billing.lnk')) && fs.existsSync(path.join(A, 'Programs', 'Free GST Billing.lnk')) && !fs.existsSync(path.join(A, 'Startup', 'Free GST Billing.lnk')),
+  ok(fs.existsSync(path.join(A, 'Desktop', 'UCNPL Billing.lnk')) && fs.existsSync(path.join(A, 'Programs', 'UCNPL Billing.lnk')) && !fs.existsSync(path.join(A, 'Startup', 'UCNPL Billing.lnk')),
     'A: Desktop and Start-menu icons (in the test folder), no Startup icon');
-  ok(lnk(path.join(A, 'Desktop', 'Free GST Billing.lnk')).trim() === path.join(appOf(A), 'Free GST Billing.exe'), 'A: the icon opens the app in its own window (Free GST Billing.exe)');
-  ok(aumidOf(path.join(A, 'Programs', 'Free GST Billing.lnk')) === 'UCNPL.FreeGSTBilling.Test', 'A: the Start-menu icon carries the window\'s taskbar id (test: UCNPL.FreeGSTBilling.Test)');
+  ok(lnk(path.join(A, 'Desktop', 'UCNPL Billing.lnk')).trim() === path.join(appOf(A), 'UCNPL Billing.exe'), 'A: the icon opens the app in its own window (UCNPL Billing.exe)');
+  ok(aumidOf(path.join(A, 'Programs', 'UCNPL Billing.lnk')) === 'UCNPL.FreeGSTBilling.Test', 'A: the Start-menu icon carries the window\'s taskbar id (test: UCNPL.FreeGSTBilling.Test)');
   const status = await (await answers(NEW_PORT, '/api/control-panel/status')).json();
   ok(status.installed === true && status.actions.update === true && status.actions.move === false, 'A: the app knows it is a Setup copy (update by Setup, no Move)');
   fs.copyFileSync(UPGRADE, path.join(A, 'UCNPL-GST-Billing-Setup.exe'));
@@ -262,23 +262,23 @@ try {
   ok(up.ok && up.installer, 'A: "Update now" starts the new Setup', JSON.stringify(up));
   const vAfter = await until(async () => { const v = await version(NEW_PORT); return v && v !== vBefore ? v : null; }, 240000);
   ok(vAfter === '1.10.99', `A: after "Update now" the app answers as ${vAfter} (was ${vBefore})`);
-  ok(fs.readFileSync(path.join(A, 'Programs', 'Free GST Billing', 'home.txt'), 'utf8').includes(docsA), 'A: the update kept home.txt');
+  ok(fs.readFileSync(path.join(A, 'Programs', 'UCNPL Billing', 'home.txt'), 'utf8').includes(docsA), 'A: the update kept home.txt');
   fs.writeFileSync(path.join(docsA, 'data', 'bills', 'A-1.json'), JSON.stringify({ id: 'A-1' }));
   ok(await runUninstall(A), 'A: silent uninstall finished, uninstall entry gone');
-  ok(!fs.existsSync(path.join(A, 'Desktop', 'Free GST Billing.lnk')) && !fs.existsSync(path.join(A, 'Programs', 'Free GST Billing.lnk')), 'A: icons removed');
+  ok(!fs.existsSync(path.join(A, 'Desktop', 'UCNPL Billing.lnk')) && !fs.existsSync(path.join(A, 'Programs', 'UCNPL Billing.lnk')), 'A: icons removed');
   ok(fs.existsSync(path.join(docsA, 'data', 'bills', 'A-1.json')), 'A: the books are kept by default');
   ok(!await answers(NEW_PORT), 'A: the app was stopped');
   r = runSetup(SETUP, A, ['/NOSTART=1']);
-  ok(r.code === 0 && fs.readFileSync(path.join(A, 'Programs', 'Free GST Billing', 'home.txt'), 'utf8').includes(docsA), 'A: installing again finds the kept books and uses them (silent default: keep)');
+  ok(r.code === 0 && fs.readFileSync(path.join(A, 'Programs', 'UCNPL Billing', 'home.txt'), 'utf8').includes(docsA), 'A: installing again finds the kept books and uses them (silent default: keep)');
   ok(await runUninstall(A, ['/DELETEBOOKS=yes']), 'A: uninstall with /DELETEBOOKS=yes');
   // The books are deleted in the uninstaller's very last step.
-  ok(await until(() => !fs.existsSync(path.join(docsA, 'data')), 30000) && fs.existsSync(path.join(docsA + ' Setup', 'Free GST Billing - install log.txt')), 'A: ...deletes data/ (only after that explicit yes); the install log stays');
+  ok(await until(() => !fs.existsSync(path.join(docsA, 'data')), 30000) && fs.existsSync(path.join(docsA + ' Setup', 'UCNPL Billing - install log.txt')), 'A: ...deletes data/ (only after that explicit yes); the install log stays');
 
   // ======== B: keep ====================================================
   console.log('\nB. An earlier ZIP copy: keep the books where they are');
   const B = path.join(BASE, 'B');
   const oldB = await makeOldZipCopy(B);
-  const docsB = path.join(B, 'Free GST Billing');
+  const docsB = path.join(B, 'UCNPL Billing');
   const h0 = fingerprint(oldB.old);
   r = runSetup(SETUP, B, ['/DATAMODE=keep', '/NOSTART=1']);
   ok(r.code === 0, 'B: silent install (keep) exit 0', r.log);
@@ -286,9 +286,9 @@ try {
   proof('B install (keep)', h0, fingerprint(oldB.old));
   checkInstallFiles(B, oldB.sys, docsB, 'B');
   const backB = listFiles(path.join(docsB, 'Old shortcuts (backup)'));
-  ok(backB.includes('Desktop - Free GST Billing.lnk') && backB.includes('Startup - Free GST Billing.lnk'), `B: both old icons MOVED to the backup folder (${backB.join(', ')})`);
-  ok(lnk(path.join(B, 'Desktop', 'Free GST Billing.lnk')).trim() === path.join(appOf(B), 'Free GST Billing.exe'), 'B: the new Desktop icon opens the new app');
-  ok(fs.existsSync(path.join(B, 'Startup', 'Free GST Billing.lnk')), 'B: the old copy opened at start-up, so the new one does too');
+  ok(backB.includes('Desktop - UCNPL Billing.lnk') && backB.includes('Startup - UCNPL Billing.lnk'), `B: both old icons MOVED to the backup folder (${backB.join(', ')})`);
+  ok(lnk(path.join(B, 'Desktop', 'UCNPL Billing.lnk')).trim() === path.join(appOf(B), 'UCNPL Billing.exe'), 'B: the new Desktop icon opens the new app');
+  ok(fs.existsSync(path.join(B, 'Startup', 'UCNPL Billing.lnk')), 'B: the old copy opened at start-up, so the new one does too');
   ok(listFiles(path.join(docsB, 'Setup backups')).some((f) => /^books-before-setup-.*\.zip$/.test(f)), 'B: a backup ZIP of the old data is in the NEW folder');
   startInstalled(B);
   ok(await bills(OLD_PORT) === 3, 'B: the installed app shows the 3 invoices, from the old folder');
@@ -303,7 +303,7 @@ try {
   r = runSetup(UPGRADE, B, ['/NOSTART=1']);
   ok(r.code === 0 && !await answers(OLD_PORT), 'B: update (1.10.99) installed; it stopped the app');
   ok(!fs.existsSync(stale) && fs.existsSync(path.join(appOf(B), 'dist', 'index.html')), 'B: the old version\'s leftover file was removed after the new files were in (review M5)');
-  ok(fs.existsSync(path.join(appOf(B), 'Free GST Billing.exe')) && !fs.readdirSync(appOf(B)).some((f) => f.endsWith('.old')), 'B: no window was open: the set-aside window files were deleted right after the update');
+  ok(fs.existsSync(path.join(appOf(B), 'UCNPL Billing.exe')) && !fs.readdirSync(appOf(B)).some((f) => f.endsWith('.old')), 'B: no window was open: the set-aside window files were deleted right after the update');
   proof('B update', h1, fingerprint(oldB.old));
   startInstalled(B);
   ok(await version(OLD_PORT) === '1.10.99' && await bills(OLD_PORT) === 3, 'B: updated app 1.10.99 still has the 3 invoices');
@@ -318,9 +318,9 @@ try {
   const C = path.join(BASE, 'C');
   const oldC = await makeOldZipCopy(C);
   // Also pinned to the taskbar and in a Start-menu subfolder (review H2).
-  icon(path.join(C, 'TaskBar'), 'Free GST Billing (pinned).lnk', 'C:\\Windows\\System32\\mshta.exe', `"${path.join(oldC.old, 'Free GST Billing - WINDOWS.hta')}"`);
+  icon(path.join(C, 'TaskBar'), 'UCNPL Billing (pinned).lnk', 'C:\\Windows\\System32\\mshta.exe', `"${path.join(oldC.old, 'UCNPL Billing - WINDOWS.hta')}"`);
   icon(path.join(C, 'Programs', 'Billing Apps'), 'GST app.lnk', 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe', `-File "${path.join(oldC.sys, 'start-windows.ps1')}"`);
-  const docsC = path.join(C, 'Free GST Billing');
+  const docsC = path.join(C, 'UCNPL Billing');
   const c0 = fingerprint(oldC.old);
   r = runSetup(SETUP, C, ['/DATAMODE=move']);
   ok(r.code === 0, 'C: silent install (move) exit 0', r.log);
@@ -329,8 +329,8 @@ try {
   const portC = readPort(docsC);
   ok(portC !== OLD_PORT && portC === NEW_PORT, `C: the copied books got a port of their own (${portC}, the old copy keeps ${OLD_PORT})`);
   const backC = listFiles(path.join(docsC, 'Old shortcuts (backup)'));
-  ok(['Desktop - Free GST Billing.lnk', 'Startup - Free GST Billing.lnk', 'Taskbar - Free GST Billing (pinned).lnk', 'Start menu - Billing Apps - GST app.lnk'].every((n) => backC.includes(n))
-    && !fs.existsSync(path.join(C, 'TaskBar', 'Free GST Billing (pinned).lnk')) && !fs.existsSync(path.join(C, 'Programs', 'Billing Apps', 'GST app.lnk')),
+  ok(['Desktop - UCNPL Billing.lnk', 'Startup - UCNPL Billing.lnk', 'Taskbar - UCNPL Billing (pinned).lnk', 'Start menu - Billing Apps - GST app.lnk'].every((n) => backC.includes(n))
+    && !fs.existsSync(path.join(C, 'TaskBar', 'UCNPL Billing (pinned).lnk')) && !fs.existsSync(path.join(C, 'Programs', 'Billing Apps', 'GST app.lnk')),
   `C: old Desktop, Startup, taskbar-pin and Start-menu-subfolder shortcuts all moved to the backup folder (${backC.join(', ')})`);
   const same = ['data', 'Saved Invoices', 'Trash'].every((f) => {
     const a = fingerprint(path.join(oldC.sys, f)); const b = fingerprint(path.join(docsC, f));
@@ -339,7 +339,7 @@ try {
     return a.files > 0 && a.lines.filter((l) => !l.startsWith('port.txt ') && !l.startsWith('server.lock ')).every((l) => b.lines.includes(l));
   });
   ok(same, 'C: data, Saved Invoices and Trash copied - every file with the same SHA-256');
-  const logC = fs.readFileSync(path.join(docsC, 'Free GST Billing - install log.txt'), 'utf8');
+  const logC = fs.readFileSync(path.join(docsC, 'UCNPL Billing - install log.txt'), 'utf8');
   ok(/every file checked: same count, same sizes, same SHA-256/.test(logC) && /Moved the old shortcut/.test(logC), 'C: the install log says what was copied, checked and moved');
   ok(await until(async () => (await bills(portC)) === 3, 90000), 'C: the installed app shows the 3 invoices, from the copy');
   proof('C after the app started on the copy', c0, fingerprint(oldC.old));
@@ -368,16 +368,16 @@ try {
   ok(listFiles(path.join(docsC, 'data', 'bills')).length === 3, 'C: the copied books are kept after uninstall');
 
   // ======== D: the one-line installer's copy in the Setup's own folder (H1)
-  console.log('\nD. An earlier copy in ...\\Programs\\Free GST Billing (the one-line installer\'s folder)');
+  console.log('\nD. An earlier copy in ...\\Programs\\UCNPL Billing (the one-line installer\'s folder)');
   const D = path.join(BASE, 'D');
   const oldD = await makeOldZipCopy(D, { dir: appOf(D) });
-  const appD = appOf(D, 'Free GST Billing App');
+  const appD = appOf(D, 'UCNPL Billing App');
   const d0 = fingerprint(oldD.old);
   r = runSetup(SETUP, D, ['/DATAMODE=keep', '/NOSTART=1']);
   ok(r.code === 0, 'D: silent install (keep) exit 0', r.log);
   ok(fs.existsSync(path.join(appD, 'installed.txt')) && !fs.existsSync(path.join(oldD.old, 'installed.txt')), `D: installed to ${path.basename(appD)}, NOT into the old copy's folder`);
   proof('D install (keep, same folder as the old copy)', d0, fingerprint(oldD.old));
-  checkInstallFiles(D, oldD.sys, path.join(D, 'Free GST Billing'), 'D', appD);
+  checkInstallFiles(D, oldD.sys, path.join(D, 'UCNPL Billing'), 'D', appD);
   startInstalled(D, appD);
   ok(await bills(OLD_PORT) === 3, 'D: the installed app shows the old copy\'s 3 invoices');
   stopTestServers();
@@ -396,16 +396,16 @@ try {
   r = runSetup(SETUP, D2, ['/DATAMODE=move']);
   ok(r.code === 0, 'D2: silent install (copy) from the one-line installer\'s folder, exit 0', r.log);
   proof('D2 install (copy, same folder as the old copy)', e0, fingerprint(oldD2.old));
-  const docsD2 = path.join(D2, 'Free GST Billing');
+  const docsD2 = path.join(D2, 'UCNPL Billing');
   ok(await until(async () => (await bills(readPort(docsD2))) === 3, 90000), 'D2: the app shows the 3 copied invoices');
-  ok(await runUninstall(D2, [], appOf(D2, 'Free GST Billing App')), 'D2: uninstall finished');
+  ok(await runUninstall(D2, [], appOf(D2, 'UCNPL Billing App')), 'D2: uninstall finished');
   proof('D2 uninstall', e0, fingerprint(oldD2.old));
 
   // ======== E: two earlier copies (H4) ===================================
   console.log('\nE. Two earlier copies: listed, never guessed');
   const E = path.join(BASE, 'E');
   const older = await makeOldZipCopy(E, { running: false, invoices: 4, changed: new Date('2026-01-15T10:00:00Z'), icons: false });
-  const newer = await makeOldZipCopy(E, { dir: path.join(E, 'Desktop', 'Free GST Billing 2'), running: false, invoices: 2, icons: false });
+  const newer = await makeOldZipCopy(E, { dir: path.join(E, 'Desktop', 'UCNPL Billing 2'), running: false, invoices: 2, icons: false });
   const f0 = [fingerprint(older.old), fingerprint(newer.old)];
   r = runSetup(SETUP, E, ['/NOSTART=1']);
   ok(r.code !== 0 && !fs.existsSync(appOf(E)) && !uninstallKeys().includes(TEST_APP_ID), `E: silent, two copies, no choice given: Setup stops (exit ${r.code}), installs nothing`);
@@ -413,10 +413,10 @@ try {
   proof('E stopped (older copy)', f0[0], fingerprint(older.old));
   proof('E stopped (newer copy)', f0[1], fingerprint(newer.old));
   r = runSetup(SETUP, E, ['/DATAMODE=move', `/OLDDIR=${older.old}`]);
-  const docsE = path.join(E, 'Free GST Billing');
+  const docsE = path.join(E, 'UCNPL Billing');
   ok(r.code === 0 && listFiles(path.join(docsE, 'data', 'bills')).length === 4, 'E: /DATAMODE=move /OLDDIR=<the older one> copies exactly that one (4 invoices, not the newer 2)');
-  const logE = fs.readFileSync(path.join(docsE, 'Free GST Billing - install log.txt'), 'utf8');
-  ok(/Free GST Billing 2.*2 invoices, last changed/.test(logE) && /4 invoices, last changed 2026-01-15/.test(logE), 'E: the log lists both, with invoices and last-change dates');
+  const logE = fs.readFileSync(path.join(docsE, 'UCNPL Billing - install log.txt'), 'utf8');
+  ok(/UCNPL Billing 2.*2 invoices, last changed/.test(logE) && /4 invoices, last changed 2026-01-15/.test(logE), 'E: the log lists both, with invoices and last-change dates');
   ok(await runUninstall(E), 'E: uninstall finished');
   proof('E after install + uninstall (older copy)', f0[0], fingerprint(older.old));
   proof('E after install + uninstall (newer copy)', f0[1], fingerprint(newer.old));
@@ -445,22 +445,22 @@ try {
   r = runSetup(SETUP, G, ['/DATAMODE=move']);
   ok(r.code === 0, 'G: silent install (copy) in that folder, exit 0', r.log);
   ok(await oldG.srv.done.then(() => true), 'G: the old server there was stopped');
-  const docsG = path.join(G, 'Free GST Billing');
+  const docsG = path.join(G, 'UCNPL Billing');
   ok(await until(async () => (await bills(readPort(docsG))) === 3, 90000), 'G: the app answers with the 3 copied invoices');
   proof('G install (odd folder names)', g0, fingerprint(oldG.old));
   const backG = listFiles(path.join(docsG, 'Old shortcuts (backup)'));
-  ok(backG.includes('Desktop - Free GST Billing.lnk') && backG.includes('Startup - Free GST Billing.lnk'), `G: the old icons there were recognised and moved (${backG.join(', ')})`);
+  ok(backG.includes('Desktop - UCNPL Billing.lnk') && backG.includes('Startup - UCNPL Billing.lnk'), `G: the old icons there were recognised and moved (${backG.join(', ')})`);
   ok(await runUninstall(G), 'G: uninstall finished');
   proof('G uninstall', g0, fingerprint(oldG.old));
 
   // ======== H: the app's own window ======================================
-  console.log('\nH. The app\'s own window (Free GST Billing.exe, WebView2)');
+  console.log('\nH. The app\'s own window (UCNPL Billing.exe, WebView2)');
   const H = path.join(BASE, 'H');
   const oldH = await makeOldZipCopy(H);
   const appH = appOf(H);
-  const docsH = path.join(H, 'Free GST Billing');
-  const hostData = path.join(H, 'LocalAppData', 'Free GST Billing');
-  const iconH = path.join(H, 'Desktop', 'Free GST Billing.lnk');
+  const docsH = path.join(H, 'UCNPL Billing');
+  const hostData = path.join(H, 'LocalAppData', 'UCNPL Billing');
+  const iconH = path.join(H, 'Desktop', 'UCNPL Billing.lnk');
   const traceH = path.join(H, 'trace.txt');
   const trace = (f = traceH) => { try { return fs.readFileSync(f, 'utf8').split(/\r?\n/).filter(Boolean); } catch { return []; } };
   // The X button: WM_SYSCOMMAND SC_CLOSE. (A bare WM_CLOSE, as Task Manager sends, closes it for real.)
@@ -477,10 +477,10 @@ try {
   r = runSetup(SETUP, H, ['/DATAMODE=move', '/NOSTART=1', `/FAKEWEBVIEW2=${fakeWv}`]);
   ok(r.code === 0, 'H: silent install (copy), exit 0', r.log);
   proof('H install (copy)', hh0, fingerprint(oldH.old));
-  const logH = () => fs.readFileSync(path.join(docsH, 'Free GST Billing - install log.txt'), 'utf8');
+  const logH = () => fs.readFileSync(path.join(docsH, 'UCNPL Billing - install log.txt'), 'utf8');
   ok(fs.existsSync(`${fakeWv}.args.txt`) && fs.readFileSync(`${fakeWv}.args.txt`, 'utf8') === '/silent /install' && /fake-webview2\.exe \/silent \/install: finished with code 3/.test(logH()) && /could not be installed/.test(logH()),
     'H: WebView2 "missing" (test hook): Microsoft\'s installer is run with /silent /install; its failure is logged and the install carries on');
-  ok(['Free GST Billing.exe', 'Microsoft.Web.WebView2.Core.dll', 'Microsoft.Web.WebView2.WinForms.dll', 'WebView2Loader.dll'].every((f) => fs.existsSync(path.join(appH, f))), 'H: the window and its WebView2 files are installed');
+  ok(['UCNPL Billing.exe', 'Microsoft.Web.WebView2.Core.dll', 'Microsoft.Web.WebView2.WinForms.dll', 'WebView2Loader.dll'].every((f) => fs.existsSync(path.join(appH, f))), 'H: the window and its WebView2 files are installed');
   // 1. The icon opens the window; it starts the server for these books.
   const smoke1 = path.join(H, 'smoke1.txt');
   openIcon(iconH, { FGSB_HOST_SMOKE: smoke1 });
@@ -489,7 +489,7 @@ try {
   ok(/^Dashboard - /.test(s1.title1 || '') && /^Settings - /.test(s1.title2 || ''), `H: the window title follows the page ("${s1.title1}" -> "${s1.title2}")`);
   ok(s1.aumid === 'UCNPL.FreeGSTBilling.Test' && aumidOf(iconH) === s1.aumid, 'H: the window and its icon have the same taskbar id');
   ok(s1.userdata === path.join(hostData, 'WebView2') && fs.existsSync(s1.userdata) && !fs.existsSync(path.join(appH, 'WebView2')) && !fs.existsSync(path.join(H, 'Documents')),
-    'H: its WebView2 profile is in (test) LocalAppData\\Free GST Billing - not in the program folder or Documents');
+    'H: its WebView2 profile is in (test) LocalAppData\\UCNPL Billing - not in the program folder or Documents');
   ok(await until(() => !hostPids(appH) && fs.existsSync(path.join(hostData, 'window.txt')), 30000), 'H: the window closed and kept its size and place (window.txt)');
   ok(await bills(NEW_PORT) === 3, 'H: the server the window started serves the 3 copied invoices');
   // 2. The window open (with the DevTools protocol, to drive it); a second start.
@@ -529,9 +529,9 @@ try {
   ok(shown === '1.10.99', `H: the update installed with the window open, and the page loaded again by itself as ${shown}`);
   ok(hostPids(appH) === pid1, 'H: ...in the same window (it stayed open)');
   const setupLogH = fs.existsSync(upd.log || '') ? fs.readFileSync(upd.log, 'utf8') : '';
-  ok(/Need to restart Windows\? No/.test(setupLogH) && /Set aside the app window's files/.test(fs.readFileSync(path.join(docsH, 'Free GST Billing - install log.txt'), 'utf8')),
+  ok(/Need to restart Windows\? No/.test(setupLogH) && /Set aside the app window's files/.test(fs.readFileSync(path.join(docsH, 'UCNPL Billing - install log.txt'), 'utf8')),
     'H: the window\'s files in use were set aside (*.old) - no reboot asked');
-  ok(fs.existsSync(path.join(appH, 'Free GST Billing.exe')) && fs.existsSync(path.join(appH, 'Free GST Billing.exe.old')) && fs.readFileSync(path.join(appH, 'package.json'), 'utf8').includes('1.10.99'),
+  ok(fs.existsSync(path.join(appH, 'UCNPL Billing.exe')) && fs.existsSync(path.join(appH, 'UCNPL Billing.exe.old')) && fs.readFileSync(path.join(appH, 'package.json'), 'utf8').includes('1.10.99'),
     'H: the new program files are in; the open window\'s old exe waits beside them as *.old');
   await sleep(7000);
   proof('H update with the window open', hh1, fingerprint(oldH.old));
@@ -543,9 +543,9 @@ try {
   // While hidden: the page keeps running, and its notifications show near the clock.
   const ticks = await page.evaluate(() => new Promise((res) => { let n = 0; const t = setInterval(() => { n += 1; }, 500); setTimeout(() => { clearInterval(t); res(n); }, 5000); }));
   ok(ticks >= 6, `H: while hidden near the clock the page keeps running (${ticks} timer ticks of 500 ms in 5 s)`);
-  await page.evaluate(async () => { await Notification.requestPermission(); new Notification('Free GST Billing 9.9.9 is available', { body: 'A test notice from the hidden window' }); });
-  ok(await until(() => trace().includes('notify Free GST Billing 9.9.9 is available'), 15000), 'H: the app\'s notification (Notification API) shows near the clock while the window is hidden');
-  ok(trace().some((l) => /^menu=Free GST Billing \d+\.\d+\.\d+\|Open Free GST Billing\|Check for updates\|Open books folder\|Make a backup now\|Quit \(stop the app\)$/.test(l)),
+  await page.evaluate(async () => { await Notification.requestPermission(); new Notification('UCNPL Billing 9.9.9 is available', { body: 'A test notice from the hidden window' }); });
+  ok(await until(() => trace().includes('notify UCNPL Billing 9.9.9 is available'), 15000), 'H: the app\'s notification (Notification API) shows near the clock while the window is hidden');
+  ok(trace().some((l) => /^menu=UCNPL Billing \d+\.\d+\.\d+\|Open UCNPL Billing\|Check for updates\|Open books folder\|Make a backup now\|Quit \(stop the app\)$/.test(l)),
     'H: the tray menu: the version, Open, Check for updates, Open books folder, Make a backup now, Quit', trace().find((l) => l.startsWith('menu=')));
   await browser.close();
   const smoke6 = path.join(H, 'smoke6.txt');
@@ -580,7 +580,7 @@ try {
   ok(pidRep && back && trace(traceRep).some((l) => l.startsWith('repair: ')) && afterRepair.some((l) => /^title=Dashboard - /.test(l)) && hostPids(appH) === pidRep && servers === 1,
     `H: the server was killed; the window started it again by itself (pid ${lockPid} -> ${back?.pid}, one server) and reloaded the app (${trace(traceRep).find((l) => l.startsWith('repair: '))})`);
   // The jump list: "/view=<screen>"; a running window is sent to that screen.
-  const exeH = path.join(appH, 'Free GST Billing.exe');
+  const exeH = path.join(appH, 'UCNPL Billing.exe');
   spawnSync(exeH, ['/view=clients'], { env: { ...process.env, FREEGSTBILL_TEST: '1' }, timeout: 30000 });
   ok(await until(() => trace(traceRep).includes('view=clients') && trace(traceRep).slice(-3).some((l) => /^title=Clients - /.test(l)), 20000), 'H: jump list "Clients" with the window open: the same window goes to Clients');
   const jumpDir = path.join(process.env.APPDATA || '', 'Microsoft', 'Windows', 'Recent', 'CustomDestinations');
@@ -594,7 +594,7 @@ try {
   const traceView = path.join(H, 'trace-view.txt');
   spawnSync('powershell.exe', ['-NoProfile', '-Command', `Start-Process -FilePath '${psq(exeH)}' -ArgumentList '/view=reports'`], { env: { ...process.env, FREEGSTBILL_TEST: '1', FGSB_HOST_TRACE: traceView } });
   ok(await until(() => trace(traceView).some((l) => /^title=Reports - /.test(l)), 90000), 'H: jump list "Reports" with no window open: it opens straight on Reports');
-  ps(`Get-Process -Name 'Free GST Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -like '${psq(appH)}\\*' } | ForEach-Object { [void]$_.CloseMainWindow() }; exit 0`);
+  ps(`Get-Process -Name 'UCNPL Billing' -ErrorAction SilentlyContinue | Where-Object { $_.Path -like '${psq(appH)}\\*' } | ForEach-Object { [void]$_.CloseMainWindow() }; exit 0`);
   await until(() => !hostPids(appH), 20000);
   for (const f of jumpFiles()) fs.rmSync(f, { force: true }); // the test id's jump list only
   // 5. No WebView2 Runtime (simulated: the loader is pointed at an empty folder).
@@ -613,8 +613,8 @@ try {
   ok(s5.mode === 'error' && /folder with your books is not there/.test(s5.text || ''), `H: when the server cannot start, the window shows the launcher's text ("${(s5.text || '').slice(0, 70)}...")`, JSON.stringify(s5));
   await until(() => !hostPids(appH), 20000);
   // 7. The Startup icon: "/tray" - the server starts, no window, the icon near the clock.
-  const startupH = path.join(H, 'Startup', 'Free GST Billing.lnk');
-  ok(/Free GST Billing\.exe \/tray$/.test(lnk(startupH).trim()) && !/\/tray/.test(lnk(iconH)), 'H: the Startup icon (the old copy had one) starts it with /tray; the Desktop icon does not');
+  const startupH = path.join(H, 'Startup', 'UCNPL Billing.lnk');
+  ok(/UCNPL Billing\.exe \/tray$/.test(lnk(startupH).trim()) && !/\/tray/.test(lnk(iconH)), 'H: the Startup icon (the old copy had one) starts it with /tray; the Desktop icon does not');
   const traceTray = path.join(H, 'trace-tray.txt');
   openIcon(startupH, { FGSB_HOST_TRACE: traceTray });
   const pidTray = await until(async () => { const p = hostPids(appH); return p && await answers(NEW_PORT) ? p : null; }, 120000);
@@ -640,7 +640,7 @@ try {
   const jd = path.join(process.env.APPDATA || '', 'Microsoft', 'Windows', 'Recent', 'CustomDestinations');
   try { for (const f of fs.readdirSync(jd)) { if (fs.readFileSync(path.join(jd, f)).indexOf(Buffer.from(BASE, 'utf16le')) >= 0) fs.rmSync(path.join(jd, f), { force: true }); } } catch { /* none */ }
   for (const root of ['A', 'A-second', 'B', 'C', 'D', 'D2', 'E', 'F', path.join('G', 'Rām\'s ‘Shop’ दुकान'), 'H']) {
-    for (const name of ['Free GST Billing', 'Free GST Billing App']) {
+    for (const name of ['UCNPL Billing', 'UCNPL Billing App']) {
       const app = appOf(path.join(BASE, root), name);
       if (fs.existsSync(path.join(app, 'unins000.exe'))) await runUninstall(path.join(BASE, root), [], app);
     }

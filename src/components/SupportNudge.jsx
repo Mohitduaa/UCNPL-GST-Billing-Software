@@ -21,7 +21,7 @@ const inr = (n) => `₹${Number(n).toLocaleString('en-IN')}`;
 const LINES = [
   'UCNPL Billing is free, with no ads and no paid version. It keeps going because users chip in.',
   'One developer builds this app in spare hours. A small UPI payment pays for the next fix.',
-  'No subscription, no locked features. If the app saves you time, help keep it free for everyone.',
+  'No subscription, no locked features. If the app saves you time, consider supporting development.',
   'Every bug you report and every rupee you send goes into the next update.',
 ];
 

@@ -1,11 +1,11 @@
-# Free GST Billing - Windows backup.
+# UCNPL Billing - Windows backup.
 #
 # Zips the entire data/ folder into
 #   %USERPROFILE%\Documents\UCNPL Billing Backups\YYYY-MM-DD_HH-mm-ss.zip
 # Opens the folder in Explorer so the user knows where it went.
 
 $ErrorActionPreference = 'Stop'
-$Host.UI.RawUI.WindowTitle = 'Free GST Billing - Backup'
+$Host.UI.RawUI.WindowTitle = 'UCNPL Billing - Backup'
 
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $SystemDir = $ScriptDir
