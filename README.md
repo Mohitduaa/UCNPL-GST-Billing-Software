@@ -8,7 +8,6 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-blue.svg)](#quick-start--installation)
 [![Latest release](https://img.shields.io/github/v/release/Mohitduaa/UCNPL-GST-Billing-Software?label=Latest&color=orange)](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest)
 [![Desktop icon](https://img.shields.io/badge/Desktop-one--click%20icon-purple.svg)](#the-ucnpl-billing-icon)
-[![GitHub Stars](https://img.shields.io/github/stars/Mohitduaa/UCNPL-GST-Billing-Software?style=social)](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software)
 [![Countries](https://img.shields.io/badge/Countries-22-blue.svg)](#key-features)
 [![GST](https://img.shields.io/badge/GST-Compliant-success.svg)](#clipboard-gst-compliance--filing)
 
@@ -926,7 +925,7 @@ This project is licensed under the [MIT License](LICENSE) — free to use, modif
 
 ### Ready to stop paying for billing software?
 
-[**⬇ Download Now**](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip) &nbsp;·&nbsp; [⭐ **Star on GitHub**](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software) &nbsp;·&nbsp; [📖 **Read the User Guide**](docs/USER_GUIDE.md) &nbsp;·&nbsp; [🐛 **Report an Issue**](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues) &nbsp;·&nbsp; [📧 **Email UCNPL**](mailto:contact@ucnpl.com)
+[**⬇ Download Now**](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/releases/latest/download/UCNPL-GST-Billing.zip) &nbsp;·&nbsp; [📖 **Read the User Guide**](docs/USER_GUIDE.md) &nbsp;·&nbsp; [🐛 **Report an Issue**](https://github.com/Mohitduaa/UCNPL-GST-Billing-Software/issues) &nbsp;·&nbsp; [📧 **Email UCNPL**](mailto:contact@ucnpl.com)
 
 ---
 
