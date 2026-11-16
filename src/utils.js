@@ -136,7 +136,9 @@ export const resolveLineDiscount = (item = {}, taxIncluded = false) => {
     // so their GSTR-1 figures and reprints still match the saved totals.
     if (taxIncluded && item.withTaxRule === 2) return Math.min(net, raw);
     const taxRate = finiteNonNeg(item.taxPercent);
-    const divisor = 1 + taxRate / 100;
+    const cessRate = finiteNonNeg(item.cessPercent ?? item.cessRate);
+    const combinedRate = taxRate + cessRate;
+    const divisor = 1 + combinedRate / 100;
     return Math.min(net, divisor > 0 ? raw / divisor : raw);
   }
   // default: net-amount base

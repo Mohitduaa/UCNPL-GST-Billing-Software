@@ -296,7 +296,7 @@ export default function ClientsView({ onEdit, onDuplicate, onNew }) {
       // proformas, challans and cancelled invoices are not owed, and listing
       // them as debits gave a closing balance that disagreed with the summary.
       const sortedBills = clientBills.filter((b) => salesSign(b) !== 0)
-        .sort((a, b) => parseLocalDate(a.invoiceDate) - parseLocalDate(b.invoiceDate));
+        .sort((a, b) => ((parseLocalDate(a.invoiceDate) || 0) - (parseLocalDate(b.invoiceDate) || 0)) || String(a.invoiceNumber || '').localeCompare(String(b.invoiceNumber || '')));
 
       const drawHeader = () => {
         doc.setFillColor(...getAccentRGB());
@@ -439,7 +439,7 @@ export default function ClientsView({ onEdit, onDuplicate, onNew }) {
           runningBalance -= tds;
           doc.setFont('helvetica', 'normal'); doc.setTextColor(15, 23, 42);
           doc.text(fmt(Math.abs(runningBalance)) + (runningBalance > 0.01 ? ' Dr' : runningBalance < -0.01 ? ' Cr' : ''), col.balanceEnd, y, { align: 'right' });
-          y += rowH;
+          y += 7;
         }
       }
 

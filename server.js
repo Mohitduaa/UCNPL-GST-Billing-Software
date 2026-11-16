@@ -427,7 +427,18 @@ function errRes(res, status, code, err) {
 function writeFileAtomic(filePath, contents) {
   const tmp = filePath + '.tmp';
   fs.writeFileSync(tmp, contents, 'utf-8');
-  fs.renameSync(tmp, filePath);
+  try {
+    fs.renameSync(tmp, filePath);
+  } catch (err) {
+    if (process.platform === 'win32' && (err.code === 'EPERM' || err.code === 'EBUSY')) {
+      try {
+        fs.copyFileSync(tmp, filePath);
+        fs.unlinkSync(tmp);
+        return;
+      } catch { /* ignore fallback error */ }
+    }
+    throw err;
+  }
 }
 
 // Errors log path — declared here so errRes() can find it. The actual

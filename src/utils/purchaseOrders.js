@@ -35,11 +35,21 @@ export function purchaseTotals(items, applyRoundOff = false) {
       total: acc.total + total,
     };
   }, { subtotal: 0, discount: 0, taxable: 0, tax: 0, cess: 0, total: 0 });
+
+  const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
+  const rounded = {
+    subtotal: r2(raw.subtotal),
+    discount: r2(raw.discount),
+    taxable: r2(raw.taxable),
+    tax: r2(raw.tax),
+    cess: r2(raw.cess),
+    total: r2(raw.total),
+  };
   // Round-off is applied to the GRAND total (taxable + tax + cess). Stored
   // as a separate line so GSTR-3B input tax credit reflects the supplier's
   // actual tax amount, not a rounded version.
-  const roundOff = applyRoundOff ? calculateRoundOff(raw.total) : 0;
-  return { ...raw, roundOff, finalTotal: raw.total + roundOff };
+  const roundOff = applyRoundOff ? calculateRoundOff(rounded.total) : 0;
+  return { ...rounded, roundOff, finalTotal: r2(rounded.total + roundOff) };
 }
 
 export const PO_STATUS_LABELS = {

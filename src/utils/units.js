@@ -47,8 +47,10 @@ export function toSecondaryQuantity(baseQuantity, product) {
   const factor = Number(product.conversionFactor) || 1;
   const secondaryUnit = product.secondaryUnit;
 
-  const secondaryQty = Math.floor(baseQty / factor);
-  const remainderBaseQty = Math.round((baseQty % factor) * 1000) / 1000;
+  const rawRatio = factor > 0 ? baseQty / factor : 0;
+  // Guard against IEEE-754 precision artifacts (e.g. 1 / 0.25 = 3.9999999999999996 or 0.6 / 0.2 = 2.9999999999999996)
+  const secondaryQty = Math.floor(Math.round(rawRatio * 1e6) / 1e6);
+  const remainderBaseQty = Math.round(Math.max(0, baseQty - secondaryQty * factor) * 1000) / 1000;
 
   let formatted = '';
   if (secondaryQty > 0 && remainderBaseQty > 0) {

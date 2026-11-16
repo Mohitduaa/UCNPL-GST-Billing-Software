@@ -160,4 +160,56 @@ console.log('--- Testing In-Depth Bug Fixes ---');
   console.log('✓ Test 6 Passed: Barcode scan baseQuantity stays strictly synced across repeat scans');
 }
 
-console.log('All 6 In-Depth Bug Fix verification tests passed 100%!');
+// Test 7: Compound Unit Division Float Precision (IEEE-754 Truncation Fix)
+{
+  console.log('Test 7: Compound Unit Division Float Precision');
+  const { toSecondaryQuantity } = await import('../src/utils/units.js');
+
+  // 1 kg divided into 250g (0.25) packs -> Must be exactly 4 packs, 0 remaining
+  const res1 = toSecondaryQuantity(1.0, { unit: 'kg', secondaryUnit: 'pack', conversionFactor: 0.25 });
+  assert.equal(res1.secondaryQty, 4, '1.0 / 0.25 must be 4 packs, not 3');
+  assert.equal(res1.remainderBaseQty, 0, 'Remainder must be 0, not 0.25');
+
+  // 0.6 Litres divided into 0.2L bottles -> Must be exactly 3 bottles, 0 remaining
+  const res2 = toSecondaryQuantity(0.6, { unit: 'L', secondaryUnit: 'bottle', conversionFactor: 0.2 });
+  assert.equal(res2.secondaryQty, 3, '0.6 / 0.2 must be 3 bottles, not 2');
+  assert.equal(res2.remainderBaseQty, 0, 'Remainder must be 0');
+
+  // 5 kg divided into 0.25kg packs -> Must be 20 packs
+  const res3 = toSecondaryQuantity(5.0, { unit: 'kg', secondaryUnit: 'pack', conversionFactor: 0.25 });
+  assert.equal(res3.secondaryQty, 20, '5.0 / 0.25 must be 20 packs, not 19');
+  assert.equal(res3.remainderBaseQty, 0, 'Remainder must be 0');
+  console.log('✓ Test 7 Passed: Compound unit division is mathematically exact without float truncation');
+}
+
+// Test 8: With-Tax Discount Base Divisor with Cess
+{
+  console.log('Test 8: With-Tax Discount Base Divisor with Cess');
+  const { resolveLineDiscount } = await import('../src/utils.js');
+
+  // 14 Rs with-tax discount on 28% GST + 12% Cess (40% total tax)
+  // Tax-exclusive discount should be 14 / 1.40 = 10 Rs
+  const item = { quantity: 1, rate: 100, discount: 14, discountBase: 'with-tax', taxPercent: 28, cessPercent: 12 };
+  const netDiscount = resolveLineDiscount(item, false);
+  assert.equal(Math.round(netDiscount * 100) / 100, 10, 'With-tax discount must back out combined tax+cess rate (40%)');
+  console.log(`✓ Test 8 Passed: With-tax discount backs out both GST and Cess cleanly to ${netDiscount}`);
+}
+
+// Test 9: Purchase Totals Float Arithmetic Rounding
+{
+  console.log('Test 9: Purchase Totals Float Arithmetic Rounding');
+  const { purchaseTotals } = await import('../src/utils/purchaseOrders.js');
+
+  const items = [
+    { quantity: 1, rate: 10.1, taxPercent: 18 },
+    { quantity: 1, rate: 20.2, taxPercent: 18 },
+  ];
+  const totals = purchaseTotals(items, false);
+  // 10.1 + 20.2 = 30.3 (in raw float 30.299999999999997)
+  assert.equal(totals.subtotal, 30.3, 'Subtotal must be clean 30.3');
+  assert.equal(totals.taxable, 30.3, 'Taxable must be clean 30.3');
+  assert.equal(Number.isInteger(totals.subtotal * 100), true, 'Totals must not have float noise beyond 2 decimals');
+  console.log('✓ Test 9 Passed: Purchase totals rounded to clean 2 decimals without IEEE float noise');
+}
+
+console.log('All 9 In-Depth Bug Fix verification tests passed 100%!');

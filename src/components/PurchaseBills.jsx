@@ -307,7 +307,7 @@ export default function PurchaseBills() {
   const generateSupplierStatement = async (supplierName) => {
     const supBills = purchases
       .filter(p => (p.supplierName || '').trim().toLowerCase() === (supplierName || '').trim().toLowerCase())
-      .sort((a, b) => (parseLocalDate(a.date) || 0) - (parseLocalDate(b.date) || 0));
+      .sort((a, b) => ((parseLocalDate(a.date) || 0) - (parseLocalDate(b.date) || 0)) || String(a.invoiceNumber || '').localeCompare(String(b.invoiceNumber || '')));
 
     if (supBills.length === 0) {
       toast('No purchase bills found for this supplier', 'warning');
@@ -387,12 +387,13 @@ export default function PurchaseBills() {
       y += Math.max(buyerDy, supplierDy) + 5;
 
       // Summary Strip
-      let totBilled = 0, totPaid = 0;
+      let totBilled = 0, totPaid = 0, totTds = 0;
       for (const b of supBills) {
         totBilled += calcPurchaseTotal(b.items, !!b.applyRoundOff).finalTotal;
         totPaid += purchasePaid(b);
+        totTds += Math.max(0, Number(b.tdsAmount) || 0);
       }
-      const totOwed = Math.max(0, totBilled - totPaid);
+      const totOwed = Math.max(0, totBilled - totPaid - totTds);
 
       doc.setFillColor(241, 245, 249);
       doc.rect(marginL, y, tableW, 16, 'F');
@@ -403,8 +404,8 @@ export default function PurchaseBills() {
       const summaryCells = [
         { label: 'Bills', value: String(supBills.length) },
         { label: 'Total Purchases', value: fmt(totBilled) },
-        { label: 'Paid to Supplier', value: fmt(totPaid), color: [5, 150, 105] },
-        { label: 'Balance Payable', value: fmt(totOwed), color: totOwed > 0 ? [220, 38, 38] : [5, 150, 105] },
+        { label: 'Paid / Settled', value: fmt(totPaid + totTds), color: [5, 150, 105] },
+        { label: 'Balance Payable', value: fmt(totOwed), color: totOwed > 0.005 ? [220, 38, 38] : [5, 150, 105] },
       ];
       summaryCells.forEach((cell, i) => {
         const cx = marginL + i * cellW + cellW / 2;
@@ -507,6 +508,8 @@ export default function PurchaseBills() {
         doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal');
         y += rowH;
 
+        const tdsAmt = Math.max(0, Number(bill.tdsAmount) || 0);
+
         // Follow-on rows for payments recorded on this purchase
         if (pays.length > 0) {
           for (const p of pays) {
@@ -530,17 +533,37 @@ export default function PurchaseBills() {
           }
         } else if (bill.paymentStatus === 'Paid') {
           if (y > 265) { doc.addPage(); y = 20; drawHeader(); }
-          runningBalance -= billAmount;
+          const settledAmt = Math.max(0, billAmount - tdsAmt);
+          runningBalance -= settledAmt;
 
           doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(80);
           doc.text('   Payment (Settled in full)', col.dateEnd + 2, y);
-          doc.text(fmt(billAmount), col.debitEnd, y, { align: 'right' });
+          doc.text(fmt(settledAmt), col.debitEnd, y, { align: 'right' });
           doc.setTextColor(180); doc.text('—', col.creditEnd, y, { align: 'right' }); doc.setTextColor(80);
 
           const isOwingP = runningBalance > 0.01;
           if (isOwingP) { doc.setFont('helvetica', 'bold'); doc.setTextColor(220, 38, 38); }
           else { doc.setFont('helvetica', 'normal'); doc.setTextColor(5, 150, 105); }
           doc.text(fmt(Math.abs(runningBalance)) + (isOwingP ? ' Cr' : ' Nil'), col.balanceEnd, y, { align: 'right' });
+          doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal');
+          y += 7;
+        }
+
+        // TDS withheld from this purchase (reduces balance payable to supplier)
+        if (tdsAmt > 0.01) {
+          if (y > 265) { doc.addPage(); y = 20; drawHeader(); }
+          runningBalance -= tdsAmt;
+
+          doc.setFont('helvetica', 'italic'); doc.setFontSize(8); doc.setTextColor(80);
+          doc.text(bill.date ? parseLocalDate(bill.date).toLocaleDateString('en-IN') : '', marginL + 2, y);
+          doc.text(`   TDS Deducted (u/s ${bill.tdsSection || '194Q'}${bill.tdsRate ? ` @ ${bill.tdsRate}%` : ''})`, col.dateEnd + 2, y);
+          doc.text(fmt(tdsAmt), col.debitEnd, y, { align: 'right' });
+          doc.setTextColor(180); doc.text('—', col.creditEnd, y, { align: 'right' }); doc.setTextColor(80);
+
+          const isOwingT = runningBalance > 0.01;
+          if (isOwingT) { doc.setFont('helvetica', 'bold'); doc.setTextColor(220, 38, 38); }
+          else { doc.setFont('helvetica', 'normal'); doc.setTextColor(5, 150, 105); }
+          doc.text(fmt(Math.abs(runningBalance)) + (isOwingT ? ' Cr' : ' Nil'), col.balanceEnd, y, { align: 'right' });
           doc.setTextColor(15, 23, 42); doc.setFont('helvetica', 'normal');
           y += 7;
         }

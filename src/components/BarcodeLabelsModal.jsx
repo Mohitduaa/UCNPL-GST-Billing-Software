@@ -52,7 +52,7 @@ export default function BarcodeLabelsModal({ products = [], initialCounts = null
             id: p.id,
             name: p.name,
             barcode: bc,
-            price: p.sellingPrice ?? p.rate ?? 0,
+            price: p.mrp ?? p.sellingPrice ?? p.rate ?? 0,
           });
         }
       }
@@ -190,7 +190,7 @@ export default function BarcodeLabelsModal({ products = [], initialCounts = null
                           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', display: 'flex', gap: '0.4rem' }}>
                             <span>{p.barcode ? `BC: ${p.barcode}` : 'Auto-barcode'}</span>
                             <span>·</span>
-                            <span>{formatCurrency(p.sellingPrice ?? p.rate ?? 0, currency)}</span>
+                            <span>{formatCurrency(p.mrp ?? p.sellingPrice ?? p.rate ?? 0, currency)}</span>
                           </div>
                         </div>
 
@@ -344,11 +344,12 @@ export default function BarcodeLabelsModal({ products = [], initialCounts = null
               visibility: visible !important;
             }
             #barcode-print-container {
-              position: fixed !important;
+              position: absolute !important;
               left: 0 !important;
               top: 0 !important;
               width: 100% !important;
-              height: 100% !important;
+              height: auto !important;
+              min-height: 100% !important;
               margin: 0 !important;
               padding: 5mm !important;
               border: none !important;
