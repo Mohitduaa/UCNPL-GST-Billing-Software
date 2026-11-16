@@ -216,7 +216,8 @@ export const buildEInvoice = (bill, opts = {}) => {
     // With "Prices include tax" the rate holds the tax: the e-invoice wants
     // the price before tax, so it is backed out the way the totals do it.
     // Not under a LUT: no tax is taken out there (calc.taxInclusive is false).
-    const div = calc.taxInclusive && l.taxPct > 0 ? 1 + l.taxPct / 100 : 1;
+    const combinedPct = calc.taxInclusive ? (l.taxPct + l.cessPct) : 0;
+    const div = combinedPct > 0 ? 1 + combinedPct / 100 : 1;
     const TotAmt = r2(l.gross / div);
     const AssAmt = r2(l.taxable);
     const IgstAmt = interstate ? r2(l.tax) : 0;

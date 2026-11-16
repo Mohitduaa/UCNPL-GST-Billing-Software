@@ -21,7 +21,7 @@
  * for the client is unchanged.
  */
 
-import { amountDue, paymentStatusFor, isCancelledBill, SALES_INVOICE_TYPES, localToday } from '../utils';
+import { amountDue, paymentStatusFor, isCancelledBill, SALES_INVOICE_TYPES, localToday } from '../utils.js';
 
 // What the client owes on a bill: the total less TDS they deduct. Nothing on
 // a cancelled invoice, or on a quotation / proforma / challan (not a sale), so
@@ -38,6 +38,7 @@ const owedOn = (bill) => {
 // paper trail so we don't double-count our own transfer entries.
 export function getBillOverpayment(bill) {
   if (!bill) return 0;
+  const isCredit = (bill.invoiceType || '') === 'credit-note';
   const total = owedOn(bill);
   const cashPaid = (bill.payments || []).reduce((s, p) => {
     // 'credit-transferred-out' entries reduce the raw paidAmount to show
@@ -47,6 +48,13 @@ export function getBillOverpayment(bill) {
     if (p.mode === 'credit-applied') return s;
     return s + (Number(p.amount) || 0);
   }, 0);
+  if (isCredit) {
+    // A credit note represents money owed by the business to the client.
+    // 'credit-transferred-out' entries record a negative amount (-take), so
+    // cashPaid is <= 0 as credit is moved to other invoices.
+    // Remaining client credit = total + cashPaid (e.g. 1000 + (-300) = 700).
+    return Math.max(0, total + cashPaid);
+  }
   return cashPaid - total; // positive → overpaid, negative → underpaid
 }
 

@@ -148,16 +148,20 @@ export const calculateLineItemTax = (item = {}, taxInclusive = false) => {
   const rate = finiteNonNeg(item.rate);
   const discount = resolveLineDiscount(item, taxInclusive);
   const taxRate = finiteNonNeg(item.taxPercent);
+  const cessRate = finiteNonNeg(item.cessPercent ?? item.cessRate);
   const amount = qty * rate;
   const grossAfterDiscount = Math.max(0, amount - discount); // discount can't exceed line value
-  if (taxInclusive && taxRate > 0) {
-    const afterDiscount = grossAfterDiscount / (1 + taxRate / 100);
-    const taxAmount = grossAfterDiscount - afterDiscount;
-    return { amount, discount, afterDiscount, taxAmount, total: grossAfterDiscount };
+  const combinedRate = taxRate + cessRate;
+  if (taxInclusive && combinedRate > 0) {
+    const afterDiscount = grossAfterDiscount / (1 + combinedRate / 100);
+    const taxAmount = (afterDiscount * taxRate) / 100;
+    const cessAmount = (afterDiscount * cessRate) / 100;
+    return { amount, discount, afterDiscount, taxAmount, cessAmount, total: grossAfterDiscount };
   }
   const afterDiscount = grossAfterDiscount;
   const taxAmount = (afterDiscount * taxRate) / 100;
-  return { amount, discount, afterDiscount, taxAmount, total: afterDiscount + taxAmount };
+  const cessAmount = (afterDiscount * cessRate) / 100;
+  return { amount, discount, afterDiscount, taxAmount, cessAmount, total: afterDiscount + taxAmount + cessAmount };
 };
 
 // ============================================================================
@@ -266,7 +270,8 @@ export function computeInvoiceTotals(opts) {
     // afterDisc value), which is what a Bill of Supply / Delivery
     // Challan actually is.
     const applyTax = !!showGST && !lutZeroRated;
-    const taxable = (applyTax && taxInclusive && taxPct > 0) ? afterDisc / (1 + taxPct / 100) : afterDisc;
+    const combinedPct = (applyTax && taxInclusive) ? (taxPct + cessPct) : 0;
+    const taxable = combinedPct > 0 ? afterDisc / (1 + combinedPct / 100) : afterDisc;
     const tax = applyTax ? r2(taxable * taxPct / 100) : 0;
     const cess = applyTax ? r2(taxable * cessPct / 100) : 0;
     return { qty, rate, disc, taxPct, cessPct, gross, afterDisc, taxable: r2(taxable), tax, cess };
@@ -323,8 +328,8 @@ export function computeInvoiceTotals(opts) {
 
   const half = r2(taxTotal / 2);
   const cgst = isIndia && !isInterstate ? half : 0;
-  const sgst = isIndia && !isInterstate && !isIntraUT ? half : 0;
-  const utgst = isIndia && isIntraUT ? half : 0;
+  const sgst = isIndia && !isInterstate && !isIntraUT ? r2(taxTotal - cgst) : 0;
+  const utgst = isIndia && isIntraUT ? r2(taxTotal - cgst) : 0;
   const igst = isIndia ? (isInterstate ? taxTotal : 0) : taxTotal;
 
   // RCM handling. Under Section 9(3)/9(4), the SUPPLIER doesn't collect
@@ -415,7 +420,7 @@ export function computeInvoiceTotals(opts) {
   // it on-invoice. Previously left in the total → buyer paid supplier's cess
   // AND remitted own → double payment.
   const cessOnInvoice = isReverseCharge ? 0 : cessTotal;
-  const preInvDiscTotal = baseTotal + tcsAmount + cessOnInvoice;
+  const preInvDiscTotal = baseTotal + tcsAmount + (taxInclusive && showGST ? 0 : cessOnInvoice);
   const invoiceDiscountAmount = invDiscType === 'percent'
     ? Math.min(preInvDiscTotal, r2(preInvDiscTotal * Math.min(invDiscValue, 100) / 100))
     : Math.min(preInvDiscTotal, r2(invDiscValue));
@@ -1193,8 +1198,9 @@ export const generateEWayBillJSON = (profile, client, details, items, totals, in
     const gross = (Number(item.quantity) || 0) * (Number(item.rate) || 0) - resolveLineDiscount(item, taxInclusive);
     const taxRate = zeroRated ? 0 : Number(item.taxPercent) || 0;
     const cessRate = zeroRated ? 0 : Number(item.cessPercent) || 0;
-    const taxable = taxInclusive && taxRate > 0
-      ? gross / (1 + taxRate / 100)
+    const combinedRate = taxRate + cessRate;
+    const taxable = taxInclusive && combinedRate > 0
+      ? gross / (1 + combinedRate / 100)
       : gross;
     return {
       itemNo: idx + 1,

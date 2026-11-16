@@ -2,6 +2,7 @@
 // Auto-import Purchase Bills from GSTR-2B and GSTR-2A JSON files
 
 import { toIsoDate } from './bulkCsv.js';
+import { localToday } from '../utils.js';
 
 // Normalise invoice number for duplicate matching
 export function normInv(s) {
@@ -50,7 +51,7 @@ export function convertGstrInvoiceToPurchase(inv, supplier = {}, profile = {}) {
   const ctin = String(supplier.ctin || supplier.gstin || '').trim().toUpperCase();
   const supName = String(supplier.trdnm || supplier.cname || supplier.legal_name || supplier.name || ctin).trim();
   const rawDate = inv.dt || inv.idt || '';
-  const date = toIsoDate(rawDate) || new Date().toISOString().slice(0, 10);
+  const date = toIsoDate(rawDate) || localToday();
   const invoiceNumber = String(inv.inum || '').trim();
 
   const items = extractGstrItems(inv);

@@ -265,11 +265,10 @@ export const reconcilePurchaseProducts = ({
       linkedItems.push({ ...it, productId: existing.id });
 
       const key = existing.id;
-      const priorQty = priorQtyByKey.get(key) || 0;
       seenPriorKeys.add(key);
-      const delta = isEdit ? (qty - priorQty) : qty;
 
-      stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + delta);
+      // Accumulate new purchased quantity across all line items for this existing product
+      stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + qty);
 
       const lineGross = qty * (Number(it.rate) || 0);
       let lineDisc = Number(it.discount) || 0;
@@ -313,17 +312,28 @@ export const reconcilePurchaseProducts = ({
     }
   }
 
-  // Adjust stock for rows removed while editing
+  // Adjust stock for prior quantities on edit
   if (isEdit) {
     for (const [key, priorQty] of priorQtyByKey) {
-      if (seenPriorKeys.has(key)) continue;
-      const gone = key.startsWith('name:')
-        ? existingProducts.find((p) => normStr(p.name) === key.slice(5))
-        : byId.get(key);
-      if (!gone) continue;
-      stockDeltaById.set(gone.id, (stockDeltaById.get(gone.id) || 0) - priorQty);
-      if (!productsToUpsert.has(gone.id)) {
-        productsToUpsert.set(gone.id, { ...gone, _placeholderId: gone.id });
+      const targetId = key.startsWith('name:')
+        ? existingProducts.find((p) => normStr(p.name) === key.slice(5))?.id
+        : key;
+
+      if (seenPriorKeys.has(key)) {
+        // Product is retained: subtract prior quantity ONCE so net delta = newQtyTotal - priorQtyTotal
+        if (targetId) {
+          stockDeltaById.set(targetId, (stockDeltaById.get(targetId) || 0) - priorQty);
+        }
+      } else {
+        // Product was removed while editing: reduce stock by priorQty
+        const gone = key.startsWith('name:')
+          ? existingProducts.find((p) => normStr(p.name) === key.slice(5))
+          : byId.get(key);
+        if (!gone) continue;
+        stockDeltaById.set(gone.id, (stockDeltaById.get(gone.id) || 0) - priorQty);
+        if (!productsToUpsert.has(gone.id)) {
+          productsToUpsert.set(gone.id, { ...gone, _placeholderId: gone.id });
+        }
       }
     }
   }

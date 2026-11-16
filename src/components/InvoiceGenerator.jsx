@@ -2025,7 +2025,10 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
           const updated = [...prev];
           const it = updated[existingIdx];
           const newQty = (Number(it.quantity) || 0) + 1;
-          updated[existingIdx] = { ...it, quantity: newQty };
+          const factor = Number(it.conversionFactor) || 1;
+          const isSec = Boolean(it.selectedUnit && it.secondaryUnit && it.selectedUnit === it.secondaryUnit && factor > 0);
+          const baseQuantity = isSec ? Math.round((newQty * factor) * 1000) / 1000 : newQty;
+          updated[existingIdx] = { ...it, quantity: newQty, baseQuantity };
           toast(`Scanned: ${found.name} (Qty: ${newQty})`, 'success', 2000);
           return updated;
         }
@@ -2038,6 +2041,7 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
             name: found.name,
             hsn: found.hsn || '',
             quantity: 1,
+            baseQuantity: 1,
             rate: salePrice,
             mrp: (found.mrp !== undefined && found.mrp !== null && found.mrp !== '') ? found.mrp : (first.mrp ?? ''),
             taxPercent: found.taxPercent ?? defaultTaxRate,
@@ -2057,6 +2061,7 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
           name: found.name,
           hsn: found.hsn || '',
           quantity: 1,
+          baseQuantity: 1,
           unit: found.unit || 'Nos',
           rate: salePrice,
           mrp: (found.mrp !== undefined && found.mrp !== null && found.mrp !== '') ? found.mrp : '',
