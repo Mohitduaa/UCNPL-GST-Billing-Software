@@ -216,12 +216,12 @@ function Open-App([int]$p) {
   $url = "http://localhost:$p/"
   if ($PrintUrl) { Write-Output "URL=$url"; return }
   if ($env:FREEGSTBILL_TEST -or $NoWindow) { Write-Host "  (not opening a window: $url)"; return }
-  if ($AppWindow) {
-    foreach ($d in @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA)) {
-      if (-not $d) { continue }
-      $edge = Join-Path $d 'Microsoft\Edge\Application\msedge.exe'
-      if (Test-Path -LiteralPath $edge) { Start-Process -FilePath $edge -ArgumentList "--app=$url"; return }
-    }
+  foreach ($d in @(${env:ProgramFiles(x86)}, $env:ProgramFiles, $env:LOCALAPPDATA)) {
+    if (-not $d) { continue }
+    $edge = Join-Path $d 'Microsoft\Edge\Application\msedge.exe'
+    if (Test-Path -LiteralPath $edge) { Start-Process -FilePath $edge -ArgumentList "--app=$url"; return }
+    $chrome = Join-Path $d 'Google\Chrome\Application\chrome.exe'
+    if (Test-Path -LiteralPath $chrome) { Start-Process -FilePath $chrome -ArgumentList "--app=$url"; return }
   }
   Start-Process $url
 }

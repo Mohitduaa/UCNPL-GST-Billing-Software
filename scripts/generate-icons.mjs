@@ -97,9 +97,11 @@ console.log(`\nWrote ${targets.length} PNGs to ${path.relative(ROOT, OUT_DIR)}/ 
 //    what every Windows since 95 expects, so those are used for every size
 //    that fits in one, with PNG kept only for 256 where the bitmap would be
 //    256 KB on its own.
-const ICO_SMALL = [16, 20, 24, 32, 48];   // simplified mark
-const ICO_LARGE = [64, 128, 256];         // full mark
+const ICO_SMALL = [16, 20, 24];         // simplified mark for tiny sizes
+const ICO_LARGE = [32, 40, 48, 64, 128, 256]; // full mark with checkmark for high-DPI and taskbars
 const ICO_OUT = path.join(ROOT, 'release-templates', '_system-scripts', 'app-icon.ico');
+const ICO_ROOT = path.join(ROOT, 'release-templates', 'app-icon.ico');
+const ICO_FAVICON = path.join(ROOT, 'public', 'favicon.ico');
 
 // The same blue, the same letter, nothing that cannot survive being six
 // pixels tall. Kept beside favicon.svg rather than replacing it: the web app
@@ -150,6 +152,8 @@ for (const size of ICO_LARGE) {
     ? { size, buf: await renderPng(256, 'any'), png: true }
     : { size, buf: await icoBitmap(svgBuffer, size), png: false });
 }
+// Sort largest first (256 down to 16) so high-DPI taskbars and shell pickers get high-res images
+images.sort((a, b) => b.size - a.size);
 
 const header = Buffer.alloc(6);
 header.writeUInt16LE(0, 0);            // reserved
@@ -174,5 +178,16 @@ for (const { size, buf } of images) {
 
 const ico = Buffer.concat([header, ...entries, ...images.map((i) => i.buf)]);
 fs.writeFileSync(ICO_OUT, ico);
-console.log(`Wrote ${path.relative(ROOT, ICO_OUT)} (${images.map((i) => i.size).join(', ')} px, ${(ico.length / 1024).toFixed(1)} KB)`);
+fs.writeFileSync(ICO_ROOT, ico);
+fs.writeFileSync(ICO_FAVICON, ico);
+const extraOuts = [
+  path.join(ROOT, 'release-build', 'UCNPL-GST-Billing', 'app-icon.ico'),
+  'D:/Browser/UCNPL-GST-Billing/UCNPL-GST-Billing/app-icon.ico'
+];
+for (const extra of extraOuts) {
+  try {
+    if (fs.existsSync(path.dirname(extra))) fs.writeFileSync(extra, ico);
+  } catch { /* fine */ }
+}
+console.log(`Wrote ${path.relative(ROOT, ICO_OUT)} & root copies (${images.map((i) => i.size).join(', ')} px, ${(ico.length / 1024).toFixed(1)} KB)`);
 
