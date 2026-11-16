@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
-import { ShoppingCart, Upload, Plus, Edit3, Trash2, Search, X, Save, Download, ScanText, Eye, ClipboardList, IndianRupee, Building2, FileText } from 'lucide-react';
+import { ShoppingCart, Upload, Plus, Edit3, Trash2, Search, X, Save, Download, ScanText, Eye, ClipboardList, IndianRupee, Building2, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
 import HelpButton from './HelpButton';
 import { getAllPurchases, savePurchase, deletePurchase, getAllProducts, saveProduct, getProfile, getEnabledModules, getAllPurchaseOrders, savePurchaseOrder, getNextPoNumber } from '../store';
+import { findDuplicateProduct, formatDuplicateProductDetails, calculateUpdatedStock, reconcilePurchaseProducts } from '../utils/products';
 import { formatCurrency, getFYOptions, belongsToProfile, parseLocalDate, isUnassignedToBusiness, isInterstateSupply, localToday, roundQty, splitPurchaseTax, isModuleEnabled, businessKeyOf, getAllUnits, TDS_SECTIONS } from '../utils';
 import { purchaseTdsAmount } from '../utils/tdsTcs';
 import { parseGstrJsonToPurchases } from '../utils/gstrImport';
@@ -1154,128 +1155,36 @@ export default function PurchaseBills() {
       } else if (form.paymentStatus === 'Paid' && (before?.paymentStatus || 'Unpaid') !== 'Paid') {
         purchase = markPurchasePaid(purchaseFields, form.date || localToday(), new Date(), form.paymentMode || 'cash');
       }
-      await savePurchase(purchase);
 
-      // v1.10.29 — reported: "items added in purchase bill also available
-      // for sale means automatically added to the product page too".
-      // On save, upsert each line item into Products. Match by trimmed
-      // lowercase name to avoid duplicates. For existing products we
-      // update purchasePrice (latest cost) but leave sellingPrice alone
-      // so we don't accidentally overwrite the user's margin. For new
-      // products we seed sellingPrice = purchasePrice as a starting
-      // point (user can raise it in Inventory later). Runs in parallel
-      // and non-fatal — a single-item failure doesn't block the
-      // purchase-bill save.
-      // v1.10.31 — Data-F10.1-3: delta-based stock sync. Previously stock
-      // was incremented only on FIRST save (create). If the user edited the
-      // purchase later — changing qty from 10 → 20, or removing a line, or
-      // renaming a line — the product's stock stayed at 10 (F10.1) or a
-      // duplicate product was created (F10.3). Now:
-      //   • Save (edit path): compute per-line delta from the pre-edit
-      //     snapshot; apply that delta to each existing product's stock.
-      //   • Save (create path): increment stock by full quantity.
-      //   • Rename detection: match by productId first (persisted below),
-      //     then by name — a rename with productId keeps the same product.
+      // Issue #199: Duplicate Product Detection & Inventory Reconciliation.
+      // Automatically checks whether entered products exist in inventory
+      // (matching by productId, barcode/serialNo, SKU, modelNumber, or normalized name).
+      // - Prevents duplicate product records in the catalog.
+      // - Updates existing product stock by adding newly purchased quantity.
+      // - Updates latest purchase price (cost) while protecting selling price.
+      // - Seeds truly new products with initial stock.
+      // - Saves linkedItems with productId bound permanently to the purchase bill.
       try {
         const existingProducts = await getAllProducts();
-        const byName = new Map(existingProducts.map(p => [(p.name || '').trim().toLowerCase(), p]));
-        const byId = new Map(existingProducts.map(p => [p.id, p]));
-
-        // Pre-edit snapshot: on edit, compute deltas per productId/name.
         const priorLines = editingId
           ? (purchases.find(p => p.id === editingId)?.items || [])
           : [];
-        const priorQtyByKey = new Map();
-        for (const p of priorLines) {
-          const key = p.productId || `name:${(p.name || '').trim().toLowerCase()}`;
-          priorQtyByKey.set(key, (priorQtyByKey.get(key) || 0) + (Number(p.quantity) || 0));
-        }
 
-        // Batch stock adjustments per product so we don't race on parallel saves.
-        const stockDeltaById = new Map();
-        const productsToUpsert = new Map();
-        const seenPriorKeys = new Set();
+        const { productsToSave, linkedItems } = reconcilePurchaseProducts({
+          items: purchase.items,
+          existingProducts,
+          isEdit: !!editingId,
+          priorItems: priorLines,
+        });
 
-        for (const it of purchase.items.filter(x => x.name)) {
-          const qty = Number(it.quantity) || 0;
-          // Match order: productId (persisted below) → name (case-insensitive).
-          let existing = it.productId ? byId.get(it.productId) : null;
-          if (!existing) {
-            const key = it.name.trim().toLowerCase();
-            existing = byName.get(key);
-          }
-          if (existing) {
-            // Delta = current qty − prior qty (for this product).
-            const priorKey = it.productId
-              ? it.productId
-              : `name:${(it.name || '').trim().toLowerCase()}`;
-            const priorQty = priorQtyByKey.get(priorKey) || 0;
-            seenPriorKeys.add(priorKey);
-            const delta = qty - priorQty; // may be negative (line reduced) or zero (unchanged)
-            stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + delta);
-            const lineGross = (Number(it.quantity) || 0) * (Number(it.rate) || 0);
-            let lineDisc = Number(it.discount) || 0;
-            if (lineDisc > 0 && it.discountType === 'percent') lineDisc = (lineGross * lineDisc) / 100;
-            lineDisc = Math.min(lineGross, Math.max(0, lineDisc));
-            const effectiveUnitCost = qty > 0 ? (lineGross - lineDisc) / qty : it.rate;
-            productsToUpsert.set(existing.id, {
-              ...existing,
-              purchasePrice: effectiveUnitCost,
-              hsn: existing.hsn || it.hsn,
-              taxPercent: existing.taxPercent || it.taxPercent,
-              cessPercent: existing.cessPercent || it.cessPercent || 0,
-              // stock filled after we sum all deltas for this product.
-              _placeholderId: existing.id,
-            });
-          } else {
-            // New product — seed stock with the line qty (all its lines: two
-            // lines of the same new item used to keep only the last one's).
-            const newKey = `__new__::${it.name.trim().toLowerCase()}`;
-            const seeded = Number(productsToUpsert.get(newKey)?.stock) || 0;
-            productsToUpsert.set(newKey, {
-              name: it.name.trim(),
-              hsn: it.hsn || '',
-              purchasePrice: it.rate,
-              sellingPrice: it.rate,
-              rate: it.rate,
-              taxPercent: it.taxPercent || 0,
-              cessPercent: it.cessPercent || 0,
-              unit: it.unit || 'Nos',
-              stock: roundQty(seeded + qty),
-              description: '',
-            });
-          }
-        }
+        purchase.items = linkedItems;
+        await savePurchase(purchase);
 
-        // Rows removed while editing: their stock was added when the bill was
-        // first saved, so take it back out (it used to stay in stock forever).
-        for (const [key, priorQty] of priorQtyByKey) {
-          if (seenPriorKeys.has(key)) continue;
-          const gone = key.startsWith('name:') ? byName.get(key.slice(5)) : byId.get(key);
-          if (!gone) continue;
-          stockDeltaById.set(gone.id, (stockDeltaById.get(gone.id) || 0) - priorQty);
-          if (!productsToUpsert.has(gone.id)) productsToUpsert.set(gone.id, { ...gone, _placeholderId: gone.id });
-        }
-
-        // Apply deltas + write.
-        const upserts = [];
-        for (const [, prod] of productsToUpsert) {
-          if (prod._placeholderId) {
-            const existing = byId.get(prod._placeholderId);
-            const delta = stockDeltaById.get(prod._placeholderId) || 0;
-            // Not clamped at 0: sales may take stock below zero, and clamping
-            // here made a purchase edit and its undo leave different stock
-            // (stock 2, reduce a purchase by 5 -> 0, put it back -> 5).
-            const newStock = roundQty((Number(existing.stock) || 0) + delta);
-            upserts.push(saveProduct({ ...prod, stock: newStock, _placeholderId: undefined }));
-          } else {
-            upserts.push(saveProduct(prod));
-          }
-        }
-        await Promise.all(upserts);
+        await Promise.all(productsToSave.map(prod => saveProduct(prod)));
         toast(editingId ? 'Purchase updated' : 'Purchase added — items synced to Products', 'success');
       } catch (e) {
         console.warn('Products auto-sync from purchase failed (non-fatal):', e);
+        await savePurchase(purchase).catch(() => {});
         toast('Purchase saved, but updating stock in Products failed - check them there', 'warning');
       }
 
@@ -1413,7 +1322,13 @@ export default function PurchaseBills() {
       const name = (pr.name || '').trim();
       if (!name) continue;
       seen.set(name.toLowerCase(), {
+        productId: pr.id,
         name,
+        brand: (pr.brand || '').trim(),
+        modelNumber: (pr.modelNumber || pr.model || '').trim(),
+        barcode: (pr.barcode || '').trim(),
+        sku: (pr.sku || '').trim(),
+        stock: Number(pr.stock) || 0,
         hsn: (pr.hsn || '').trim(),
         // purchasePrice is what we PAY a supplier; `rate`/sellingPrice is
         // what we charge a customer. On a purchase bill the former is the
@@ -1432,7 +1347,13 @@ export default function PurchaseBills() {
         const key = name.toLowerCase();
         if (!seen.has(key)) {
           seen.set(key, {
+            productId: it.productId,
             name,
+            brand: (it.brand || '').trim(),
+            modelNumber: (it.modelNumber || '').trim(),
+            barcode: (it.barcode || '').trim(),
+            sku: (it.sku || '').trim(),
+            stock: 0,
             hsn: (it.hsn || '').trim(),
             rate: Number(it.rate) || 0,
             taxPercent: Number(it.taxPercent) || 0,
@@ -1518,6 +1439,7 @@ export default function PurchaseBills() {
       const items = [...prev.items];
       const cur = { ...items[index], name: value };
       if (match) {
+        if (match.productId) cur.productId = match.productId;
         const last = cur._auto || {};
         if (isOursToReplace(cur.hsn, last.hsn)) cur.hsn = match.hsn;
         if (isOursToReplace(cur.rate, last.rate)) cur.rate = match.rate;
@@ -1537,6 +1459,28 @@ export default function PurchaseBills() {
           cessPercent: match.cessPercent,
           unit: match.unit,
         };
+      } else {
+        // Issue #199: Check if matches any existing inventory product directly
+        const dup = findDuplicateProduct({ name: value }, products);
+        if (dup.isDuplicate && dup.existingProduct) {
+          const ep = dup.existingProduct;
+          cur.productId = ep.id;
+          const last = cur._auto || {};
+          if (isOursToReplace(cur.hsn, last.hsn)) cur.hsn = ep.hsn || '';
+          const epCost = Number(ep.purchasePrice) || Number(ep.rate) || 0;
+          if (epCost > 0 && isOursToReplace(cur.rate, last.rate)) cur.rate = epCost;
+          if (ep.taxPercent !== undefined && isOursToReplace(cur.taxPercent, last.taxPercent)) cur.taxPercent = ep.taxPercent;
+          if (prev.kind === 'po' && ep.unit && isOursToReplace(cur.unit, last.unit)) cur.unit = ep.unit;
+          cur._auto = {
+            hsn: ep.hsn,
+            rate: epCost,
+            taxPercent: cur.taxPercent,
+            cessPercent: ep.cessPercent,
+            unit: ep.unit,
+          };
+        } else {
+          cur.productId = undefined;
+        }
       }
       items[index] = cur;
       return { ...prev, items };
@@ -2049,133 +1993,204 @@ export default function PurchaseBills() {
                 {getAllUnits().map(u => <option key={u.label} value={u.label} />)}
               </datalist>
             )}
-            {form.items.map((item, idx) => (
-              <div key={idx} data-focus-key={item._focusKey} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <div className="form-group" style={{ flex: isPo ? 1.2 : 2, margin: 0 }}>
-                  {idx === 0 && <label className="form-label">Name</label>}
-                  {/* v1.10.50 (#39) — recall previously purchased items along
-                      with their HSN, rate and tax rates. One shared datalist
-                      serves every row; the browser scopes suggestions to the
-                      focused input. */}
-                  <input type="text" className="form-input" value={item.name}
-                    list="fgsb-item-history" autoComplete="off"
-                    onChange={e => updateItemName(idx, e.target.value)}
-                    placeholder={itemHistory.length ? 'Type or pick a previous item' : 'Item name'} />
-                </div>
-                {showSerialNo && (
-                  <div className="form-group" style={{ flex: isPo ? 1.1 : 1.3, margin: 0, minWidth: 120 }}>
-                    {idx === 0 && <label className="form-label">Serial / IMEI</label>}
-                    <input type="text" className="form-input" value={item.serialNo || ''}
-                      onChange={e => updateItem(idx, 'serialNo', e.target.value)}
-                      placeholder="SN / IMEI" />
-                  </div>
-                )}
-                <div className="form-group" style={{ flex: isPo ? 0.8 : 1, margin: 0 }}>
-                  {idx === 0 && <label className="form-label">HSN</label>}
-                  <input type="text" className="form-input" value={item.hsn}
-                    onChange={e => updateItem(idx, 'hsn', e.target.value)} placeholder="HSN" />
-                </div>
-                <div className="form-group" style={{ flex: isPo ? 0.9 : 0.7, margin: 0 }}>
-                  {idx === 0 && <label className="form-label">Qty</label>}
-                  {/* v1.6.8 (P2 #30): decimal quantity for 2.5 kg / 0.5 hr / etc. */}
-                  {/* v1.10.69 - requested (#71 item 2, @sangwanmail-eng): the
-                      number fields here now select their contents on focus, as
-                      the invoice screen has since v1.10.67. Without it, typing
-                      into a field showing 0 gave you 018 rather than 18. */}
-                  <input type="number" className="form-input" value={item.quantity} min="0" step="any"
-                    onFocus={e => e.target.select()}
-                    onChange={e => updateItem(idx, 'quantity', e.target.value)} />
-                </div>
-                {isPo && (
-                  <div className="form-group" style={{ flex: 0.8, margin: 0 }}>
-                    {idx === 0 && <label className="form-label">Unit</label>}
-                    <input type="text" className="form-input" value={item.unit || ''} list="fgsb-unit-list"
-                      autoComplete="off" onChange={e => updateItem(idx, 'unit', e.target.value)} placeholder="Nos" />
-                  </div>
-                )}
-                <div className="form-group" style={{ flex: 1, margin: 0 }}>
-                  {idx === 0 && <label className="form-label">Rate</label>}
-                  <input type="number" className="form-input" value={item.rate} min="0" step="any"
-                    onFocus={e => e.target.select()}
-                    onChange={e => updateItem(idx, 'rate', e.target.value)} />
-                </div>
-                <div className="form-group" style={{ flex: isPo ? 0.95 : 0.85, margin: 0, minWidth: 80 }}>
-                  {idx === 0 && (
-                    <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Disc</span>
-                      <span style={{ fontSize: '0.68rem', cursor: 'pointer', color: 'var(--primary)' }}
-                        onClick={() => updateItem(idx, 'discountType', item.discountType === 'fixed' ? 'percent' : 'fixed')}>
-                        {item.discountType === 'fixed' ? '₹' : '%'}
-                      </span>
-                    </label>
-                  )}
-                  <div style={{ display: 'flex', position: 'relative' }}>
-                    <input type="number" className="form-input" value={item.discount ?? ''} min="0" step="any"
-                      onFocus={e => e.target.select()}
-                      placeholder="0"
-                      onChange={e => updateItem(idx, 'discount', e.target.value)}
-                      style={{ paddingRight: '22px' }} />
-                    <button
-                      type="button"
-                      tabIndex={-1}
-                      onClick={() => updateItem(idx, 'discountType', item.discountType === 'fixed' ? 'percent' : 'fixed')}
-                      title="Toggle % or ₹"
-                      style={{
-                        position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
-                        border: 'none', background: 'transparent', cursor: 'pointer',
-                        fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', padding: '2px 4px'
+            {form.items.map((item, idx) => {
+              const dup = findDuplicateProduct(item, products);
+              const isExisting = dup.isDuplicate && dup.existingProduct;
+              const details = isExisting ? formatDuplicateProductDetails(dup.existingProduct) : null;
+              const updatedStock = isExisting ? calculateUpdatedStock(details.stock, item.quantity) : null;
+
+              return (
+                <div key={idx} data-focus-key={item._focusKey} style={{ marginBottom: '0.65rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                    <div className="form-group" style={{ flex: isPo ? 1.2 : 2, margin: 0 }}>
+                      {idx === 0 && <label className="form-label">Name</label>}
+                      {/* v1.10.50 (#39) — recall previously purchased items along
+                          with their HSN, rate and tax rates. One shared datalist
+                          serves every row; the browser scopes suggestions to the
+                          focused input. */}
+                      <input type="text" className="form-input" value={item.name}
+                        list="fgsb-item-history" autoComplete="off"
+                        onChange={e => updateItemName(idx, e.target.value)}
+                        placeholder={itemHistory.length ? 'Type or pick a previous item' : 'Item name'} />
+                    </div>
+                    {showSerialNo && (
+                      <div className="form-group" style={{ flex: isPo ? 1.1 : 1.3, margin: 0, minWidth: 120 }}>
+                        {idx === 0 && <label className="form-label">Serial / IMEI</label>}
+                        <input type="text" className="form-input" value={item.serialNo || ''}
+                          onChange={e => updateItem(idx, 'serialNo', e.target.value)}
+                          placeholder="SN / IMEI" />
+                      </div>
+                    )}
+                    <div className="form-group" style={{ flex: isPo ? 0.8 : 1, margin: 0 }}>
+                      {idx === 0 && <label className="form-label">HSN</label>}
+                      <input type="text" className="form-input" value={item.hsn}
+                        onChange={e => updateItem(idx, 'hsn', e.target.value)} placeholder="HSN" />
+                    </div>
+                    <div className="form-group" style={{ flex: isPo ? 0.9 : 0.7, margin: 0 }}>
+                      {idx === 0 && <label className="form-label">Qty</label>}
+                      {/* v1.6.8 (P2 #30): decimal quantity for 2.5 kg / 0.5 hr / etc. */}
+                      {/* v1.10.69 - requested (#71 item 2, @sangwanmail-eng): the
+                          number fields here now select their contents on focus, as
+                          the invoice screen has since v1.10.67. Without it, typing
+                          into a field showing 0 gave you 018 rather than 18. */}
+                      <input type="number" className="form-input" value={item.quantity} min="0" step="any"
+                        onFocus={e => e.target.select()}
+                        onChange={e => updateItem(idx, 'quantity', e.target.value)} />
+                    </div>
+                    {isPo && (
+                      <div className="form-group" style={{ flex: 0.8, margin: 0 }}>
+                        {idx === 0 && <label className="form-label">Unit</label>}
+                        <input type="text" className="form-input" value={item.unit || ''} list="fgsb-unit-list"
+                          autoComplete="off" onChange={e => updateItem(idx, 'unit', e.target.value)} placeholder="Nos" />
+                      </div>
+                    )}
+                    <div className="form-group" style={{ flex: 1, margin: 0 }}>
+                      {idx === 0 && <label className="form-label">Rate</label>}
+                      <input type="number" className="form-input" value={item.rate} min="0" step="any"
+                        onFocus={e => e.target.select()}
+                        onChange={e => updateItem(idx, 'rate', e.target.value)} />
+                    </div>
+                    <div className="form-group" style={{ flex: isPo ? 0.95 : 0.85, margin: 0, minWidth: 80 }}>
+                      {idx === 0 && (
+                        <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <span>Disc</span>
+                          <span style={{ fontSize: '0.68rem', cursor: 'pointer', color: 'var(--primary)' }}
+                            onClick={() => updateItem(idx, 'discountType', item.discountType === 'fixed' ? 'percent' : 'fixed')}>
+                            {item.discountType === 'fixed' ? '₹' : '%'}
+                          </span>
+                        </label>
+                      )}
+                      <div style={{ display: 'flex', position: 'relative' }}>
+                        <input type="number" className="form-input" value={item.discount ?? ''} min="0" step="any"
+                          onFocus={e => e.target.select()}
+                          placeholder="0"
+                          onChange={e => updateItem(idx, 'discount', e.target.value)}
+                          style={{ paddingRight: '22px' }} />
+                        <button
+                          type="button"
+                          tabIndex={-1}
+                          onClick={() => updateItem(idx, 'discountType', item.discountType === 'fixed' ? 'percent' : 'fixed')}
+                          title="Toggle % or ₹"
+                          style={{
+                            position: 'absolute', right: 4, top: '50%', transform: 'translateY(-50%)',
+                            border: 'none', background: 'transparent', cursor: 'pointer',
+                            fontSize: '0.72rem', fontWeight: 700, color: 'var(--primary)', padding: '2px 4px'
+                          }}>
+                          {item.discountType === 'fixed' ? '₹' : '%'}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="form-group" style={{ flex: isPo ? 0.95 : 0.75, margin: 0 }}>
+                      {idx === 0 && <label className="form-label">Tax %</label>}
+                      {/* v1.6.8 (P2 #29): "Other…" for jeweller 3% / diamond 0.25% /
+                           agriculture 0.1% and any bespoke rate. */}
+                      <select className="form-input" value={
+                        ['0','0.1','0.25','3','5','12','18','28','40'].includes(String(item.taxPercent)) ? String(item.taxPercent) : '__custom__'
+                      } onChange={async e => {
+                        if (e.target.value === '__custom__') {
+                          const v = await promptAction({
+                            title: 'Custom tax rate',
+                            message: 'Enter a GST rate between 0% and 100% (up to 2 decimals).',
+                            defaultValue: String(item.taxPercent || 0),
+                            placeholder: 'e.g. 7.5',
+                            inputType: 'number',
+                            confirmLabel: 'Apply rate',
+                          });
+                          const n = parseFloat(v);
+                          if (Number.isFinite(n) && n >= 0 && n <= 100) updateItem(idx, 'taxPercent', n);
+                        } else {
+                          updateItem(idx, 'taxPercent', e.target.value);
+                        }
                       }}>
-                      {item.discountType === 'fixed' ? '₹' : '%'}
-                    </button>
+                        <option value="0">0%</option>
+                        <option value="0.1">0.1%</option>
+                        <option value="0.25">0.25%</option>
+                        <option value="3">3%</option>
+                        <option value="5">5%</option>
+                        <option value="12">12%</option>
+                        <option value="18">18%</option>
+                        <option value="28">28%</option>
+                        <option value="40">40%</option>
+                        <option value="__custom__">Other…{['0','0.1','0.25','3','5','12','18','28','40'].includes(String(item.taxPercent)) ? '' : ` (${item.taxPercent}%)`}</option>
+                      </select>
+                    </div>
+                    <div className="form-group" style={{ flex: 0.7, margin: 0 }}>
+                      {idx === 0 && <label className="form-label" title="Compensation Cess — for tobacco, aerated, motor vehicles, coal, etc.">Cess %</label>}
+                      <input type="number" className="form-input" value={item.cessPercent ?? 0} min="0" step="any"
+                        onFocus={e => e.target.select()}
+                        onChange={e => updateItem(idx, 'cessPercent', e.target.value)} />
+                    </div>
+                    <div style={{ flex: '0 0 auto', marginBottom: idx === 0 ? 0 : 0 }}>
+                      {form.items.length > 1 && (
+                        <button className="icon-btn icon-btn-red" onClick={() => removeItem(idx)} title="Remove"><Trash2 size={15} /></button>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="form-group" style={{ flex: isPo ? 0.95 : 0.75, margin: 0 }}>
-                  {idx === 0 && <label className="form-label">Tax %</label>}
-                  {/* v1.6.8 (P2 #29): "Other…" for jeweller 3% / diamond 0.25% /
-                       agriculture 0.1% and any bespoke rate. */}
-                  <select className="form-input" value={
-                    ['0','0.1','0.25','3','5','12','18','28','40'].includes(String(item.taxPercent)) ? String(item.taxPercent) : '__custom__'
-                  } onChange={async e => {
-                    if (e.target.value === '__custom__') {
-                      const v = await promptAction({
-                        title: 'Custom tax rate',
-                        message: 'Enter a GST rate between 0% and 100% (up to 2 decimals).',
-                        defaultValue: String(item.taxPercent || 0),
-                        placeholder: 'e.g. 7.5',
-                        inputType: 'number',
-                        confirmLabel: 'Apply rate',
-                      });
-                      const n = parseFloat(v);
-                      if (Number.isFinite(n) && n >= 0 && n <= 100) updateItem(idx, 'taxPercent', n);
-                    } else {
-                      updateItem(idx, 'taxPercent', e.target.value);
-                    }
-                  }}>
-                    <option value="0">0%</option>
-                    <option value="0.1">0.1%</option>
-                    <option value="0.25">0.25%</option>
-                    <option value="3">3%</option>
-                    <option value="5">5%</option>
-                    <option value="12">12%</option>
-                    <option value="18">18%</option>
-                    <option value="28">28%</option>
-                    <option value="40">40%</option>
-                    <option value="__custom__">Other…{['0','0.1','0.25','3','5','12','18','28','40'].includes(String(item.taxPercent)) ? '' : ` (${item.taxPercent}%)`}</option>
-                  </select>
-                </div>
-                <div className="form-group" style={{ flex: 0.7, margin: 0 }}>
-                  {idx === 0 && <label className="form-label" title="Compensation Cess — for tobacco, aerated, motor vehicles, coal, etc.">Cess %</label>}
-                  <input type="number" className="form-input" value={item.cessPercent ?? 0} min="0" step="any"
-                    onFocus={e => e.target.select()}
-                    onChange={e => updateItem(idx, 'cessPercent', e.target.value)} />
-                </div>
-                <div style={{ flex: '0 0 auto', marginBottom: idx === 0 ? 0 : 0 }}>
-                  {form.items.length > 1 && (
-                    <button className="icon-btn icon-btn-red" onClick={() => removeItem(idx)} title="Remove"><Trash2 size={15} /></button>
+
+                  {/* Issue #199: Duplicate Product Detection Warning & Existing Product Details */}
+                  {isExisting && (
+                    <div style={{
+                      marginTop: '0.35rem',
+                      padding: '0.5rem 0.75rem',
+                      borderRadius: 6,
+                      background: 'rgba(201, 100, 66, 0.05)',
+                      border: '1px solid rgba(201, 100, 66, 0.22)',
+                      fontSize: '0.78rem',
+                      color: 'var(--text, #1e293b)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.3rem',
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, color: 'var(--primary, #c96442)' }}>
+                          <AlertCircle size={14} style={{ flexShrink: 0 }} />
+                          <span>This product already exists in your inventory.</span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.74rem' }}>
+                          <span style={{
+                            background: 'rgba(34, 197, 94, 0.12)',
+                            color: '#15803d',
+                            fontWeight: 600,
+                            padding: '1px 6px',
+                            borderRadius: 4,
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 3,
+                          }}>
+                            <CheckCircle2 size={12} />
+                            No duplicate product &bull; Stock will increase (+{item.quantity || 0} {details.unit})
+                          </span>
+                        </div>
+                      </div>
+                      <div style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.85rem',
+                        paddingTop: '0.25rem',
+                        borderTop: '1px dashed rgba(201, 100, 66, 0.18)',
+                        fontSize: '0.75rem',
+                        color: 'var(--text-muted, #64748b)'
+                      }}>
+                        <span>Product: <strong style={{ color: 'var(--text)' }}>{details.name}</strong></span>
+                        {details.brand !== '—' && (
+                          <span>Brand: <strong style={{ color: 'var(--text)' }}>{details.brand}</strong></span>
+                        )}
+                        {details.modelNumber !== '—' && (
+                          <span>Model: <strong style={{ color: 'var(--text)' }}>{details.modelNumber}</strong></span>
+                        )}
+                        {details.sku !== '—' && (
+                          <span>SKU / Barcode: <strong style={{ color: 'var(--text)' }}>{details.sku}</strong></span>
+                        )}
+                        <span>
+                          Current Stock: <strong style={{ color: details.stock > 0 ? '#15803d' : '#b3453a' }}>{details.stock} {details.unit}</strong>
+                          {' '}&rarr; New Stock: <strong style={{ color: '#15803d' }}>{updatedStock} {details.unit}</strong>
+                        </span>
+                      </div>
+                    </div>
                   )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <button className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem', marginTop: '0.25rem' }}
               onClick={addItem}><Plus size={14} /> Add Item</button>
 

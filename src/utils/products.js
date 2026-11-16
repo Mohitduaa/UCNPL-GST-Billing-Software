@@ -112,3 +112,235 @@ export const costOfGoodsSold = (bills, products) => {
   }
   return { cost: Math.round(cost * 100) / 100, missing: [...missing] };
 };
+
+// ============================================================================
+// Issue #199: Duplicate Product Detection & Inventory Reconciliation
+// ============================================================================
+
+const normStr = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+
+/**
+ * Checks whether a given purchase item matches an existing product in inventory.
+ * Match precedence:
+ *   1. productId (exact id)
+ *   2. barcode (matches product.barcode or product.sku)
+ *   3. sku (matches product.sku or product.barcode)
+ *   4. modelNumber (matches product.modelNumber or product.model)
+ *   5. name (case-insensitive, trimmed, normalized whitespace)
+ */
+export const findDuplicateProduct = (item, products = []) => {
+  if (!item || !Array.isArray(products) || products.length === 0) {
+    return { isDuplicate: false, existingProduct: null };
+  }
+
+  // 1. Explicit productId match
+  if (item.productId) {
+    const found = products.find((p) => p && p.id === item.productId);
+    if (found) {
+      return { isDuplicate: true, existingProduct: found, matchReason: 'productId' };
+    }
+  }
+
+  // 2. Barcode match
+  const rawBarcode = item.barcode || item.serialNo;
+  if (rawBarcode) {
+    const normCode = normStr(rawBarcode);
+    if (normCode) {
+      const found = products.find((p) => p && (normStr(p.barcode) === normCode || normStr(p.sku) === normCode));
+      if (found) {
+        return { isDuplicate: true, existingProduct: found, matchReason: 'barcode' };
+      }
+    }
+  }
+
+  // 3. SKU match
+  if (item.sku) {
+    const normSku = normStr(item.sku);
+    if (normSku) {
+      const found = products.find((p) => p && (normStr(p.sku) === normSku || normStr(p.barcode) === normSku));
+      if (found) {
+        return { isDuplicate: true, existingProduct: found, matchReason: 'sku' };
+      }
+    }
+  }
+
+  // 4. Model Number match
+  const rawModel = item.modelNumber || item.model;
+  if (rawModel) {
+    const normModel = normStr(rawModel);
+    if (normModel) {
+      const found = products.find((p) => p && (normStr(p.modelNumber) === normModel || normStr(p.model) === normModel));
+      if (found) {
+        return { isDuplicate: true, existingProduct: found, matchReason: 'modelNumber' };
+      }
+    }
+  }
+
+  // 5. Name match (case-insensitive, normalized whitespace)
+  if (item.name) {
+    const normName = normStr(item.name);
+    if (normName) {
+      const found = products.find((p) => p && normStr(p.name) === normName);
+      if (found) {
+        return { isDuplicate: true, existingProduct: found, matchReason: 'name' };
+      }
+    }
+  }
+
+  return { isDuplicate: false, existingProduct: null };
+};
+
+/**
+ * Formats details of an existing product for clean UI warning display.
+ */
+export const formatDuplicateProductDetails = (product) => {
+  if (!product) {
+    return {
+      name: '—',
+      brand: '—',
+      modelNumber: '—',
+      sku: '—',
+      stock: 0,
+      unit: 'Nos',
+    };
+  }
+
+  return {
+    id: product.id,
+    name: product.name || '—',
+    brand: (product.brand || '').trim() || '—',
+    modelNumber: (product.modelNumber || product.model || '').trim() || '—',
+    sku: (product.sku || product.barcode || '').trim() || '—',
+    stock: Number(product.stock) || 0,
+    unit: product.unit || 'Nos',
+    purchasePrice: Number(product.purchasePrice) || Number(product.rate) || 0,
+    sellingPrice: Number(product.sellingPrice) || Number(product.rate) || 0,
+  };
+};
+
+/**
+ * Computes updated stock quantity safely.
+ */
+export const calculateUpdatedStock = (currentStock, quantityAdded) => {
+  const cur = Number(currentStock) || 0;
+  const add = Number(quantityAdded) || 0;
+  return Math.round((cur + add) * 1000) / 1000;
+};
+
+/**
+ * Reconciles purchase bill items with inventory products:
+ * - Existing products are updated (stock delta applied, latest purchasePrice updated).
+ * - NO duplicate product entries created.
+ * - Truly new items seeded with initial stock.
+ * - Items returned with linked productId.
+ */
+export const reconcilePurchaseProducts = ({
+  items = [],
+  existingProducts = [],
+  isEdit = false,
+  priorItems = [],
+}) => {
+  const byId = new Map((existingProducts || []).map((p) => [p.id, p]));
+  const priorQtyByKey = new Map();
+
+  if (isEdit) {
+    for (const p of priorItems || []) {
+      const match = findDuplicateProduct(p, existingProducts);
+      const key = match.isDuplicate ? match.existingProduct.id : `name:${normStr(p.name)}`;
+      priorQtyByKey.set(key, (priorQtyByKey.get(key) || 0) + (Number(p.quantity) || 0));
+    }
+  }
+
+  const stockDeltaById = new Map();
+  const productsToUpsert = new Map();
+  const seenPriorKeys = new Set();
+  const linkedItems = [];
+
+  for (const it of (items || []).filter((x) => x && x.name && String(x.name).trim())) {
+    const qty = Number(it.quantity) || 0;
+    const match = findDuplicateProduct(it, existingProducts);
+
+    if (match.isDuplicate && match.existingProduct) {
+      const existing = match.existingProduct;
+      linkedItems.push({ ...it, productId: existing.id });
+
+      const key = existing.id;
+      const priorQty = priorQtyByKey.get(key) || 0;
+      seenPriorKeys.add(key);
+      const delta = isEdit ? (qty - priorQty) : qty;
+
+      stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + delta);
+
+      const lineGross = qty * (Number(it.rate) || 0);
+      let lineDisc = Number(it.discount) || 0;
+      if (lineDisc > 0 && it.discountType === 'percent') {
+        lineDisc = (lineGross * lineDisc) / 100;
+      }
+      lineDisc = Math.min(lineGross, Math.max(0, lineDisc));
+      const effectiveUnitCost = qty > 0 ? (lineGross - lineDisc) / qty : (Number(it.rate) || 0);
+
+      // Merge into upsert map without overwriting selling price
+      const currentUpsert = productsToUpsert.get(existing.id) || existing;
+      productsToUpsert.set(existing.id, {
+        ...currentUpsert,
+        purchasePrice: effectiveUnitCost > 0 ? effectiveUnitCost : currentUpsert.purchasePrice,
+        hsn: existing.hsn || it.hsn,
+        taxPercent: existing.taxPercent ?? it.taxPercent,
+        cessPercent: existing.cessPercent ?? it.cessPercent ?? 0,
+        _placeholderId: existing.id,
+      });
+    } else {
+      linkedItems.push({ ...it });
+
+      const newKey = `__new__::${normStr(it.name)}`;
+      const seeded = Number(productsToUpsert.get(newKey)?.stock) || 0;
+      productsToUpsert.set(newKey, {
+        name: String(it.name).trim(),
+        brand: (it.brand || '').trim(),
+        modelNumber: (it.modelNumber || '').trim(),
+        barcode: (it.barcode || '').trim(),
+        sku: (it.sku || '').trim(),
+        hsn: it.hsn || '',
+        purchasePrice: Number(it.rate) || 0,
+        sellingPrice: Number(it.rate) || 0,
+        rate: Number(it.rate) || 0,
+        taxPercent: Number(it.taxPercent) || 0,
+        cessPercent: Number(it.cessPercent) || 0,
+        unit: it.unit || 'Nos',
+        stock: Math.round((seeded + qty) * 1000) / 1000,
+        description: it.description || '',
+      });
+    }
+  }
+
+  // Adjust stock for rows removed while editing
+  if (isEdit) {
+    for (const [key, priorQty] of priorQtyByKey) {
+      if (seenPriorKeys.has(key)) continue;
+      const gone = key.startsWith('name:')
+        ? existingProducts.find((p) => normStr(p.name) === key.slice(5))
+        : byId.get(key);
+      if (!gone) continue;
+      stockDeltaById.set(gone.id, (stockDeltaById.get(gone.id) || 0) - priorQty);
+      if (!productsToUpsert.has(gone.id)) {
+        productsToUpsert.set(gone.id, { ...gone, _placeholderId: gone.id });
+      }
+    }
+  }
+
+  const productsToSave = [];
+  for (const [, prod] of productsToUpsert) {
+    if (prod._placeholderId) {
+      const existing = byId.get(prod._placeholderId) || existingProducts.find((p) => p.id === prod._placeholderId);
+      const delta = stockDeltaById.get(prod._placeholderId) || 0;
+      const currentStock = Number(existing?.stock) || 0;
+      const newStock = Math.round((currentStock + delta) * 1000) / 1000;
+      const { _placeholderId, ...clean } = prod;
+      productsToSave.push({ ...clean, stock: newStock });
+    } else {
+      productsToSave.push(prod);
+    }
+  }
+
+  return { productsToSave, linkedItems };
+};
