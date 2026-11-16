@@ -98,7 +98,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = async () => {
-    try { await apiLogoutUser(); } catch {}
+    try { await apiLogoutUser(); } catch { /* ignore */ }
     localStorage.removeItem('fgsb_session_token');
     setCurrentUser(null);
     setIsLocked(true);

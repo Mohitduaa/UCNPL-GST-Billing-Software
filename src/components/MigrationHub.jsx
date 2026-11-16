@@ -211,8 +211,6 @@ SUP-2026-882,2026-10-05,Global Industrial Suppliers,29BBBBB1111B1Z2,"45 Peenya I
 };
 
 export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
-  if (!isOpen) return null;
-
   // Region tabs state
   const [activeRegion, setActiveRegion] = useState('india');
   const [searchQuery, setSearchQuery] = useState('');
@@ -751,6 +749,8 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
   const readyCount =
     (plan?.scorecard?.readyToAdd || 0) +
     (updateExistingClients ? plan?.scorecard?.readyToUpdate || 0 : 0);
+
+  if (!isOpen) return null;
 
   return (
     <div className="modal-overlay" onClick={handleClose} style={{ zIndex: 10000 }}>

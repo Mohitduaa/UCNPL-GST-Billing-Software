@@ -118,7 +118,6 @@ export default function PurchaseBills() {
   const [purchases, setPurchases] = useState([]);
   // v1.10.65 (#58 item 3) — the business these records belong to.
   const [ownerProfile, setOwnerProfile] = useState(null);
-  const fileInputRef = useRef(null);
   const gstrInputRef = useRef(null);
 
   const handleGstrJsonImport = async (e) => {
@@ -149,7 +148,6 @@ export default function PurchaseBills() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [supplierSearch, setSupplierSearch] = useState('');
-  const [selectedSupplierModal, setSelectedSupplierModal] = useState(null);
   const [pdfPreview, setPdfPreview] = useState(null);
   const [barcodeModalData, setBarcodeModalData] = useState(null);
   const [purchaseScannedBarcode, setPurchaseScannedBarcode] = useState('');
@@ -747,7 +745,7 @@ export default function PurchaseBills() {
   const openAdd = () => {
     setForm({ ...emptyForm, date: localToday(), items: [{ ...emptyItem }] });
     setEditingId(null);
-    try { setShowSerialNo(localStorage.getItem('fgsb_purchase_show_serial') === 'true'); } catch {}
+    try { setShowSerialNo(localStorage.getItem('fgsb_purchase_show_serial') === 'true'); } catch { /* ignore */ }
     setShowForm(true);
   };
 
@@ -1935,7 +1933,7 @@ export default function PurchaseBills() {
                   onChange={e => {
                     const val = e.target.checked;
                     setShowSerialNo(val);
-                    try { localStorage.setItem('fgsb_purchase_show_serial', val ? 'true' : 'false'); } catch {}
+                    try { localStorage.setItem('fgsb_purchase_show_serial', val ? 'true' : 'false'); } catch { /* ignore */ }
                   }}
                   style={{ width: 14, height: 14, accentColor: 'var(--primary)', cursor: 'pointer' }}
                 />

@@ -25,7 +25,7 @@ async function apiFetch(url, options = {}) {
       if (devToken) headers['x-device-token'] = devToken;
       const sessToken = localStorage.getItem('fgsb_session_token');
       if (sessToken) headers['x-session-token'] = sessToken;
-    } catch {}
+    } catch { /* ignore */ }
 
     res = await fetch(url, {
       ...options,

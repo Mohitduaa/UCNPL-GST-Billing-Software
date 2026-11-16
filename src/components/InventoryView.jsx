@@ -14,7 +14,7 @@ import { confirmAction } from './ConfirmModal';
 import HelpButton from './HelpButton';
 import ProductBulkEdit from './ProductBulkEdit';
 import TableExport from './TableExport';
-import { formatDualStock, hasAlternateUnit } from '../utils/units';
+import { hasAlternateUnit } from '../utils/units';
 
 // v1.10.29 — reported: "here purchase price and selling price need".
 // Product now carries BOTH: `purchasePrice` (what we paid the supplier) and

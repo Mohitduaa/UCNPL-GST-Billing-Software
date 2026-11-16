@@ -170,11 +170,11 @@ export const changeSize = (item, patch) => {
 // NA (#143) has no quantity: held at 1.
 export const itemWithUnit = (item, unit, { sizeOn = false, step = 0, allItems = [] } = {}) => {
   if (sizeOn && unit === 'Sq.ft' && !item.size) {
-    const { rft, ...clean } = item;
+    const { rft: _rft, ...clean } = item;
     return applySize(clean, { l: '', w: '', pcs: 1, step, sqft: Number(item.quantity) || 0 });
   }
   if (sizeOn && unit === 'R.ft' && !item.rft) {
-    const { size, ...clean } = item;
+    const { size: _size, ...clean } = item;
     return applyRft(clean, { method: 'perimeter', scope: 'all', selectedIds: [] }, allItems);
   }
   if (unit !== 'Sq.ft' && item.size) {
@@ -183,7 +183,7 @@ export const itemWithUnit = (item, unit, { sizeOn = false, step = 0, allItems = 
     return { ...plain, unit, quantity: unit === 'NA' ? 1 : pcs };
   }
   if (unit !== 'R.ft' && item.rft) {
-    const { rft, ...plain } = item;
+    const { rft: _rft, ...plain } = item;
     return { ...plain, unit, quantity: unit === 'NA' ? 1 : (Number(item.quantity) || 1) };
   }
   return { ...item, unit, ...(unit === 'NA' ? { quantity: 1 } : {}) };

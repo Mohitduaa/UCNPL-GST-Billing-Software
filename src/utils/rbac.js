@@ -118,10 +118,19 @@ export function verifyPin(pin, salt, expectedHash) {
   if (!pin || !salt || !expectedHash) return false;
   try {
     const { hash } = hashPin(pin, salt);
-    if (crypto && typeof crypto.timingSafeEqual === 'function') {
-      return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(expectedHash));
+    if (typeof globalThis.Buffer !== 'undefined' && crypto && typeof crypto.timingSafeEqual === 'function') {
+      const a = globalThis.Buffer.from(hash);
+      const b = globalThis.Buffer.from(expectedHash);
+      if (a.length === b.length) {
+        return crypto.timingSafeEqual(a, b);
+      }
     }
-    return hash === expectedHash;
+    if (hash.length !== expectedHash.length) return false;
+    let diff = 0;
+    for (let i = 0; i < hash.length; i++) {
+      diff |= hash.charCodeAt(i) ^ expectedHash.charCodeAt(i);
+    }
+    return diff === 0;
   } catch {
     return false;
   }

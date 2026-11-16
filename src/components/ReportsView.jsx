@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Wallet, BarChart3, Clock, Search, X, Users, Package, Boxes, Building2, Percent, Tag, Folder } from 'lucide-react';
 import { getAllBills, getAllExpenses, getAllProducts, getProfile } from '../store';
 import { costOfGoodsSold } from '../utils/products';

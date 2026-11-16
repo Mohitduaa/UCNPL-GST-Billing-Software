@@ -63,7 +63,7 @@ function getUsersConfig() {
       },
     ],
   };
-  try { writeJSON(USERS_FILE, seeded); } catch {}
+  try { writeJSON(USERS_FILE, seeded); } catch { /* ignore initial seed write */ }
   return seeded;
 }
 
@@ -73,7 +73,7 @@ function getRolesConfig() {
     return existing;
   }
   const seeded = { roles: DEFAULT_ROLES };
-  try { writeJSON(ROLES_FILE, seeded); } catch {}
+  try { writeJSON(ROLES_FILE, seeded); } catch { /* ignore initial seed write */ }
   return seeded;
 }
 
@@ -87,7 +87,7 @@ function getLanConfig() {
     activePairingCode: null,
     pairedDevices: [],
   };
-  try { writeJSON(LAN_PAIRING_FILE, seeded); } catch {}
+  try { writeJSON(LAN_PAIRING_FILE, seeded); } catch { /* ignore initial seed write */ }
   return seeded;
 }
 
@@ -231,7 +231,7 @@ app.use((req, res, next) => {
 
   // If LAN is enabled, allow private network IPs in Host header
   if (isLanEnabled()) {
-    const hostWithoutPort = host.split(':')[0].replace(/^[\[\]]/g, '');
+    const hostWithoutPort = host.split(':')[0].replace(/^[\][]/g, '');
     if (isPrivateNetworkIp(hostWithoutPort)) return next();
   }
 
@@ -252,7 +252,7 @@ app.use((req, res, next) => {
       if (isPrivateNetworkIp(u.hostname)) {
         allow = true;
       }
-    } catch {}
+    } catch { /* ignore invalid origin URL */ }
   }
 
   if (!allow) {
@@ -2104,7 +2104,7 @@ function openFolderInOS(targetDir) {
   if (isWindows) {
     exec('start "" "' + targetDir + '"', (err) => {
       if (err) {
-        spawn('powershell.exe', ['-NoProfile', '-Command', 'Start-Process explorer.exe -ArgumentList \"' + targetDir + '\"'], { detached: true }).unref();
+        spawn('powershell.exe', ['-NoProfile', '-Command', 'Start-Process explorer.exe -ArgumentList "' + targetDir + '"'], { detached: true }).unref();
       }
     });
   } else if (isMac) {

@@ -5,7 +5,7 @@ import { calculateBillMargin } from '../utils/profitability';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { saveBill, deleteBill, applyStockChanges, getNextInvoiceNumber, typedNumberInSeries, raiseInvoiceCounter, getTermsTemplates, getAllClients, saveClient, getProfile, getAllProducts, getInvoiceDisplayOptions, saveInvoiceDisplayOptions, getAllProfiles, getRegionMode, saveRecurring, getAllRecurring, getAllBills, getEnabledModules, getBusinessType } from '../store';
-import { clientPaperPrefs, clientPaperOptions, INVOICE_TYPES, isModuleEnabled, businessKeyOf, GST_DOC_NUMBER, COUNTRIES, deliveryChargeLine, stockEffect, appliedStock, stockDelta, generateEWayBillJSON, formatCurrency, getCountryConfig, getStatesForCountry, getAllUnits, addCustomUnit, removeCustomUnit, getCountriesForRegion, TDS_SECTIONS, TCS_SECTIONS, REMOVED_TCS_SECTIONS, TERMS_PRESETS, getActiveAccounts, getDefaultAccount, getAccountById, getDefaultUnitForMode, filterUnitsByMode, PAPER_SIZES, getPaperSize, computeInvoiceTotals, clientYearToDate, htmlHasText, ORDER_DETAIL_FIELDS, customFieldsOf, invoiceOptionOn, DEFAULT_DECLARATION, decodeGstin, safePageBoundaries, localToday, toLocalIsoDate, parseLocalDate, paymentStatusFor, getStateCode } from '../utils';
+import { clientPaperPrefs, clientPaperOptions, INVOICE_TYPES, isModuleEnabled, businessKeyOf, GST_DOC_NUMBER, COUNTRIES, deliveryChargeLine, stockEffect, appliedStock, stockDelta, generateEWayBillJSON, formatCurrency, getCountryConfig, getStatesForCountry, getAllUnits, addCustomUnit, removeCustomUnit, getCountriesForRegion, TDS_SECTIONS, TCS_SECTIONS, REMOVED_TCS_SECTIONS, TERMS_PRESETS, getActiveAccounts, getDefaultAccount, getAccountById, getDefaultUnitForMode, filterUnitsByMode, PAPER_SIZES, getPaperSize, computeInvoiceTotals, clientYearToDate, htmlHasText, ORDER_DETAIL_FIELDS, customFieldsOf, invoiceOptionOn, DEFAULT_DECLARATION, decodeGstin, safePageBoundaries, localToday, toLocalIsoDate, parseLocalDate, paymentStatusFor, getStateCode, calculateWarrantyExpiry, formatShortDate } from '../utils';
 import { getPrintSettings, savePrintSettings } from '../utils/printSettings';
 import { openWhatsAppShare, invoiceShareMessage } from '../utils/share';
 import { confirmAction, promptAction } from './ConfirmModal';
@@ -595,6 +595,7 @@ const LineItem = memo(function LineItem({
   onFieldChange, onSelectProduct, onSetProductSearch,
   onAddCustomUnit, onRemoveCustomUnit, onRemove, clampNonNeg,
   isLastRow, onAddRow, isOnlyRow, onSizeChange, onRftChange, allItems,
+  invoiceDate,
 }) {
   // v1.10.37 — Keyboard shortcut: Enter on any input inside the LAST
   // row adds a new row. Muscle-memory for POS users — reported: "if
@@ -2038,7 +2039,7 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
             hsn: found.hsn || '',
             quantity: 1,
             rate: salePrice,
-          mrp: prodMrp !== '' ? prodMrp : (item.mrp ?? ''),
+            mrp: (found.mrp !== undefined && found.mrp !== null && found.mrp !== '') ? found.mrp : (first.mrp ?? ''),
             taxPercent: found.taxPercent ?? defaultTaxRate,
             unit: found.unit || first.unit || 'Nos',
             productId: found.id,
@@ -2058,6 +2059,7 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
           quantity: 1,
           unit: found.unit || 'Nos',
           rate: salePrice,
+          mrp: (found.mrp !== undefined && found.mrp !== null && found.mrp !== '') ? found.mrp : '',
           discount: 0,
           taxPercent: found.taxPercent ?? defaultTaxRate,
           cessPercent: 0,
@@ -5498,6 +5500,7 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
                 onSizeChange={handleSizeChange}
                 onRftChange={handleRftChange}
                 allItems={items}
+                invoiceDate={details.invoiceDate}
               />
             ))}
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>

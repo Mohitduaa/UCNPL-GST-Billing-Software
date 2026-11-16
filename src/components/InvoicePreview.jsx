@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import QRCode from 'qrcode';
 import SignatureImages from './SignatureImages';
 import DOMPurify from 'dompurify';
-import { numberToWords, printedSubtotal, formatCurrency, INVOICE_TYPES, getCountryConfig, CURRENCY_NAMES, formatExchangeRateLine, getAccountById, getPaperSize, resolveLineDiscount, htmlHasText, splitNumberedTerms, invoiceOptionOn, DEFAULT_DECLARATION, filledOrderDetails, formatShortDate, isModuleEnabled, getStateCode, COUNTRIES } from '../utils';
+import { numberToWords, printedSubtotal, formatCurrency, INVOICE_TYPES, getCountryConfig, CURRENCY_NAMES, formatExchangeRateLine, getAccountById, getPaperSize, resolveLineDiscount, htmlHasText, splitNumberedTerms, invoiceOptionOn, DEFAULT_DECLARATION, filledOrderDetails, formatShortDate, isModuleEnabled, getStateCode, COUNTRIES, formatWarrantyLabel, calculateWarrantyExpiry } from '../utils';
 import { getEnabledModules } from '../store';
 import { getPrintSettings, getLabel, formatCurrencyEx, formatDate } from '../utils/printSettings';
 import InvoiceGridLayout, { HsnSummaryTable } from './InvoiceGridLayout';

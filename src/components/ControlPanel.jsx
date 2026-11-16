@@ -3,7 +3,6 @@ import { Download, RefreshCw, Package, FolderOpen, HardDrive, StopCircle, Upload
 import PageHeader from './PageHeader';
 import { toast } from './Toast';
 import HelpButton from './HelpButton';
-import { docsLink } from '../utils';
 import { runUpdateNow } from '../store';
 
 // v1.10.44 — In-app Control Panel.

@@ -9,7 +9,7 @@
  * Pure JavaScript module. Offline and client-side processing only.
  */
 
-import { parseCsv, rowsToRecords, toNum, toIsoDate, percentPart } from './bulkCsv.js';
+import { parseCsv, rowsToRecords, toNum, percentPart } from './bulkCsv.js';
 
 // Canonical header aliases for Parties / Clients / Customers / Vendors
 export const CLIENT_ALIASES = {

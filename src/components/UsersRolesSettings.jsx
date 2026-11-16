@@ -1,7 +1,7 @@
 // src/components/UsersRolesSettings.jsx
 // Users management, Custom Roles & Permissions Matrix, and LAN Device Pairing with QR Code
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   Shield,
@@ -39,10 +39,9 @@ import { DEFAULT_ROLES, ALL_PERMISSIONS } from '../utils/rbac';
 import { toast } from './Toast';
 
 export default function UsersRolesSettings() {
-  const { multiUserEnabled, refreshStatus } = useAuth();
+  const { refreshStatus } = useAuth();
 
   const [activeSubTab, setActiveSubTab] = useState('users'); // 'users' | 'roles' | 'lan'
-  const [loading, setLoading] = useState(true);
 
   // Users state
   const [users, setUsers] = useState([]);
@@ -63,9 +62,6 @@ export default function UsersRolesSettings() {
   const [roles, setRoles] = useState(DEFAULT_ROLES);
   const [selectedRole, setSelectedRole] = useState(DEFAULT_ROLES[0]);
   const [rolePerms, setRolePerms] = useState(new Set());
-  const [isEditingRoleName, setIsEditingRoleName] = useState(false);
-  const [newRoleName, setNewRoleName] = useState('');
-  const [newRoleDesc, setNewRoleDesc] = useState('');
 
   // LAN state
   const [lanStatus, setLanStatus] = useState({
@@ -81,7 +77,6 @@ export default function UsersRolesSettings() {
 
   // Load all data
   const loadData = async () => {
-    setLoading(true);
     try {
       const [uData, rData, lData] = await Promise.all([
         getAllUsers(),
@@ -105,8 +100,6 @@ export default function UsersRolesSettings() {
       setLanStatus(lData || { lanEnabled: false, localIps: [], port: 47371, devices: [] });
     } catch (err) {
       console.error('Failed to load users/roles/LAN data:', err);
-    } finally {
-      setLoading(false);
     }
   };
 

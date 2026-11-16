@@ -1,7 +1,7 @@
 // src/components/LoginModal.jsx
 // Multi-User PIN Login Modal & LAN Device Pairing Screen
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Lock, User, Smartphone, KeyRound, AlertCircle, RefreshCw, ArrowLeft, Check, Shield } from 'lucide-react';
 import { useAuth } from '../utils/authContext';
 import { getAllUsers } from '../store';
@@ -12,7 +12,6 @@ export default function LoginModal() {
     needsPairing,
     login,
     pairDevice,
-    isLanClient,
   } = useAuth();
 
   const [users, setUsers] = useState([]);
@@ -35,8 +34,6 @@ export default function LoginModal() {
       return 'LAN Terminal';
     }
   });
-
-  const pinInputRef = useRef(null);
 
   // Fetch users when locked
   useEffect(() => {

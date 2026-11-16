@@ -105,6 +105,18 @@ export default function ConfirmModalContainer() {
     return () => clearTimeout(t);
   }, [modal]);
 
+  const cancel = useCallback(() => {
+    if (!modal) return;
+    modal.resolve(modal.kind === 'prompt' ? null : false);
+    setModal(null);
+  }, [modal]);
+
+  const confirm = useCallback(() => {
+    if (!modal) return;
+    modal.resolve(modal.kind === 'prompt' ? value : true);
+    setModal(null);
+  }, [modal, value]);
+
   // Keyboard: Enter → confirm, Esc → cancel.
   useEffect(() => {
     if (!modal) return;
@@ -118,20 +130,7 @@ export default function ConfirmModalContainer() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modal]);
-
-  const cancel = useCallback(() => {
-    if (!modal) return;
-    modal.resolve(modal.kind === 'prompt' ? null : false);
-    setModal(null);
-  }, [modal]);
-
-  const confirm = useCallback(() => {
-    if (!modal) return;
-    modal.resolve(modal.kind === 'prompt' ? value : true);
-    setModal(null);
-  }, [modal, value]);
+  }, [modal, cancel, confirm]);
 
   if (!modal) return null;
 
