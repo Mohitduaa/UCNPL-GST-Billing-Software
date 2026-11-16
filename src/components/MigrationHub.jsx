@@ -14,7 +14,9 @@ import {
   ArrowLeft,
   AlertTriangle,
   Layers,
+  Globe,
 } from 'lucide-react';
+import SoftwareLogo from './SoftwareLogo';
 import {
   MIGRATION_SOFTWARES,
   getSoftwaresByRegion,
@@ -880,6 +882,9 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       borderRadius: 6,
                       border: 'none',
                       cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
                       background: activeRegion === 'india' ? 'var(--card-bg, #ffffff)' : 'transparent',
                       color:
                         activeRegion === 'india'
@@ -889,7 +894,14 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    🇮🇳 India
+                    <svg width="18" height="13" viewBox="0 0 18 13" style={{ borderRadius: 2, flexShrink: 0, boxShadow: '0 0.5px 1.5px rgba(0,0,0,0.2)' }}>
+                      <rect width="18" height="4.33" fill="#FF9933" />
+                      <rect y="4.33" width="18" height="4.34" fill="#FFFFFF" />
+                      <rect y="8.67" width="18" height="4.33" fill="#138808" />
+                      <circle cx="9" cy="6.5" r="1.6" fill="#000080" />
+                      <circle cx="9" cy="6.5" r="0.8" fill="#FFFFFF" />
+                    </svg>
+                    India
                   </button>
                   <button
                     type="button"
@@ -901,6 +913,9 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       borderRadius: 6,
                       border: 'none',
                       cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
                       background: activeRegion === 'global' ? 'var(--card-bg, #ffffff)' : 'transparent',
                       color:
                         activeRegion === 'global'
@@ -910,7 +925,8 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       transition: 'all 0.15s ease',
                     }}
                   >
-                    🌍 Global / International
+                    <Globe size={15} style={{ color: activeRegion === 'global' ? '#0284c7' : 'inherit' }} />
+                    Global / International
                   </button>
                   <button
                     type="button"
@@ -922,6 +938,9 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       borderRadius: 6,
                       border: 'none',
                       cursor: 'pointer',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.45rem',
                       background: activeRegion === 'all' ? 'var(--card-bg, #ffffff)' : 'transparent',
                       color:
                         activeRegion === 'all'
@@ -931,6 +950,7 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       transition: 'all 0.15s ease',
                     }}
                   >
+                    <Layers size={15} />
                     All Softwares
                   </button>
                 </div>
@@ -1061,34 +1081,37 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                       }}
                     >
                       <div>
-                        {/* Top Badge & Format Pill */}
+                        {/* Brand Logo, Badge & Format Pill */}
                         <div
                           style={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
-                            marginBottom: '0.5rem',
+                            marginBottom: '0.75rem',
                           }}
                         >
-                          <span
-                            className={sw.badge.bg + ' ' + sw.badge.textCol}
-                            style={{
-                              fontSize: '0.7rem',
-                              fontWeight: 700,
-                              padding: '0.2rem 0.5rem',
-                              borderRadius: 4,
-                              border: '1px solid currentColor',
-                              textTransform: 'uppercase',
-                              letterSpacing: '0.04em',
-                            }}
-                          >
-                            {sw.badge.text}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                            <SoftwareLogo id={sw.id} size={36} />
+                            <span
+                              className={sw.badge.bg + ' ' + sw.badge.textCol}
+                              style={{
+                                fontSize: '0.7rem',
+                                fontWeight: 700,
+                                padding: '0.18rem 0.45rem',
+                                borderRadius: 4,
+                                border: '1px solid currentColor',
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.04em',
+                              }}
+                            >
+                              {sw.badge.text}
+                            </span>
+                          </div>
                           <span
                             style={{
                               fontSize: '0.7rem',
                               fontWeight: 600,
-                              padding: '0.15rem 0.45rem',
+                              padding: '0.18rem 0.45rem',
                               borderRadius: 4,
                               background: 'var(--bg-secondary, #f5f4ee)',
                               color: 'var(--text-muted, #6e6d68)',
@@ -1192,7 +1215,8 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                   <ArrowLeft size={16} /> All Softwares
                 </button>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <SoftwareLogo id={selectedSoftware.id} size={32} />
                   <span
                     className={selectedSoftware.badge.bg + ' ' + selectedSoftware.badge.textCol}
                     style={{
@@ -1230,16 +1254,24 @@ export default function MigrationHub({ isOpen, onClose, onDone, onNavigate }) {
                   border: '1px solid var(--border-color, #dad9d4)',
                 }}
               >
-                <h3
-                  style={{
-                    margin: '0 0 0.5rem 0',
-                    fontSize: '1.05rem',
-                    fontWeight: 700,
-                    color: 'var(--text-primary, #141413)',
-                  }}
-                >
-                  Export Guide: How to export data from {selectedSoftware.name}
-                </h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', marginBottom: '0.75rem' }}>
+                  <SoftwareLogo id={selectedSoftware.id} size={46} />
+                  <div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        fontSize: '1.15rem',
+                        fontWeight: 700,
+                        color: 'var(--text-primary, #141413)',
+                      }}
+                    >
+                      Export Guide: How to export data from {selectedSoftware.name}
+                    </h3>
+                    <p className="text-muted" style={{ margin: '0.15rem 0 0 0', fontSize: '0.82rem' }}>
+                      {selectedSoftware.tagline}
+                    </p>
+                  </div>
+                </div>
                 <div
                   style={{
                     display: 'grid',
