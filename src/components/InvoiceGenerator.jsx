@@ -1568,6 +1568,23 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
   useEffect(() => {
     if (draftInitialized.current) {
       draftInitialized.current = false;
+      // Issue #194: If draft was restored without an invoice number (or empty),
+      // auto-generate the next sequential number so the number box is never left blank.
+      if (!details.invoiceNumber) {
+        const _psForPrefix = getPrintSettings();
+        const rawOverride = _psForPrefix.customPrefixes?.[invoiceType];
+        const overridePrefix = rawOverride && rawOverride.trim();
+        const prefix = overridePrefix || INVOICE_TYPES[invoiceType]?.prefix || 'INV';
+        const seq = ++peekSeq.current;
+        getNextInvoiceNumber(prefix, { peek: true, explicitPrefix: !!overridePrefix, invoiceType, businessKey: businessKeyOf(profile) })
+          .then(num => {
+            if (seq !== peekSeq.current) return;
+            peekedNumber.current = num;
+            setDetails(prev => (prev.invoiceNumber ? prev : { ...prev, invoiceNumber: num }));
+            numberReserved.current = false;
+          })
+          .catch(err => console.warn('Failed to peek invoice number on draft restore:', err));
+      }
       return;
     }
     if (editingBill?.data) {
@@ -1631,8 +1648,8 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
         setInvoiceOptions(prev => ({ ...prev, showRoundOff: false }));
       }
 
-      if (editingBill._isDuplicate) {
-        const convertType = editingBill._convertToType;
+      if (editingBill._isDuplicate || editingBill._isNewWithType) {
+        const convertType = editingBill._convertToType || editingBill.data?.invoiceType;
         const type = convertType || d.invoiceType || 'tax-invoice';
         if (convertType) {
           setInvoiceType(convertType);
@@ -1645,12 +1662,14 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
         const overridePrefix = rawOverride && rawOverride.trim();
         const prefix = overridePrefix || INVOICE_TYPES[type]?.prefix || 'INV';
         const seq = ++peekSeq.current;
-        getNextInvoiceNumber(prefix, { peek: true, explicitPrefix: !!overridePrefix, invoiceType: type, businessKey: businessKeyOf(profile) }).then(num => {
-          if (seq !== peekSeq.current) return;
-          peekedNumber.current = num;
-          setDetails({ ...d.details, invoiceNumber: num, invoiceDate: localToday() });
-          numberReserved.current = false;
-        });
+        getNextInvoiceNumber(prefix, { peek: true, explicitPrefix: !!overridePrefix, invoiceType: type, businessKey: businessKeyOf(profile) })
+          .then(num => {
+            if (seq !== peekSeq.current) return;
+            peekedNumber.current = num;
+            setDetails({ ...d.details, invoiceNumber: num, invoiceDate: localToday() });
+            numberReserved.current = false;
+          })
+          .catch(err => console.warn('Failed to peek invoice number on new/converted document:', err));
       } else {
         setDetails(d.details);
       }
@@ -1661,12 +1680,14 @@ export default function InvoiceGenerator({ onBack, profile: profileProp, editing
       const overridePrefix = rawOverride && rawOverride.trim();
       const prefix = overridePrefix || INVOICE_TYPES[invoiceType]?.prefix || 'INV';
       const seq = ++peekSeq.current;
-      getNextInvoiceNumber(prefix, { peek: true, explicitPrefix: !!overridePrefix, invoiceType, businessKey: businessKeyOf(profile) }).then(num => {
-        if (seq !== peekSeq.current) return;
-        peekedNumber.current = num;
-        setDetails(prev => ({ ...prev, invoiceNumber: num }));
-        numberReserved.current = false;
-      });
+      getNextInvoiceNumber(prefix, { peek: true, explicitPrefix: !!overridePrefix, invoiceType, businessKey: businessKeyOf(profile) })
+        .then(num => {
+          if (seq !== peekSeq.current) return;
+          peekedNumber.current = num;
+          setDetails(prev => ({ ...prev, invoiceNumber: num }));
+          numberReserved.current = false;
+        })
+        .catch(err => console.warn('Failed to peek invoice number for fresh invoice:', err));
     }
   }, [editingBill]);
 

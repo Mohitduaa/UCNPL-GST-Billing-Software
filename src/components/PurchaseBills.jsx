@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
-import { ShoppingCart, Upload, Plus, Edit3, Trash2, Search, X, Save, Download, ScanText, Eye, ClipboardList, IndianRupee, Building2, FileText, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ShoppingCart, Upload, Plus, Edit3, Trash2, Search, X, Save, Download, ScanText, Eye, ClipboardList, IndianRupee, Building2, FileText, AlertCircle, CheckCircle2, MessageCircle } from 'lucide-react';
 import HelpButton from './HelpButton';
 import { getAllPurchases, savePurchase, deletePurchase, getAllProducts, saveProduct, getProfile, getEnabledModules, getAllPurchaseOrders, savePurchaseOrder, getNextPoNumber } from '../store';
 import { findDuplicateProduct, formatDuplicateProductDetails, calculateUpdatedStock, reconcilePurchaseProducts } from '../utils/products';
 import { formatCurrency, getFYOptions, belongsToProfile, parseLocalDate, isUnassignedToBusiness, isInterstateSupply, localToday, roundQty, splitPurchaseTax, isModuleEnabled, businessKeyOf, getAllUnits, TDS_SECTIONS } from '../utils';
+import { openWhatsAppShare, supplierShareMessage } from '../utils/share';
 import { purchaseTdsAmount } from '../utils/tdsTcs';
 import { parseGstrJsonToPurchases } from '../utils/gstrImport';
 import { purchaseTotals as calcPurchaseTotal, billFormFromPo } from '../utils/purchaseOrders';
@@ -2319,16 +2320,16 @@ export default function PurchaseBills() {
                     <tr key={p.id}>
                       <td className="text-muted">{p.date ? new Date(p.date).toLocaleDateString('en-IN') : ''}</td>
                       <td className="font-medium">
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                           <span>{p.supplierName}</span>
                           <button
                             type="button"
-                            className="icon-btn"
-                            style={{ padding: 2, height: 'auto', width: 'auto', color: '#6366f1' }}
-                            title="Download Supplier Account Statement PDF"
+                            className="btn btn-secondary"
+                            style={{ padding: '2px 6px', fontSize: '0.7rem', display: 'inline-flex', alignItems: 'center', gap: 3, height: 'auto', lineHeight: '1.2' }}
+                            title="View / Download Supplier Account Statement PDF"
                             onClick={(e) => { e.stopPropagation(); generateSupplierStatement(p.supplierName); }}
                           >
-                            <FileText size={13} />
+                            <FileText size={11} /> Statement
                           </button>
                         </div>
                       </td>
@@ -2470,15 +2471,24 @@ export default function PurchaseBills() {
                           {s.balanceOwed > 0.005 ? `${formatCurrency(s.balanceOwed)} Cr` : 'Nil'}
                         </td>
                         <td>
-                          <div className="table-actions" style={{ justifyContent: 'center', gap: '0.4rem' }}>
+                          <div className="table-actions" style={{ justifyContent: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
                             <button
                               type="button"
                               className="btn btn-secondary"
                               style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
                               onClick={() => generateSupplierStatement(s.name)}
-                              title="Download complete statement PDF for this supplier"
+                              title="View & download complete statement PDF for this supplier"
                             >
-                              <Download size={13} /> Statement PDF
+                              <FileText size={13} /> Statement PDF
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              style={{ padding: '0.25rem 0.55rem', fontSize: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: '#16a34a' }}
+                              onClick={() => openWhatsAppShare('', supplierShareMessage(s, ownerProfile))}
+                              title="Share statement summary via WhatsApp"
+                            >
+                              <MessageCircle size={13} /> WhatsApp
                             </button>
                             <button
                               type="button"

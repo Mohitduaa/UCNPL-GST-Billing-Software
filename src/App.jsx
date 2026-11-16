@@ -470,10 +470,21 @@ function App() {
     setSidebarAutoHide(on);
     try { localStorage.setItem('freegstbill_sidebarAutoHide', on ? '1' : '0'); } catch { /* private mode */ }
   };
-  const handleNewInvoice = () => {
+  const handleNewInvoice = (type) => {
     setEditorKey((k) => k + 1);
     sessionStorage.removeItem('gst_invoiceDraft');
-    setEditingBill(null);
+    if (type && type !== 'tax-invoice') {
+      setEditingBill({
+        _isNewWithType: true,
+        data: {
+          invoiceType: type,
+          details: { invoiceDate: localToday() },
+          items: [{ id: Date.now().toString(), name: '', hsn: '', quantity: 1, unit: 'Nos', rate: 0, discount: 0, taxPercent: 18, cessPercent: 0 }],
+        },
+      });
+    } else {
+      setEditingBill(null);
+    }
     setCurrentView('new');
   };
 

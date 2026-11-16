@@ -53,6 +53,28 @@ export function invoiceShareMessage(bill, profile) {
 }
 
 /**
+ * WhatsApp / statement summary text for a supplier statement.
+ */
+export function supplierShareMessage(supplier, profile) {
+  const totalBilled = Number(supplier?.totalBilled) || 0;
+  const totalPaid = Number(supplier?.totalPaid) || 0;
+  const balanceOwed = Number(supplier?.balanceOwed) || 0;
+  const billsCount = supplier?.bills?.length || 0;
+
+  return [
+    profile?.businessName && `*${profile.businessName}*`,
+    `*SUPPLIER ACCOUNT STATEMENT*`,
+    `Supplier: *${supplier?.name || ''}*`,
+    supplier?.gstin ? `GSTIN: ${supplier.gstin}` : null,
+    `Total Bills: ${billsCount}`,
+    `Total Purchases: ${formatCurrency(totalBilled)}`,
+    `Total Paid: ${formatCurrency(totalPaid)}`,
+    balanceOwed > 0.005 ? `*Balance Payable: ${formatCurrency(balanceOwed)} Cr*` : `Balance: Nil`,
+    `Statement Date: ${new Date().toLocaleDateString('en-IN')}`,
+  ].filter(Boolean).join('\n');
+}
+
+/**
  * Sanitize a phone number for WhatsApp deep-link.
  * WhatsApp requires digits only — no +, spaces, dashes, or parens.
  * Empty / undefined → empty string (caller picks the no-phone URL).
