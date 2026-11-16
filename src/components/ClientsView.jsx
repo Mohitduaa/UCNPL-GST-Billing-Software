@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Users, Search, FileText, ChevronDown, ChevronUp, Trash2, X, MessageCircle, Mail, Plus, Edit3, Copy, Upload, Download, IndianRupee, History } from 'lucide-react';
+import { Users, Search, FileText, ChevronDown, ChevronUp, Trash2, X, MessageCircle, Mail, Plus, Edit3, Copy, Upload, Download, IndianRupee, History, ArrowRightLeft } from 'lucide-react';
 import PdfPreviewModal from './PdfPreviewModal';
+import MigrationHub from './MigrationHub';
 import { extractClientPayments, getLatestClientPayment, formatPaymentMode } from '../utils/clientPayments';
 import HelpButton from './HelpButton';
 import { getAllClients, getAllBills, deleteClient, saveClient, saveBill, getProfile, deleteReceipt, trashBill } from '../store';
@@ -764,6 +765,7 @@ export default function ClientsView({ onEdit, onDuplicate, onNew }) {
 
   // v1.10.83 (#121) - Import CSV opens a window with a sample file (CsvListImport).
   const [showImport, setShowImport] = useState(false);
+  const [showMigration, setShowMigration] = useState(false);
 
   const handleModalSave = async (formData) => {
     if (!formData.name.trim()) { toast('Client name is required', 'warning'); return; }
@@ -807,6 +809,9 @@ export default function ClientsView({ onEdit, onDuplicate, onNew }) {
           <button className="btn btn-secondary" onClick={() => setShowImport(true)} title="Add clients from a CSV, an Excel file (.xlsx, such as Vyapar's) or Tally's masters export (.xml)">
             <Upload size={16} /> Import CSV
           </button>
+          <button className="btn btn-secondary" onClick={() => setShowMigration(true)} title="Import clients from Tally, Busy, Vyapar, QuickBooks, etc.">
+            <ArrowRightLeft size={16} /> Import &amp; Migrate
+          </button>
           <button className="btn btn-secondary" onClick={() => openAddClient()}>
             <Plus size={18} /> Add Client
           </button>
@@ -820,7 +825,19 @@ export default function ClientsView({ onEdit, onDuplicate, onNew }) {
         <CsvListImport what="clients" sample={CLIENTS_SAMPLE} sampleName="Clients-sample.csv" doc="clients#import-csv"
           intro="One client per row: Name (required), GSTIN, Phone, Email, Address and State."
           parse={(rows) => { const r = clientsCsvToList(rows, clients); return { list: r.clients, skipped: r.skipped, errors: r.errors }; }}
-          save={saveClient} onClose={() => setShowImport(false)} onDone={() => { setShowImport(false); loadData(); }} />
+          save={saveClient} onClose={() => setShowImport(false)} onDone={() => { setShowImport(false); loadData(); }}
+          onOpenMigration={() => { setShowImport(false); setShowMigration(true); }} />
+      )}
+
+      {showMigration && (
+        <MigrationHub
+          isOpen
+          onClose={() => setShowMigration(false)}
+          onDone={() => {
+            setShowMigration(false);
+            loadData();
+          }}
+        />
       )}
 
       {/* Add/Edit Client Modal */}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
-import { Home, FileText, Settings, Plus, Users, Package, BarChart3, Wallet, RefreshCw, Receipt, BookOpen, Moon, Sun, Download, X, ShoppingCart, ChevronDown, ChevronRight, Building2, Pencil, HelpCircle, Search, Command, Bell, Calculator, HardDrive, Menu, Heart, Banknote, ShoppingBag, ReceiptText, CheckCircle2, SlidersHorizontal, Clock, AlertTriangle, ClipboardList, Repeat, Lock, Lightbulb, User } from 'lucide-react';
+import { Home, FileText, Settings, Plus, Users, Package, BarChart3, Wallet, RefreshCw, Receipt, BookOpen, Moon, Sun, Download, X, ShoppingCart, ChevronDown, ChevronRight, Building2, Pencil, HelpCircle, Search, Command, Bell, Calculator, HardDrive, Menu, Heart, Banknote, ShoppingBag, ReceiptText, CheckCircle2, SlidersHorizontal, Clock, AlertTriangle, ClipboardList, Repeat, Lock, Lightbulb, User, ArrowRightLeft } from 'lucide-react';
 import { getAllProfiles, saveProfile, getEnabledModules, getMenuOrder, onMenuChanged, getAllBills, getAllProducts, getStockAlertSettings, getAllClients, runUpdateNow, getLockStatus } from './store';
 import { isModuleEnabled, getUpcomingFilings, countsAsSales, localToday, toLocalIsoDate, DOCS_URL, findLowStock, trackedStock } from './utils';
 import { orderedMenu } from './utils/businessTypes';
@@ -43,6 +43,7 @@ const SupportView = lazy(() => import('./components/SupportView'));
 const SalesOrdersView = lazy(() => import('./components/SalesOrdersView'));
 import StarBanner from './components/StarBanner';
 import AppFooter from './components/AppFooter';
+import MigrationHub from './components/MigrationHub';
 import LockButton from './components/LockButton';
 import OfflineModeButton from './components/OfflineModeButton';
 import { isOfflineMode } from './utils/offlineMode';
@@ -137,6 +138,7 @@ function App() {
   // after that dismissal will re-show the banner.
   const [updateInfo, setUpdateInfo] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [migrationOpen, setMigrationOpen] = useState(false);
   const [notifyAsked, setNotifyAsked] = useState(false);
   const updateBannerVisible = updateInfo?.updateAvailable
     && localStorage.getItem('freegstbill_dismissedUpdate') !== updateInfo.latest;
@@ -684,6 +686,13 @@ function App() {
     if (topIds.includes('guide')) acts.push({ label: 'Open the User Guide', hint: '', category: 'help', run: openDocs });
     acts.push({ label: 'Toggle dark mode', hint: '', category: 'action', run: () => setDarkMode(d => !d) });
     acts.push({ label: 'Show keyboard shortcuts', hint: 'Ctrl+/', category: 'help', run: () => setShowShortcutsHelp(true) });
+    acts.push({
+      icon: ArrowRightLeft,
+      label: 'Import & Migrate Data (Tally, Busy, Vyapar, QuickBooks...)',
+      hint: '',
+      category: 'action',
+      run: () => setMigrationOpen(true),
+    });
     if (updateInfo?.updateAvailable) {
       acts.push({ label: `View update — v${updateInfo.latest}`, hint: '', category: 'update', run: () => setShowUpdateModal(true) });
     }
@@ -1055,6 +1064,15 @@ function App() {
                 }} />
               </button>
             )}
+            {/* Import & Migrate Data button */}
+            <button
+              type="button"
+              className="nav-btn"
+              onClick={() => setMigrationOpen(true)}
+              title="Import & Migrate Data from Tally, Busy, Vyapar, QuickBooks, etc."
+            >
+              <ArrowRightLeft size={18} /> Import &amp; Migrate
+            </button>
             {/* v1.10.83 - in the order chosen in Settings → Features; switched-off
                 ones are already left out of bottomIds. */}
             {bottomIds.map(id => ({
@@ -1509,6 +1527,29 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Migration Hub Modal (Accessible globally from sidebar or palette) */}
+      <MigrationHub
+        isOpen={migrationOpen}
+        onClose={() => setMigrationOpen(false)}
+        onDone={() => {
+          Promise.all([
+            getAllBills().catch(() => []),
+            getAllClients().catch(() => []),
+            getAllProducts().catch(() => []),
+          ]).then(([b, c, p]) => {
+            setSearchCorpus({
+              bills: b.slice(0, 100),
+              clients: c.slice(0, 200),
+              products: p.slice(0, 200),
+            });
+          });
+        }}
+        onNavigate={(view) => {
+          setMigrationOpen(false);
+          setCurrentView(view);
+        }}
+      />
 
       <ToastContainer />
       <ConfirmModalContainer />

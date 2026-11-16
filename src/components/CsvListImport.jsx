@@ -6,10 +6,11 @@
 // gets a sheet picker) and Tally's masters .xml (#131), read by
 // src/utils/importFile.js into the same rows a CSV gives.
 import { useState } from 'react';
-import { Upload, Download, X } from 'lucide-react';
+import { Upload, Download, X, ArrowRightLeft } from 'lucide-react';
 import { toast } from './Toast';
 import HelpButton from './HelpButton';
 import { fileToSheets, bestSheet } from '../utils/importFile';
+import MigrationHub from './MigrationHub';
 
 const download = (text, name) => {
   const url = URL.createObjectURL(new Blob([text], { type: 'text/csv;charset=utf-8;' }));
@@ -21,9 +22,10 @@ const download = (text, name) => {
 // what: 'products' | 'clients'. parse(rows) -> { list, updates?, skipped, errors }
 // (updates: saved items with empty details filled in, #134).
 // save(item) saves one. intro: what the columns are.
-export default function CsvListImport({ what, sample, sampleName, doc, intro, parse, save, onClose, onDone }) {
+export default function CsvListImport({ what, sample, sampleName, doc, intro, parse, save, onClose, onDone, onOpenMigration }) {
   const [plan, setPlan] = useState(null); // { fileName, sheets, at, list, updates, skipped, errors }
   const [busy, setBusy] = useState(false);
+  const [showMigration, setShowMigration] = useState(false);
 
   const read = (fileName, sheets, at) => ({ fileName, sheets, at, updates: [], ...parse(sheets[at].rows) });
 
@@ -68,6 +70,39 @@ export default function CsvListImport({ what, sample, sampleName, doc, intro, pa
           Choose a CSV, an Excel file (.xlsx, such as Vyapar's {what === 'clients' ? 'party' : 'item'} export) or a Tally file
           (in Tally: <b>Gateway of Tally &gt; Export &gt; Masters</b>, format <b>XML</b>; {what === 'clients' ? 'ledgers under Sundry Debtors and Sundry Creditors come in' : 'stock items come in with HSN, GST rate and unit'}).
         </p>
+
+        {/* Migration Hub cross-link */}
+        <div style={{
+          margin: '0.75rem 0',
+          padding: '0.75rem 1rem',
+          borderRadius: 8,
+          background: 'rgba(59, 130, 246, 0.08)',
+          border: '1px solid rgba(59, 130, 246, 0.22)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem',
+          flexWrap: 'wrap',
+        }}>
+          <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.55rem', flex: 1, minWidth: 220 }}>
+            <ArrowRightLeft size={16} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+            <span>Need to migrate from Tally, Busy, Vyapar, or QuickBooks? Use the <strong>Migration Hub</strong> with step-by-step guides.</span>
+          </div>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => {
+              if (onOpenMigration) {
+                onOpenMigration();
+              } else {
+                setShowMigration(true);
+              }
+            }}
+            style={{ fontSize: '0.78rem', padding: '0.35rem 0.75rem', whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600 }}
+          >
+            <ArrowRightLeft size={13} /> Open Migration Hub
+          </button>
+        </div>
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
           <button type="button" className="btn btn-secondary" onClick={() => download(sample, sampleName)}
             title="A CSV with the right column headings and two example rows. Open it in Excel or Google Sheets, replace the examples and save as CSV.">
@@ -101,7 +136,19 @@ export default function CsvListImport({ what, sample, sampleName, doc, intro, pa
           </div>
         )}
         <p className="text-muted" style={{ fontSize: '0.8rem', margin: '0.75rem 0 0' }}>
-          Old invoices? Import them on the Dashboard with <b>CSV import / export</b>, which has its own template.
+          Old invoices or complete data migration? Use the{' '}
+          <button
+            type="button"
+            className="btn-link"
+            onClick={() => {
+              if (onOpenMigration) onOpenMigration();
+              else setShowMigration(true);
+            }}
+            style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}
+          >
+            Migration Hub
+          </button>
+          {' '}or the Dashboard's <b>CSV import / export</b>.
           <HelpButton title="Importing old invoices" doc="dashboard#csv" size={14} />
         </p>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem', marginTop: '1rem' }}>
@@ -111,6 +158,17 @@ export default function CsvListImport({ what, sample, sampleName, doc, intro, pa
           </button>
         </div>
       </div>
+
+      {showMigration && (
+        <MigrationHub
+          isOpen
+          onClose={() => setShowMigration(false)}
+          onDone={() => {
+            setShowMigration(false);
+            onDone?.();
+          }}
+        />
+      )}
     </div>
   );
 }

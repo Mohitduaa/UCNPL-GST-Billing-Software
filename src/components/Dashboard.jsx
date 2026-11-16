@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { FileText, Trash2, Plus, IndianRupee, Receipt, Edit3, TrendingUp, Search, Copy, X, CheckCircle, Clock, AlertTriangle, MessageCircle, Mail, StickyNote, Send, Package, Download, Printer, Ban, Undo2, Eye, QrCode, Upload } from 'lucide-react';
+import { FileText, Trash2, Plus, IndianRupee, Receipt, Edit3, TrendingUp, Search, Copy, X, CheckCircle, Clock, AlertTriangle, MessageCircle, Mail, StickyNote, Send, Package, Download, Printer, Ban, Undo2, Eye, QrCode, Upload, ArrowRightLeft } from 'lucide-react';
 import HelpButton from './HelpButton';
 import { useAuth } from '../utils/authContext.jsx';
 import { getAllBills, saveBill, getAllProducts, applyStockChanges, getProfile, getAllClients, getStockAlertSettings, saveReceipt, deleteReceipt, getAllReceipts, markSavedPdfCancelled, getEnabledModules, trashBill, getTrashedBills, restoreBillFromTrash, purgeTrashedBill } from '../store';
@@ -13,6 +13,7 @@ import PageHeader from './PageHeader';
 import LockButton from './LockButton';
 import ActionsMenu from './ActionsMenu';
 import BulkCsvImport from './BulkCsvImport';
+import MigrationHub from './MigrationHub';
 import PrintPreviewModal from './PrintPreviewModal';
 import InvoiceTrash from './InvoiceTrash';
 import SupportNudge from './SupportNudge';
@@ -336,6 +337,7 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
     try { localStorage.setItem('gst_dashboardColumns', JSON.stringify(visibleColumns)); } catch { /* ignore */ }
   }, [visibleColumns]);
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [migrationOpen, setMigrationOpen] = useState(false);
   const [paymentModal, setPaymentModal] = useState(null);
   // v1.10.80 (#100) - the invoice shown read-only by the View button.
   const [viewBill, setViewBill] = useState(null);
@@ -1425,6 +1427,9 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
     if (guideDismissed || productCount === null || !profile) return null;
     const hasBank = !!(profile.paymentAccounts?.length || profile.upiId || profile.accountNumber);
     const steps = [
+      { key: 'migration', done: allBills.length > 0 || (productCount || 0) > 0,
+        title: 'Import from Tally, Busy, Vyapar or QuickBooks', hint: 'Moving from another software? Bring your parties, products & invoices in minutes',
+        cta: 'Open Migration Hub', go: () => setMigrationOpen(true) },
       { key: 'business', done: !!profile.businessName?.trim(),
         title: 'Add your business details', hint: 'Name, address and GSTIN - these print on every invoice',
         cta: 'Open Settings', go: onOpenSettings },
@@ -1451,6 +1456,15 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
         subtitle="Overview of your invoices"
         meta={`${bills.length} invoice${bills.length === 1 ? '' : 's'}`}>
         <LockButton />
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={() => setMigrationOpen(true)}
+          title="Import & Migrate Data from Tally, Busy, Vyapar, QuickBooks, CSV, Excel, XML"
+          style={{ fontWeight: 600 }}
+        >
+          <ArrowRightLeft size={16} /> Import &amp; Migrate Data
+        </button>
         <BulkCsvImport kind="sales" onDone={loadBills} />
         {einvoiceOn && (
           <>
@@ -1471,6 +1485,57 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
           from real data rather than from "have you seen this screen", and
           removes itself for good once everything is set up. */}
       <WelcomeCard invoiceCount={bills.length} />
+
+      {/* Getting Started Migration Banner for accounts with 0 invoices */}
+      {bills.length === 0 && (
+        <div
+          className="glass-panel p-6 mb-6"
+          style={{
+            background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%)',
+            border: '1.5px solid rgba(59, 130, 246, 0.25)',
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1.25rem',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '280px' }}>
+            <div
+              style={{
+                width: 44,
+                height: 44,
+                borderRadius: '10px',
+                background: 'var(--primary)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
+              <ArrowRightLeft size={22} />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>
+                Moving from another software?
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+                Import your Parties, Products &amp; Invoices in 2 minutes from Tally, Busy, Vyapar, QuickBooks, Xero &amp; more.
+              </div>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setMigrationOpen(true)}
+            style={{ whiteSpace: 'nowrap', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, padding: '0.6rem 1.25rem' }}
+          >
+            <ArrowRightLeft size={16} /> Open Migration Hub
+          </button>
+        </div>
+      )}
 
       {startedSteps && (
         <div className="glass-panel p-6 mb-6">
@@ -1502,12 +1567,22 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
               )}
             </div>
           ))}
-          <div style={{ marginTop: '0.9rem', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-            New to this?{' '}
-            <button type="button" onClick={onOpenGuide}
-              style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
-              Read the 5-minute guide
-            </button>
+          <div style={{ marginTop: '0.9rem', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+            <span>
+              New to this?{' '}
+              <button type="button" onClick={onOpenGuide}
+                style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer' }}>
+                Read the 5-minute guide
+              </button>
+            </span>
+            <span>·</span>
+            <span>
+              Switching software?{' '}
+              <button type="button" onClick={() => setMigrationOpen(true)}
+                style={{ background: 'none', border: 0, padding: 0, font: 'inherit', color: 'var(--primary)', textDecoration: 'underline', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                <ArrowRightLeft size={12} /> Open Migration Hub
+              </button>
+            </span>
           </div>
         </div>
       )}
@@ -2209,6 +2284,18 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
       {receiptTarget && (
         <ReceiptModal target={receiptTarget} onClose={() => setReceiptTarget(null)} />
       )}
+
+      {/* Migration Hub Modal */}
+      <MigrationHub
+        isOpen={migrationOpen}
+        onClose={() => setMigrationOpen(false)}
+        onDone={loadBills}
+        onNavigate={(view) => {
+          setMigrationOpen(false);
+          if (view === 'inventory') onOpenProducts?.();
+          else if (view === 'settings') onOpenSettings?.();
+        }}
+      />
     </div>
   );
 }

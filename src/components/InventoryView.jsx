@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Package, Search, Plus, Edit3, Trash2, X, Save, Upload, Table2, Factory, Barcode, RefreshCw, Tag } from 'lucide-react';
+import { Package, Search, Plus, Edit3, Trash2, X, Save, Upload, Table2, Factory, Barcode, RefreshCw, Tag, ArrowRightLeft } from 'lucide-react';
 import { renderCode128Svg, generateRandomBarcode } from '../utils/barcode';
 import BarcodeLabelsModal from './BarcodeLabelsModal';
 import { getAllProducts, saveProduct, deleteProduct, getProfile, getStockAlertSettings, getEnabledModules } from '../store';
 import { getAllUnits, getCountryConfig, formatCurrency, isModuleEnabled, isServiceProduct, trackedStock, filterUnitsByMode, getDefaultUnitForMode } from '../utils';
 import { productsCsvToList, PRODUCTS_SAMPLE } from '../utils/listCsv';
 import CsvListImport from './CsvListImport';
+import MigrationHub from './MigrationHub';
 import { bomError, unitCost } from '../utils/manufacturing';
 import { BomEditor, MakeModal, ProductionList } from './Manufacturing';
 import { toast } from './Toast';
@@ -285,6 +286,7 @@ export default function InventoryView() {
     ...(kind === 'service' && !serviceUnits.some(u => u.label === prev.unit) ? { unit: getDefaultUnitForMode('services') } : {}),
   }));
   const [showImport, setShowImport] = useState(false);
+  const [showMigration, setShowMigration] = useState(false);
 
   return (
     <div className="dashboard-container">
@@ -302,6 +304,9 @@ export default function InventoryView() {
           </button>
           <button className="btn btn-secondary" onClick={() => setShowImport(true)} title="Add products from a CSV, an Excel file (.xlsx, such as Vyapar's) or Tally's masters export (.xml)">
             <Upload size={16} /> Import CSV
+          </button>
+          <button className="btn btn-secondary" onClick={() => setShowMigration(true)} title="Import products from Tally, Busy, Vyapar, QuickBooks, etc.">
+            <ArrowRightLeft size={16} /> Import &amp; Migrate
           </button>
           <button className="btn btn-secondary" onClick={() => setBulkEdit(true)} disabled={!products.length || bulkEdit}
             title="Edit name, HSN, prices, GST %, unit and stock of many products at once">
@@ -322,7 +327,18 @@ export default function InventoryView() {
         <CsvListImport what="products" sample={PRODUCTS_SAMPLE} sampleName="Products-sample.csv" doc="products#import"
           intro="One product or service per row: Name (required), Type (Goods or Service), HSN/SAC, Unit, Purchase Price, Selling Price, GST % and Stock (leave Stock blank for a service). For a product already saved, details that are empty on it are filled in from the file; nothing already filled is changed."
           parse={(rows) => { const r = productsCsvToList(rows, products); return { list: r.products, updates: r.updates, skipped: r.skipped, errors: r.errors }; }}
-          save={saveProduct} onClose={() => setShowImport(false)} onDone={() => { setShowImport(false); loadProducts(); }} />
+          save={saveProduct} onClose={() => setShowImport(false)} onDone={() => { setShowImport(false); loadProducts(); }}
+          onOpenMigration={() => { setShowImport(false); setShowMigration(true); }} />
+      )}
+      {showMigration && (
+        <MigrationHub
+          isOpen
+          onClose={() => setShowMigration(false)}
+          onDone={() => {
+            setShowMigration(false);
+            loadProducts();
+          }}
+        />
       )}
       {showMake && <MakeModal products={products} currency={profileCurrency} onClose={() => setShowMake(false)} onSaved={afterProduction} />}
 
