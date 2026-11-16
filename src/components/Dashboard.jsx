@@ -1470,7 +1470,7 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
           two. This stays until the work is actually done, ticks itself off
           from real data rather than from "have you seen this screen", and
           removes itself for good once everything is set up. */}
-      {onOpenSupport && <WelcomeCard invoiceCount={bills.length} onOpenSupport={onOpenSupport} />}
+      <WelcomeCard invoiceCount={bills.length} />
 
       {startedSteps && (
         <div className="glass-panel p-6 mb-6">
