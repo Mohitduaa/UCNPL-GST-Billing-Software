@@ -19,6 +19,7 @@
  * ponytail: rupees only; a foreign-currency invoice or receipt is left out.
  */
 import { belongsToProfile, getFinancialYearStart, toLocalIsoDate } from '../utils.js';
+import { purchaseOwed } from './purchasePayments.js';
 
 export const CASH_CATEGORIES = ['Opening balance', 'Sales', 'Advance', 'Salary', 'Tea & snacks', 'Transport', 'Owner drawing', 'Deposit to bank', 'Other'];
 
@@ -160,7 +161,7 @@ export function linkedCashLines({ bills = [], receipts = [], expenses = [], purc
         });
       }
     } else if (p?.paymentStatus === 'Paid' && isCash(p?.paymentMode)) {
-      const amt = r2(p.totalAmount || 0);
+      const amt = r2(purchaseOwed(p));
       if (amt > 0) {
         lines.push({
           key: `purchase:${p.id}:paid`,
@@ -239,7 +240,7 @@ export function linkedBankLines({ bills = [], receipts = [], expenses = [], purc
         });
       }
     } else if (p?.paymentStatus === 'Paid' && isBankMode(p?.paymentMode)) {
-      const amt = r2(p.totalAmount || 0);
+      const amt = r2(purchaseOwed(p));
       if (amt > 0) {
         lines.push({
           key: `purchase:${p.id}:paid`,

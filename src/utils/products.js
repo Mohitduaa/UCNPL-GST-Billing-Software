@@ -243,11 +243,22 @@ export const reconcilePurchaseProducts = ({
   const byId = new Map((existingProducts || []).map((p) => [p.id, p]));
   const priorQtyByKey = new Map();
 
+  const getBaseQty = (it, prod) => {
+    if (it?.baseQuantity !== undefined && it?.baseQuantity !== null && !isNaN(Number(it.baseQuantity)) && Number(it.baseQuantity) !== 0) {
+      return Number(it.baseQuantity);
+    }
+    if (prod?.secondaryUnit && it?.unit && String(it.unit).trim().toLowerCase() === String(prod.secondaryUnit).trim().toLowerCase() && Number(prod.conversionFactor) > 0) {
+      return (Number(it?.quantity) || 0) * Number(prod.conversionFactor);
+    }
+    return Number(it?.quantity) || 0;
+  };
+
   if (isEdit) {
     for (const p of priorItems || []) {
       const match = findDuplicateProduct(p, existingProducts);
       const key = match.isDuplicate ? match.existingProduct.id : `name:${normStr(p.name)}`;
-      priorQtyByKey.set(key, (priorQtyByKey.get(key) || 0) + (Number(p.quantity) || 0));
+      const pQty = getBaseQty(p, match.existingProduct);
+      priorQtyByKey.set(key, (priorQtyByKey.get(key) || 0) + pQty);
     }
   }
 
@@ -259,16 +270,17 @@ export const reconcilePurchaseProducts = ({
   for (const it of (items || []).filter((x) => x && x.name && String(x.name).trim())) {
     const qty = Number(it.quantity) || 0;
     const match = findDuplicateProduct(it, existingProducts);
+    const existing = match.isDuplicate ? match.existingProduct : null;
+    const baseQty = getBaseQty(it, existing);
 
-    if (match.isDuplicate && match.existingProduct) {
-      const existing = match.existingProduct;
+    if (existing) {
       linkedItems.push({ ...it, productId: existing.id });
 
       const key = existing.id;
       seenPriorKeys.add(key);
 
-      // Accumulate new purchased quantity across all line items for this existing product
-      stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + qty);
+      // Accumulate new purchased quantity across all line items for this existing product (in base units)
+      stockDeltaById.set(existing.id, (stockDeltaById.get(existing.id) || 0) + baseQty);
 
       const lineGross = qty * (Number(it.rate) || 0);
       let lineDisc = Number(it.discount) || 0;
@@ -306,7 +318,7 @@ export const reconcilePurchaseProducts = ({
         taxPercent: Number(it.taxPercent) || 0,
         cessPercent: Number(it.cessPercent) || 0,
         unit: it.unit || 'Nos',
-        stock: Math.round((seeded + qty) * 1000) / 1000,
+        stock: Math.round((seeded + baseQty) * 1000) / 1000,
         description: it.description || '',
       });
     }

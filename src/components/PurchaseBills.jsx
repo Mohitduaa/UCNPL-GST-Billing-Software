@@ -307,7 +307,7 @@ export default function PurchaseBills() {
   const generateSupplierStatement = async (supplierName) => {
     const supBills = purchases
       .filter(p => (p.supplierName || '').trim().toLowerCase() === (supplierName || '').trim().toLowerCase())
-      .sort((a, b) => ((parseLocalDate(a.date) || 0) - (parseLocalDate(b.date) || 0)) || String(a.invoiceNumber || '').localeCompare(String(b.invoiceNumber || '')));
+      .sort((a, b) => ((parseLocalDate(a.date)?.getTime() || 0) - (parseLocalDate(b.date)?.getTime() || 0)) || String(a.invoiceNumber || '').localeCompare(String(b.invoiceNumber || '')));
 
     if (supBills.length === 0) {
       toast('No purchase bills found for this supplier', 'warning');
@@ -1245,6 +1245,7 @@ export default function PurchaseBills() {
 
   // Take a deleted bill's quantities back out of product stock.
   // Matches products the same way saving does: productId, then name.
+  // Respects baseQuantity and secondary packaging units.
   const revertPurchaseStock = async (bill) => {
     const lines = (bill?.items || []).filter(it => it.name && Number(it.quantity) > 0);
     if (!lines.length) return;
@@ -1254,7 +1255,14 @@ export default function PurchaseBills() {
     const minus = new Map();
     for (const it of lines) {
       const prod = (it.productId && byId.get(it.productId)) || byName.get(it.name.trim().toLowerCase());
-      if (prod) minus.set(prod.id, (minus.get(prod.id) || 0) + Number(it.quantity));
+      if (prod) {
+        const baseQty = (it.baseQuantity !== undefined && it.baseQuantity !== null && !isNaN(Number(it.baseQuantity)) && Number(it.baseQuantity) !== 0)
+          ? Number(it.baseQuantity)
+          : (prod.secondaryUnit && it.unit && String(it.unit).trim().toLowerCase() === String(prod.secondaryUnit).trim().toLowerCase() && Number(prod.conversionFactor) > 0)
+            ? (Number(it.quantity) || 0) * Number(prod.conversionFactor)
+            : (Number(it.quantity) || 0);
+        minus.set(prod.id, (minus.get(prod.id) || 0) + baseQty);
+      }
     }
     await Promise.all([...minus].map(([pid, qty]) => {
       const prod = byId.get(pid);

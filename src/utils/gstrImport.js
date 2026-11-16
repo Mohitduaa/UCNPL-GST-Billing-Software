@@ -69,10 +69,10 @@ export function convertGstrInvoiceToPurchase(inv, supplier = {}, profile = {}) {
     };
   }, { taxable: 0, tax: 0, cess: 0, total: 0 });
 
-  // Calculate IGST from 2B/2A items if present
+  // Calculate IGST from 2B/2A items if present (handles portal iamt & igst)
   const totalIgst = (inv.items || inv.itms || []).reduce((sum, it) => {
     const det = it.itm_det || it;
-    return sum + Number(det.igst || 0);
+    return sum + Number(det.igst || det.iamt || 0);
   }, 0);
 
   const profileGstin = String(profile?.gstin || '').trim().toUpperCase();
@@ -100,6 +100,8 @@ export function convertGstrInvoiceToPurchase(inv, supplier = {}, profile = {}) {
     totalAmount: finalTotal,
     totalTax: totals.tax + totals.cess,
     taxableAmount: totals.taxable,
+    subtotal: totals.taxable,
+    totalDiscount: 0,
     applyRoundOff,
     roundOff,
     paymentStatus: 'Unpaid',

@@ -3,6 +3,7 @@ import { Plus, FileText, Download, Upload, ExternalLink, CheckCircle, ChevronDow
 import { getAllBills, getAllExpenses, getAllPurchases, savePurchase, getProfile, getEnabledModules } from '../store';
 import { hsnTable, stripEmpty, lineTreatment, nilTable, expTable, exportNote, b2bInvType, docIssueSummary, docIssueDetails, cleanGstin, gstinFormatOk, hsnSplitFrom, hsnSummary, mergeHsnRows, hsnRowValue, hsnCsvRow, HSN_CSV_HEADERS, billIsInterstate, billSplit, isExportBill, hsnSign } from '../utils/gstr1Json';
 import { convertGstrInvoiceToPurchase } from '../utils/gstrImport';
+import { purchaseTotals } from '../utils/purchaseOrders';
 import { formatCurrency, INVOICE_TYPES, getStateCode, formatDateGST, getFilingPeriod, getFYOptions, belongsToProfile, toCsvLine, isCancelledBill, b2clThreshold, GST_PORTAL_RATES, setOffITC, placeOfSupplyLabel, countsAsSales, parseLocalDate, isModuleEnabled } from '../utils';
 import { toast } from './Toast';
 import HelpButton from './HelpButton';
@@ -95,16 +96,11 @@ function getTaxableAmount(totals) {
 // Normalises an invoice number for fuzzy matching: uppercase, strip non-alphanumeric.
 function normInv(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 
-// A purchase bill's taxable value, tax and invoice value as booked. Cess is
-// part of the invoice value the supplier reports in 2B (`val`); leaving it
-// out flagged every bill with cess as an amount mismatch.
+// A purchase bill's taxable value, tax and invoice value as booked.
+// Correctly accounts for item discounts and round-off via purchaseTotals.
 function purchaseBookTotals(p) {
-  return (p?.items || []).reduce((acc, it) => {
-    const amount = (Number(it.quantity) || 0) * (Number(it.rate) || 0);
-    const tax = amount * (Number(it.taxPercent) || 0) / 100;
-    const cess = amount * (Number(it.cessPercent) || 0) / 100;
-    return { taxable: acc.taxable + amount, tax: acc.tax + tax, cess: acc.cess + cess, total: acc.total + amount + tax + cess };
-  }, { taxable: 0, tax: 0, cess: 0, total: 0 });
+  const t = purchaseTotals(p?.items || [], !!p?.applyRoundOff);
+  return { taxable: t.taxable, tax: t.tax, cess: t.cess, total: t.finalTotal };
 }
 
 // Given the raw GSTR-2B JSON `data` block and the user's purchase records, return

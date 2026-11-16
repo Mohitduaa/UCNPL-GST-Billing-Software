@@ -212,4 +212,140 @@ console.log('--- Testing In-Depth Bug Fixes ---');
   console.log('✓ Test 9 Passed: Purchase totals rounded to clean 2 decimals without IEEE float noise');
 }
 
-console.log('All 9 In-Depth Bug Fix verification tests passed 100%!');
+// Test 10: Purchase Discount in GSTR Book Totals
+{
+  console.log('Test 10: Purchase Book Totals with Line Discount & Cess');
+  const { purchaseTotals } = await import('../src/utils/purchaseOrders.js');
+
+  // Purchase of 10 units @ 100 with 10% line discount, 18% GST, 12% Cess
+  // Gross = 1000, Discount = 100, Taxable = 900
+  // Tax = 162, Cess = 108, Total = 1170
+  const items = [{ quantity: 10, rate: 100, discount: 10, discountType: 'percent', taxPercent: 18, cessPercent: 12 }];
+  const t = purchaseTotals(items, false);
+  assert.equal(t.taxable, 900, 'Taxable must be 900 after discount');
+  assert.equal(t.tax, 162, 'Tax must be 162');
+  assert.equal(t.cess, 108, 'Cess must be 108');
+  assert.equal(t.finalTotal, 1170, 'Grand total must be 1170');
+  console.log('✓ Test 10 Passed: Purchase totals with line discount and cess calculate accurately');
+}
+
+// Test 11: Cash Book Purchase TDS Outflow
+{
+  console.log('Test 11: Cash Book Purchase TDS Outflow');
+  const { purchaseOwed } = await import('../src/utils/purchasePayments.js');
+
+  // Purchase total 10,000, TDS deducted @ 1% under 194C = 100
+  // Amount paid to supplier = 9,900
+  const purchase = {
+    totalAmount: 10000,
+    tdsAmount: 100,
+    paymentStatus: 'Paid',
+    paymentMode: 'cash',
+  };
+  const netOut = purchaseOwed(purchase);
+  assert.equal(netOut, 9900, 'Net cash outflow must be 9,900 (total less TDS)');
+  console.log(`✓ Test 11 Passed: Purchase outflow reflects actual paid amount ₹${netOut}`);
+}
+
+// Test 12: Purchase Alternate / Compound Units Stock Reconciliation
+{
+  console.log('Test 12: Purchase Alternate / Compound Units Stock');
+  const existingProducts = [
+    { id: 'oil-1', name: 'Refined Oil', unit: 'Pcs', secondaryUnit: 'Box', conversionFactor: 10, stock: 20 },
+  ];
+
+  // Purchase 5 Boxes (each Box = 10 Pcs)
+  const purchaseItems = [
+    { name: 'Refined Oil', unit: 'Box', quantity: 5, rate: 1200 },
+  ];
+
+  const res = reconcilePurchaseProducts({
+    items: purchaseItems,
+    existingProducts,
+    isEdit: false,
+  });
+
+  const updated = res.productsToSave.find(p => p.id === 'oil-1');
+  assert.ok(updated);
+  // Expected stock: 20 + (5 * 10) = 70 Pcs
+  assert.equal(updated.stock, 70, `Stock should be 70 Pcs, got ${updated.stock}`);
+  console.log(`✓ Test 12 Passed: Secondary unit purchase (5 Boxes of 10) correctly added 50 units to stock (total ${updated.stock})`);
+}
+
+// Test 13: GSTR-2B Auto-Import iamt IGST Recognition
+{
+  console.log('Test 13: GSTR-2B Auto-Import iamt IGST Recognition');
+  const gstr2bInv = {
+    inum: 'PORTAL-001',
+    dt: '12-11-2026',
+    val: 1180,
+    items: [
+      { num: 1, itm_det: { rt: 18, txval: 1000, iamt: 180, csamt: 0 } },
+    ],
+  };
+
+  const parsed = convertGstrInvoiceToPurchase(gstr2bInv, {
+    ctin: '03AAAAA0000A1Z5',
+    trdnm: 'Supplier Punjab',
+  }, { gstin: '' }); // profile GSTIN blank
+
+  assert.equal(parsed.interstate, true, 'Invoice with iamt > 0 must be marked interstate');
+  assert.equal(parsed.totalAmount, 1180, 'Total amount must match');
+  console.log('✓ Test 13 Passed: Official portal iamt recognized and marked as interstate purchase');
+}
+
+// Test 14: WhatsApp 10-Digit Indian Mobile Phone Sanitize
+{
+  console.log('Test 14: WhatsApp 10-Digit Indian Mobile Phone Sanitize');
+  const { sanitizeWhatsAppPhone } = await import('../src/utils/share.js');
+
+  assert.equal(sanitizeWhatsAppPhone('9876543210'), '919876543210', '10-digit Indian phone should get 91 prefix');
+  assert.equal(sanitizeWhatsAppPhone('+91 98765 43210'), '919876543210', 'Already prefixed +91 should be clean digits');
+  assert.equal(sanitizeWhatsAppPhone('919876543210'), '919876543210', 'Already prefixed 91 should not duplicate');
+  assert.equal(sanitizeWhatsAppPhone(''), '', 'Empty phone stays empty');
+  console.log('✓ Test 14 Passed: WhatsApp phone numbers correctly sanitized and prefixed with 91');
+}
+
+// Test 15: Sort Stability with Date Timestamps
+{
+  console.log('Test 15: Sort Stability with Date Timestamps');
+  const { parseLocalDate } = await import('../src/utils.js');
+
+  const bills = [
+    { invoiceNumber: 'INV-02', invoiceDate: '2026-11-15' },
+    { invoiceNumber: 'INV-01', invoiceDate: '2026-11-10' },
+    { invoiceNumber: 'INV-03', invoiceDate: '' }, // missing date
+  ];
+
+  const sorted = [...bills].sort((a, b) => ((parseLocalDate(a.invoiceDate)?.getTime() || 0) - (parseLocalDate(b.invoiceDate)?.getTime() || 0)) || String(a.invoiceNumber || '').localeCompare(String(b.invoiceNumber || '')));
+
+  assert.equal(sorted[0].invoiceNumber, 'INV-03', 'Missing date (0 timestamp) should sort first');
+  assert.equal(sorted[1].invoiceNumber, 'INV-01', '10 Nov should sort second');
+  assert.equal(sorted[2].invoiceNumber, 'INV-02', '15 Nov should sort third');
+  console.log('✓ Test 15 Passed: Date sorting handles empty/invalid dates reliably without NaN corruption');
+}
+
+// Test 16: Client Credit Application Floating Point Rounding
+{
+  console.log('Test 16: Client Credit Application Floating Point Rounding');
+  const { planCreditApplication } = await import('../src/utils/clientCredit.js');
+
+  const sourceBill = {
+    id: 'b-credit',
+    invoiceNumber: 'INV-OVER',
+    invoiceType: 'tax-invoice',
+    clientName: 'Test Client',
+    totalAmount: 100,
+    paidAmount: 200, // overpaid by 100
+    payments: [{ amount: 200, date: '2026-11-01', mode: 'cash' }],
+    invoiceDate: '2026-11-01',
+  };
+
+  const plan = planCreditApplication('Test Client', [sourceBill], 33.33, 'INV-TARGET');
+  assert.ok(plan);
+  assert.equal(plan.amountApplied, 33.33, 'Applied amount must be exact 33.33');
+  assert.equal(plan.sourcePatches[0].updatedBill.paidAmount, 166.67, 'Remaining paid amount must be exactly 166.67 without float noise');
+  console.log('✓ Test 16 Passed: Client credit transfer amounts rounded to exact 2 decimals');
+}
+
+console.log('All 16 In-Depth Bug Fix verification tests passed 100%!');

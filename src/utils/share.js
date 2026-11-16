@@ -81,7 +81,12 @@ export function supplierShareMessage(supplier, profile) {
  */
 export function sanitizeWhatsAppPhone(phone) {
   if (!phone) return '';
-  return String(phone).replace(/\D/g, '');
+  const digits = String(phone).replace(/\D/g, '');
+  // 10-digit standard Indian mobile numbers (e.g. 9876543210) require international country code 91 for wa.me / WhatsApp Web
+  if (digits.length === 10 && /^[6-9]/.test(digits)) {
+    return '91' + digits;
+  }
+  return digits;
 }
 
 /**

@@ -23,6 +23,8 @@
 
 import { amountDue, paymentStatusFor, isCancelledBill, SALES_INVOICE_TYPES, localToday } from '../utils.js';
 
+const r2 = (n) => Math.round((Number(n) || 0) * 100) / 100;
+
 // What the client owes on a bill: the total less TDS they deduct. Nothing on
 // a cancelled invoice, or on a quotation / proforma / challan (not a sale), so
 // money received against one - an advance, or a payment before the invoice was
@@ -101,7 +103,7 @@ export function planCreditApplication(clientName, allBills, amountToApply, newBi
   const consumedFrom = [];
   for (const src of sources) {
     if (remaining <= 0.005) break;
-    const take = Math.min(remaining, src.overpaid);
+    const take = r2(Math.min(remaining, src.overpaid));
     const srcBill = allBills.find(b => b.id === src.billId);
     if (!srcBill) continue;
     const newPayments = [
@@ -116,7 +118,7 @@ export function planCreditApplication(clientName, allBills, amountToApply, newBi
         creditTargetBillId: newBillId,
       },
     ];
-    const newTotalPaid = newPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+    const newTotalPaid = r2(newPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0));
     // A source keeps its status when it is cancelled or not a sale.
     const newStatus = isCancelledBill(srcBill) ? 'cancelled'
       : (owedOn(srcBill) > 0 ? paymentStatusFor(srcBill, newTotalPaid) : (srcBill.status || 'unpaid'));
@@ -125,12 +127,14 @@ export function planCreditApplication(clientName, allBills, amountToApply, newBi
       updatedBill: { ...srcBill, payments: newPayments, paidAmount: newTotalPaid, status: newStatus },
     });
     consumedFrom.push({ billId: src.billId, invoiceNumber: src.invoiceNumber, amount: take });
-    remaining -= take;
+    remaining = r2(remaining - take);
   }
+
+  const amountApplied = r2(amount - remaining);
 
   const targetEntry = {
     id: 'credit_in_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-    amount,
+    amount: amountApplied,
     date: localToday(),
     mode: 'credit-applied',
     note: `Applied from prior overpayment${consumedFrom.length > 1 ? 's' : ''} (${consumedFrom.map(c => c.invoiceNumber).join(', ')})`,
@@ -138,5 +142,5 @@ export function planCreditApplication(clientName, allBills, amountToApply, newBi
     creditSourceBillIds: consumedFrom.map(c => c.billId),
   };
 
-  return { amountApplied: amount, sourcePatches, targetEntry, consumedFrom };
+  return { amountApplied, sourcePatches, targetEntry, consumedFrom };
 }
