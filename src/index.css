@@ -4029,6 +4029,27 @@ html:not([data-theme="dark"]) .welcome-card-close:hover {
   .welcome-card-btn-secondary { flex: 1 1 100%; justify-content: center; }
 }
 
+/* Migration Hero Banner (Dashboard onboarding) - Terracotta theme native */
+.migration-hero-banner {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 1.15rem 1.4rem;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 100, 66, 0.22);
+  background: linear-gradient(135deg, #fffbf9 0%, #fef5ee 55%, #faf8f5 100%);
+  box-shadow: 0 3px 14px rgba(201, 100, 66, 0.06), inset 0 1px 0 #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+html[data-theme="dark"] .migration-hero-banner {
+  background: linear-gradient(135deg, rgba(201, 100, 66, 0.12) 0%, rgba(38, 38, 36, 0.95) 55%, rgba(201, 100, 66, 0.06) 100%);
+  border-color: rgba(201, 100, 66, 0.32);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
 /* v1.10.84 - "Print" beside each part of the invoice form that prints. */
 .label-with-toggle { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; }
 .label-with-toggle > span { display: inline-flex; gap: 0.75rem; }

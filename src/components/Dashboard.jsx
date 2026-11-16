@@ -1488,31 +1488,20 @@ export default function Dashboard({ onNew, onEdit, onPrint, onDuplicate, onConve
 
       {/* Getting Started Migration Banner for accounts with 0 invoices */}
       {bills.length === 0 && (
-        <div
-          className="glass-panel p-6 mb-6"
-          style={{
-            background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(14, 165, 233, 0.08) 100%)',
-            border: '1.5px solid rgba(59, 130, 246, 0.25)',
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '1.25rem',
-            flexWrap: 'wrap',
-          }}
-        >
+        <div className="migration-hero-banner">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '280px' }}>
             <div
               style={{
                 width: 44,
                 height: 44,
                 borderRadius: '10px',
-                background: 'var(--primary)',
+                background: 'var(--primary, #c96442)',
                 color: '#fff',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
+                boxShadow: '0 2px 6px rgba(201, 100, 66, 0.3)',
               }}
             >
               <ArrowRightLeft size={22} />
