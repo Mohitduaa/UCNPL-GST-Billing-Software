@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from 'react';
-import { Home, FileText, Settings, Plus, Users, Package, BarChart3, Wallet, RefreshCw, Receipt, BookOpen, Moon, Sun, Download, X, ShoppingCart, ChevronDown, Building2, Pencil, HelpCircle, Search, Command, Bell, Calculator, HardDrive, Menu, Heart, Banknote, ShoppingBag, ReceiptText, CheckCircle2, SlidersHorizontal, Clock, AlertTriangle, ClipboardList, Repeat, Lock, Lightbulb, User } from 'lucide-react';
+import { Home, FileText, Settings, Plus, Users, Package, BarChart3, Wallet, RefreshCw, Receipt, BookOpen, Moon, Sun, Download, X, ShoppingCart, ChevronDown, ChevronRight, Building2, Pencil, HelpCircle, Search, Command, Bell, Calculator, HardDrive, Menu, Heart, Banknote, ShoppingBag, ReceiptText, CheckCircle2, SlidersHorizontal, Clock, AlertTriangle, ClipboardList, Repeat, Lock, Lightbulb, User } from 'lucide-react';
 import { getAllProfiles, saveProfile, getEnabledModules, getMenuOrder, onMenuChanged, getAllBills, getAllProducts, getStockAlertSettings, getAllClients, runUpdateNow, getLockStatus } from './store';
 import { isModuleEnabled, getUpcomingFilings, countsAsSales, localToday, toLocalIsoDate, DOCS_URL, findLowStock, trackedStock } from './utils';
 import { orderedMenu } from './utils/businessTypes';
@@ -1244,62 +1244,119 @@ function App() {
                 All clear — nothing needs your attention right now.
               </p>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {isLive('autoFire') && (
-                  <button type="button" className="notice notice-info" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }} style={{ cursor: 'pointer', border: 'none', textAlign: 'left' }}>
-                    <span className="notice-icon"><Repeat size={16} strokeWidth={1.75} /></span>
-                    <div style={{ flex: 1 }}>
-                      <strong>{notifications.autoFire.count} recurring invoice{notifications.autoFire.count !== 1 ? 's' : ''} auto-generated today</strong>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.85, marginTop: '0.2rem' }}>
-                        Check the Dashboard for the new bills · review and download PDFs as needed
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {isLive('filings') && (() => {
+                  const count = notifications.filings.length;
+                  const first = notifications.filings[0];
+                  const daysText = first.daysAway === 0 ? 'Due today' : first.daysAway === 1 ? 'Due tomorrow' : `Due in ${first.daysAway} days`;
+                  const title = count === 1 ? 'Upcoming GST Return' : `${count} GST Returns Due Soon`;
+                  const desc = count === 1
+                    ? `${first.label} is scheduled for filing (${daysText}).`
+                    : notifications.filings.slice(0, 3).map(f => `${f.label} (${f.daysAway === 0 ? 'today' : f.daysAway === 1 ? 'tomorrow' : f.daysAway + 'd'})`).join(' · ');
+                  return (
+                    <button type="button" className="notif-card" onClick={() => { setShowNotifs(false); setCurrentView('filing'); }}>
+                      <div className="notif-icon-box notif-icon-filing">
+                        <ClipboardList size={18} strokeWidth={2} />
                       </div>
-                    </div>
-                  </button>
-                )}
-                {isLive('overdue') && (
-                  <button type="button" className="notice notice-danger" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }} style={{ cursor: 'pointer', border: 'none', textAlign: 'left' }}>
-                    <span className="notice-icon"><AlertTriangle size={16} strokeWidth={1.75} /></span>
-                    <div style={{ flex: 1 }}>
-                      <strong>{notifications.overdue.length} overdue invoice{notifications.overdue.length !== 1 ? 's' : ''}</strong>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.85, marginTop: '0.2rem' }}>
-                        {notifications.overdue.slice(0, 3).map(b => b.invoiceNumber).join(' · ')}{notifications.overdue.length > 3 ? ` · +${notifications.overdue.length - 3} more` : ''}
+                      <div className="notif-content">
+                        <div className="notif-top">
+                          <span className="notif-title">{title}</span>
+                          <span className="notif-chip notif-chip-filing">{daysText}</span>
+                        </div>
+                        <p className="notif-desc">{desc}</p>
                       </div>
-                    </div>
-                  </button>
-                )}
-                {isLive('dueSoon') && (
-                  <button type="button" className="notice notice-warn" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }} style={{ cursor: 'pointer', border: 'none', textAlign: 'left' }}>
-                    <span className="notice-icon"><Clock size={16} strokeWidth={1.75} /></span>
-                    <div style={{ flex: 1 }}>
-                      <strong>{notifications.dueSoon.length} invoice{notifications.dueSoon.length !== 1 ? 's' : ''} due in next 3 days</strong>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.85, marginTop: '0.2rem' }}>
-                        {notifications.dueSoon.slice(0, 3).map(b => `${b.invoiceNumber} (${b.clientName})`).join(' · ')}
+                      <ChevronRight size={16} className="notif-arrow" />
+                    </button>
+                  );
+                })()}
+
+                {isLive('overdue') && (() => {
+                  const count = notifications.overdue.length;
+                  const title = count === 1 ? 'Overdue Invoice' : `${count} Overdue Invoices`;
+                  const desc = count === 1
+                    ? `Invoice ${notifications.overdue[0].invoiceNumber} (${notifications.overdue[0].clientName || 'Client'}) has passed its due date.`
+                    : `${notifications.overdue.slice(0, 3).map(b => b.invoiceNumber).join(', ')}${count > 3 ? ` and ${count - 3} more` : ''} awaiting payment.`;
+                  return (
+                    <button type="button" className="notif-card" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }}>
+                      <div className="notif-icon-box notif-icon-danger">
+                        <AlertTriangle size={18} strokeWidth={2} />
                       </div>
-                    </div>
-                  </button>
-                )}
-                {isLive('filings') && (
-                  <button type="button" className="notice notice-info" onClick={() => { setShowNotifs(false); setCurrentView('filing'); }} style={{ cursor: 'pointer', border: 'none', textAlign: 'left' }}>
-                    <span className="notice-icon"><ClipboardList size={16} strokeWidth={1.75} /></span>
-                    <div style={{ flex: 1 }}>
-                      <strong>{notifications.filings.length} GST filing{notifications.filings.length !== 1 ? 's' : ''} due in next 10 days</strong>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.85, marginTop: '0.2rem' }}>
-                        {notifications.filings.slice(0, 3).map(f => `${f.label} (${f.daysAway === 0 ? 'today' : f.daysAway + 'd'})`).join(' · ')}
+                      <div className="notif-content">
+                        <div className="notif-top">
+                          <span className="notif-title">{title}</span>
+                          <span className="notif-chip notif-chip-danger">Overdue</span>
+                        </div>
+                        <p className="notif-desc">{desc}</p>
                       </div>
-                    </div>
-                  </button>
-                )}
-                {isLive('lowStock') && (
-                  <button type="button" className="notice notice-note" onClick={() => { setShowNotifs(false); setCurrentView('inventory'); }} style={{ cursor: 'pointer', border: 'none', textAlign: 'left' }}>
-                    <span className="notice-icon"><Package size={16} strokeWidth={1.75} /></span>
-                    <div style={{ flex: 1 }}>
-                      <strong>{notifications.lowStock.length} product{notifications.lowStock.length !== 1 ? 's' : ''} low on stock</strong>
-                      <div style={{ fontSize: '0.72rem', opacity: 0.85, marginTop: '0.2rem' }}>
-                        {notifications.lowStock.slice(0, 3).map(p => `${p.name} (${trackedStock(p)} left)`).join(' · ')}
+                      <ChevronRight size={16} className="notif-arrow" />
+                    </button>
+                  );
+                })()}
+
+                {isLive('dueSoon') && (() => {
+                  const count = notifications.dueSoon.length;
+                  const title = count === 1 ? 'Payment Due Soon' : `${count} Invoices Due Soon`;
+                  const desc = count === 1
+                    ? `Invoice ${notifications.dueSoon[0].invoiceNumber} (${notifications.dueSoon[0].clientName || 'Client'}) is due within 3 days.`
+                    : `${notifications.dueSoon.slice(0, 3).map(b => `${b.invoiceNumber} (${b.clientName || 'Client'})`).join(' · ')} due within 3 days.`;
+                  return (
+                    <button type="button" className="notif-card" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }}>
+                      <div className="notif-icon-box notif-icon-warn">
+                        <Clock size={18} strokeWidth={2} />
                       </div>
-                    </div>
-                  </button>
-                )}
+                      <div className="notif-content">
+                        <div className="notif-top">
+                          <span className="notif-title">{title}</span>
+                          <span className="notif-chip notif-chip-warn">Next 3 days</span>
+                        </div>
+                        <p className="notif-desc">{desc}</p>
+                      </div>
+                      <ChevronRight size={16} className="notif-arrow" />
+                    </button>
+                  );
+                })()}
+
+                {isLive('lowStock') && (() => {
+                  const count = notifications.lowStock.length;
+                  const title = count === 1 ? 'Low Stock Warning' : `${count} Products Low on Stock`;
+                  const desc = `${notifications.lowStock.slice(0, 3).map(p => `${p.name} (${trackedStock(p)} left)`).join(' · ')}${count > 3 ? ` · +${count - 3} more` : ''} — reorder recommended.`;
+                  return (
+                    <button type="button" className="notif-card" onClick={() => { setShowNotifs(false); setCurrentView('inventory'); }}>
+                      <div className="notif-icon-box notif-icon-stock">
+                        <Package size={18} strokeWidth={2} />
+                      </div>
+                      <div className="notif-content">
+                        <div className="notif-top">
+                          <span className="notif-title">{title}</span>
+                          <span className="notif-chip notif-chip-stock">Inventory</span>
+                        </div>
+                        <p className="notif-desc">{desc}</p>
+                      </div>
+                      <ChevronRight size={16} className="notif-arrow" />
+                    </button>
+                  );
+                })()}
+
+                {isLive('autoFire') && (() => {
+                  const count = notifications.autoFire.count;
+                  const title = count === 1 ? 'Recurring Invoice Created' : `${count} Recurring Invoices Created`;
+                  const desc = 'Auto-generated from your recurring schedules. Ready to review on the Dashboard.';
+                  return (
+                    <button type="button" className="notif-card" onClick={() => { setShowNotifs(false); setCurrentView('dashboard'); }}>
+                      <div className="notif-icon-box notif-icon-filing">
+                        <Repeat size={18} strokeWidth={2} />
+                      </div>
+                      <div className="notif-content">
+                        <div className="notif-top">
+                          <span className="notif-title">{title}</span>
+                          <span className="notif-chip notif-chip-filing">Today</span>
+                        </div>
+                        <p className="notif-desc">{desc}</p>
+                      </div>
+                      <ChevronRight size={16} className="notif-arrow" />
+                    </button>
+                  );
+                })()}
               </div>
             )}
           </div>
