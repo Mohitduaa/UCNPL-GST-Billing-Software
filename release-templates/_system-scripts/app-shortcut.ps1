@@ -13,7 +13,12 @@ function New-AppShortcut([string]$path, [string]$sys) {
   $sc.Arguments = "-NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -File `"$(Join-Path $sys 'start-windows.ps1')`" -AppWindow -Hidden"
   $sc.WorkingDirectory = $sys
   $sc.WindowStyle = 7
-  $sc.IconLocation = "$(Join-Path $sys 'app-icon.ico'),0"
+  $parent = Split-Path -Parent $sys
+  $iconPath = Join-Path $parent 'app-icon.ico'
+  if (-not (Test-Path -LiteralPath $iconPath)) {
+    $iconPath = Join-Path $sys 'app-icon.ico'
+  }
+  $sc.IconLocation = "$iconPath,0"
   $sc.Description = 'UCNPL GST Billing Software'
   $sc.Save()
 }

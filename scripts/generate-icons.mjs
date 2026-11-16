@@ -54,6 +54,10 @@ async function renderPng(size, purpose) {
 }
 
 const targets = [
+  { name: 'icon-32.png',       size: 32,  purpose: 'any' },
+  { name: 'icon-48.png',       size: 48,  purpose: 'any' },
+  { name: 'icon-64.png',       size: 64,  purpose: 'any' },
+  { name: 'icon-96.png',       size: 96,  purpose: 'any' },
   { name: 'icon-192.png',      size: 192, purpose: 'any' },
   { name: 'icon-512.png',      size: 512, purpose: 'any' },
   { name: 'maskable-192.png',  size: 192, purpose: 'maskable' },

@@ -132,11 +132,15 @@ export default defineConfig({
         // handle it (all modern desktop). The PNG entries point at files
         // that MUST be dropped into public/icons/ — see README.
         icons: [
-          { src: '/favicon.svg', sizes: 'any',       type: 'image/svg+xml' },
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-          { src: '/icons/maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-96.png',  sizes: '96x96',   type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-64.png',  sizes: '64x64',   type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-48.png',  sizes: '48x48',   type: 'image/png', purpose: 'any' },
+          { src: '/icons/icon-32.png',  sizes: '32x32',   type: 'image/png', purpose: 'any' },
           { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/icons/maskable-192.png', sizes: '192x192', type: 'image/png', purpose: 'maskable' },
+          { src: '/favicon.svg', sizes: 'any',       type: 'image/svg+xml' },
         ],
       },
       workbox: {

@@ -113,7 +113,24 @@ function Move-IconsToApp {
     # The old icon still opens the launcher, which still works.
   }
 }
-if (-not $Installed) { Move-IconsToApp }
+function Ensure-DesktopShortcut {
+  if ((Split-Path -Leaf $SystemDir) -ne '_system') { return }
+  try {
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    if (-not $desktop -or -not (Test-Path -LiteralPath $desktop)) { return }
+    $lnkPath = Join-Path $desktop 'UCNPL Billing.lnk'
+    $oldLnk = Join-Path $desktop 'Start-Windows - Shortcut.lnk'
+    if (Test-Path -LiteralPath $oldLnk) {
+      Remove-Item -LiteralPath $oldLnk -Force -ErrorAction SilentlyContinue
+    }
+    . (Join-Path $SystemDir 'app-shortcut.ps1')
+    New-AppShortcut $lnkPath $SystemDir
+  } catch { }
+}
+if (-not $Installed) {
+  Move-IconsToApp
+  Ensure-DesktopShortcut
+}
 
 # v1.10.75 - updating only ever ADDED files, so an install that started on an
 # older version kept launchers and scripts that no longer do anything (and
